@@ -6,8 +6,8 @@ import lombok.Setter;
 
 import java.time.Instant;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 @Entity
 @Table(name = "usr")
@@ -32,11 +32,8 @@ public class MyUser extends AbstractEntity<UserId> {
     @Column
     private Locale locale;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "usr_role", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
     @Enumerated(EnumType.STRING)
-    private Set<Role> roles = Collections.emptySet();
+    private List<Role> roles = Collections.emptyList();
 
     @Column(length = EMAIL_MAX)
     private Email newEmail;

@@ -23,10 +23,4 @@ CREATE TABLE IF NOT EXISTS usr
     CONSTRAINT new_email_len CHECK ( char_length(new_email) <= 1024 )
 );
 
-CREATE TABLE IF NOT EXISTS usr_role
-(
-    user_id UUID NOT NULL,
-    role TEXT,
-    CONSTRAINT fk_user_id FOREIGN KEY (user_id)
-        REFERENCES usr (id)
-);
+
