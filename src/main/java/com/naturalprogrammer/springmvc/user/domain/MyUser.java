@@ -3,6 +3,7 @@ package com.naturalprogrammer.springmvc.user.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -13,17 +14,28 @@ import java.util.Locale;
 @Table(name = "usr")
 @Getter
 @Setter
-@IdClass(UserId.class)
+@ToString
+@IdClass(MyUser.MyUserId.class)
 public class MyUser extends AbstractEntity<UserId> {
 
     public static final int EMAIL_MAX = 1024;
     public static final int NAME_MIN = 1;
     public static final int NAME_MAX = 50;
+    public static final int PASSWORD_MIN = 8;
+    public static final int PASSWORD_MAX = 50;
+
+    public static class MyUserId {
+
+        @Column(nullable = false, updatable = false)
+        @Convert(converter = UserIdConverter.class)
+        private UserId id;
+    }
 
     @Column(nullable = false, unique = true, length = EMAIL_MAX)
     private Email email;
 
     @Column(nullable = false) // no length because it will be encrypted
+    @ToString.Exclude
     private Password password;
 
     @Column(nullable = false, length = NAME_MAX)

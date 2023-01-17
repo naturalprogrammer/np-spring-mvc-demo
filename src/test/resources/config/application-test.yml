@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:15.1://np-spring-mvc-demo
+    username: username
+    password: postgres
