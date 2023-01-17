@@ -5,12 +5,12 @@ import jakarta.persistence.Converter;
 
 import java.util.UUID;
 
-@Converter(autoApply = true)
+@Converter
 public class UserIdConverter implements AttributeConverter<UserId, UUID> {
 
     @Override
     public UUID convertToDatabaseColumn(UserId object) {
-        return object == null ? null : object.id();
+        return object == null ? null : object.value();
     }
 
     @Override
