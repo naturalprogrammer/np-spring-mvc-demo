@@ -25,6 +25,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(config ->
                         config
                                 .requestMatchers(HttpMethod.POST, USERS).permitAll()
+                                .requestMatchers(HttpMethod.GET,
+                                        "/v3/api-docs/**",
+                                        "/favicon.ico",
+                                        "/swagger-ui.html",
+                                        "/swagger-ui/**"
+                                ).permitAll()
+                                .requestMatchers(HttpMethod.GET, "/error").permitAll()
                                 .anyRequest().denyAll()
                 ).build();
     }
