@@ -24,11 +24,13 @@ public record SignupRequest(
         @JsonProperty("displayName")
         String displayName
 ) {
-        @Override
-        public String toString() {
-                return "SignupRequest{" +
-                        "email='" + email + '\'' +
-                        ", displayName='" + displayName + '\'' +
-                        '}';
-        }
+    @Override
+    public String toString() {
+        return "SignupRequest{" +
+                "email='" + email + '\'' +
+                ", displayName='" + displayName + '\'' +
+                '}';
+    }
+
+    public static final String CONTENT_TYPE = "application/vnd.com.naturalprogrammer.signup-request.v1+json";
 }
