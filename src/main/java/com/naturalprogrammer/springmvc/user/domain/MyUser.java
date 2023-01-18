@@ -15,8 +15,7 @@ import java.util.Locale;
 @Getter
 @Setter
 @ToString
-@IdClass(UserIdClass.class)
-public class MyUser extends AbstractEntity<UserId> {
+public class MyUser extends AbstractEntity {
 
     public static final int EMAIL_MAX = 1024;
     public static final int NAME_MIN = 1;
@@ -25,14 +24,14 @@ public class MyUser extends AbstractEntity<UserId> {
     public static final int PASSWORD_MAX = 50;
 
     @Column(nullable = false, unique = true, length = EMAIL_MAX)
-    private Email email;
+    private String email;
 
     @Column(nullable = false) // no length because it will be encrypted
     @ToString.Exclude
-    private Password password;
+    private String password;
 
     @Column(nullable = false, length = NAME_MAX)
-    private DisplayName displayName;
+    private String displayName;
 
     @Column
     private Locale locale;
@@ -41,7 +40,7 @@ public class MyUser extends AbstractEntity<UserId> {
     private List<Role> roles = Collections.emptyList();
 
     @Column(length = EMAIL_MAX)
-    private Email newEmail;
+    private String newEmail;
 
     // A JWT issued before this won't be valid
     @Column(nullable = false)

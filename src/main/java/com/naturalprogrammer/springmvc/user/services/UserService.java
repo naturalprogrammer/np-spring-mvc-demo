@@ -10,9 +10,9 @@ public class UserService {
     public UserResource toResponse(MyUser user, String token) {
 
         return new UserResource(
-                user.getId().value().toString(),
-                user.getEmail().value(),
-                user.getDisplayName().value(),
+                user.getId().toString(),
+                user.getEmail(),
+                user.getDisplayName(),
                 user.getLocale().toLanguageTag(),
                 token
         );
