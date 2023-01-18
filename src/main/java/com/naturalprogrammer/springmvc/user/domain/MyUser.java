@@ -15,7 +15,7 @@ import java.util.Locale;
 @Getter
 @Setter
 @ToString
-@IdClass(MyUser.MyUserId.class)
+@IdClass(UserIdClass.class)
 public class MyUser extends AbstractEntity<UserId> {
 
     public static final int EMAIL_MAX = 1024;
@@ -23,13 +23,6 @@ public class MyUser extends AbstractEntity<UserId> {
     public static final int NAME_MAX = 50;
     public static final int PASSWORD_MIN = 8;
     public static final int PASSWORD_MAX = 50;
-
-    public static class MyUserId {
-
-        @Column(nullable = false, updatable = false)
-        @Convert(converter = UserIdConverter.class)
-        private UserId id;
-    }
 
     @Column(nullable = false, unique = true, length = EMAIL_MAX)
     private Email email;

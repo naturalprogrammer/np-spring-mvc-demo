@@ -1,23 +1,27 @@
 package com.naturalprogrammer.springmvc.user.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalprogrammer.springmvc.helpers.AbstractIntegrationTest;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import com.naturalprogrammer.springmvc.user.domain.MyUser;
+import com.naturalprogrammer.springmvc.user.domain.UserId;
+import com.naturalprogrammer.springmvc.user.domain.UserIdClass;
+import com.naturalprogrammer.springmvc.user.dto.UserResource;
+import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class SignupIntegrationTest extends AbstractIntegrationTest {
 
-    @BeforeEach
-    void setUp() {
-    }
+    @Autowired
+    private UserRepository userRepository;
 
-    @AfterEach
-    void tearDown() {
-    }
+    @Autowired
+    private ObjectMapper mapper;
 
     @Test
     void should_Signup() throws Exception {
@@ -25,7 +29,7 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
         // given
 
         // when, then
-        mvc.perform(post("/users")
+        var result = mvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                    {
@@ -34,6 +38,11 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
                                         "displayName" : "Sanjay567 Patel336"
                                    }       
                                 """))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        var userResource = mapper.readValue(result.getResponse().getContentAsString(), UserResource.class);
+        MyUser user = userRepository.findById(new UserIdClass(UserId.of(userResource.id()))).orElseThrow();
+        assertThat(user.getEmail().value()).isEqualTo("user12styz@example.com");
     }
 }
