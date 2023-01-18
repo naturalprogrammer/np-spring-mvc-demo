@@ -15,8 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Locale;
 
-import static com.naturalprogrammer.springmvc.common.CommonConstants.ACCEPT_LANGUAGE;
-import static com.naturalprogrammer.springmvc.common.CommonConstants.CONTENT_TYPE;
+import static com.naturalprogrammer.springmvc.common.Path.USERS;
+import static org.springframework.http.HttpHeaders.*;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -24,7 +25,7 @@ public class SignupController {
 
     private final SignupService signupService;
 
-    @PostMapping("/users")
+    @PostMapping(USERS)
     public ResponseEntity<?> signup(
             @RequestBody SignupRequest request,
             @RequestHeader(name = ACCEPT_LANGUAGE, required = false) String language) {
@@ -38,6 +39,7 @@ public class SignupController {
             case SignupResult.Success success -> ResponseEntity
                     .status(HttpStatus.CREATED)
                     .header(CONTENT_TYPE, UserResource.CONTENT_TYPE)
+                    .header(LOCATION, USERS + "/" + success.response().id())
                     .body(success.response());
             case SignupResult.ValidationError error -> Problem.toResponse(error.problem());
         };

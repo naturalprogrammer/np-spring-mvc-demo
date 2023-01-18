@@ -11,14 +11,15 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Getter
 @Setter
 @MappedSuperclass
-public abstract class AbstractEntity<I> {
+public abstract class AbstractEntity {
 
     @Id
-    private I id;
+    private UUID id;
 
     @CreatedBy
     private String createdBy;
