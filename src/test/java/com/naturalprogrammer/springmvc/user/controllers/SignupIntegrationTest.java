@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalprogrammer.springmvc.helpers.AbstractIntegrationTest;
 import com.naturalprogrammer.springmvc.user.domain.MyUser;
 import com.naturalprogrammer.springmvc.user.domain.Role;
+import com.naturalprogrammer.springmvc.user.dto.SignupRequest;
 import com.naturalprogrammer.springmvc.user.dto.UserResource;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.Instant;
@@ -43,13 +43,13 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
 
         // when, then
         var response = mvc.perform(post(USERS)
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(SignupRequest.CONTENT_TYPE)
                         .content("""
                                    {
                                         "email" : "%s",
                                         "password" : "%s",
                                         "displayName" : "%s"
-                                   }      
+                                   }     
                                 """.formatted(email, password, displayName)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(UserResource.CONTENT_TYPE))

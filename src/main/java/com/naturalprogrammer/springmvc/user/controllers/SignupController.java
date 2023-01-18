@@ -25,7 +25,7 @@ public class SignupController {
 
     private final SignupService signupService;
 
-    @PostMapping(USERS)
+    @PostMapping(value = USERS, consumes = SignupRequest.CONTENT_TYPE)
     public ResponseEntity<?> signup(
             @RequestBody SignupRequest request,
             @RequestHeader(name = ACCEPT_LANGUAGE, required = false) String language) {

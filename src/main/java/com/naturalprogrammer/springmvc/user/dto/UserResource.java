@@ -7,5 +7,5 @@ public record UserResource(
         String locale,
         String token
 ) {
-    public static final String CONTENT_TYPE = "application/vnd.com.naturalprogrammer.signup.v1+json";
+    public static final String CONTENT_TYPE = "application/vnd.com.naturalprogrammer.user.v1+json";
 }
