@@ -6,6 +6,7 @@ import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.user.domain.*;
 import com.naturalprogrammer.springmvc.user.dto.SignupRequest;
 import com.naturalprogrammer.springmvc.user.dto.UserResource;
+import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import com.naturalprogrammer.springmvc.user.services.SignupService.SignupResult.ValidationError;
 import jakarta.validation.ConstraintViolation;
 import lombok.RequiredArgsConstructor;
