@@ -4,10 +4,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record Error(
 
-        @Schema(example = "not_blank")
+        @Schema(example = "NotBlank")
         String code,
 
-        @Schema(example = "Should not be blank")
+        @Schema(example = "must not be blank")
         String message,
 
         @Schema(example = "email")

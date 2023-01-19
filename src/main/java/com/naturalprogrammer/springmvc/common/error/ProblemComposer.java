@@ -37,8 +37,17 @@ public class ProblemComposer {
 
     private Error toError(ConstraintViolation<?> violation) {
         return new Error(
-                violation.getMessageTemplate(),
+                toCode(violation.getMessageTemplate()),
                 violation.getMessage(),
                 violation.getPropertyPath().toString());
+    }
+
+    private String toCode(String messageTemplate) {
+
+        // Extracts "NotBlank" from "{jakarta.validation.constraints.NotBlank.message}"
+
+        int lastPeriodIndex = messageTemplate.lastIndexOf(".");
+        int secondLastPeriodIndex = messageTemplate.lastIndexOf(".", lastPeriodIndex - 1);
+        return messageTemplate.substring(secondLastPeriodIndex + 1, lastPeriodIndex);
     }
 }
