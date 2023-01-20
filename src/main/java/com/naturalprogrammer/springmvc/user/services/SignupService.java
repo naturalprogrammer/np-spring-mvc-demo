@@ -22,6 +22,8 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
+import static org.apache.commons.lang3.StringUtils.trim;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -37,7 +39,7 @@ public class SignupService {
     public SignupResult signup(SignupRequest request, Locale locale) {
 
         request = new SignupRequest(
-                request.email().trim(), request.password().trim(), request.displayName().trim()
+                trim(request.email()), trim(request.password()), trim(request.displayName())
         );
         log.info("Received {}", request);
         Set<ConstraintViolation<SignupRequest>> violations = validator.validate(request);

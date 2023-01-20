@@ -1,6 +1,7 @@
 package com.naturalprogrammer.springmvc.user.dto;
 
 import com.naturalprogrammer.springmvc.user.domain.MyUser;
+import com.naturalprogrammer.springmvc.user.validators.ValidPassword;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -16,9 +17,8 @@ public record SignupRequest(
         @Schema(example = "sanjay@example.com")
         String email,
 
-        @NotBlank
-        @Size(min = MyUser.PASSWORD_MIN, max = MyUser.PASSWORD_MAX)
-        @Schema(example = "Secret99!")
+        @ValidPassword
+        @Schema(example = "Secret99!", description = "Password must have least 1 upper, lower, special characters and digit, min 8 chars, max 50 chars")
         String password,
 
         @NotBlank
