@@ -2,6 +2,8 @@ package com.naturalprogrammer.springmvc.user.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import static com.naturalprogrammer.springmvc.common.CommonUtils.CONTENT_TYPE_PREFIX;
+
 public record UserResource(
 
         @Schema(example = "8fd1502e-759d-419f-aaac-e61478fc6406")
@@ -22,5 +24,5 @@ public record UserResource(
         )
         String token
 ) {
-    public static final String CONTENT_TYPE = "application/vnd.com.naturalprogrammer.user.v1+json";
+        public static final String CONTENT_TYPE = CONTENT_TYPE_PREFIX + "user.v1+json";
 }
