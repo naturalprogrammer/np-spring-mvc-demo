@@ -44,7 +44,7 @@ public class SignupService {
         log.info("Received {}", request);
         Set<ConstraintViolation<SignupRequest>> violations = validator.validate(request);
         if (!violations.isEmpty()) {
-            var problem = problemComposer.ofViolations(ProblemType.INVALID_SIGNUP, request.toString(), violations);
+            var problem = problemComposer.compose(ProblemType.INVALID_SIGNUP, request.toString(), violations);
             return new Result.Error(problem);
         }
 
@@ -76,7 +76,6 @@ public class SignupService {
         user.setTokensValidFrom(clock.instant());
         return user;
     }
-
 
     public sealed interface Result {
         record Success(UserResource response) implements Result {

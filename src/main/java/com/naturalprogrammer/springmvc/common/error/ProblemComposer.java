@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -15,6 +16,9 @@ public class ProblemComposer {
 
     private final MessageGetter messageGetter;
 
+    public Problem compose(ProblemType type, String detail) {
+        return compose(type, detail, Collections.emptyList());
+    }
 
     public Problem compose(
             ProblemType type,
@@ -51,7 +55,7 @@ public class ProblemComposer {
         );
     }
 
-    public <T> Problem ofViolations(
+    public <T> Problem compose(
             ProblemType type,
             String detail,
             Set<ConstraintViolation<T>> violations
@@ -78,4 +82,5 @@ public class ProblemComposer {
         int secondLastPeriodIndex = messageTemplate.lastIndexOf(".", lastPeriodIndex - 1);
         return messageTemplate.substring(secondLastPeriodIndex + 1, lastPeriodIndex);
     }
+
 }

@@ -28,8 +28,7 @@ import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_S
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.mockValidator;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.randomProblem;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -69,7 +68,7 @@ class SignupServiceTest {
         @BeforeEach
         void setUp() {
             mockValidator(validator);
-            given(problemComposer.ofViolations(any(), any(), any())).willReturn(problem);
+            given(problemComposer.compose(any(), any(), anySet())).willReturn(problem);
         }
 
         @ParameterizedTest
@@ -84,7 +83,7 @@ class SignupServiceTest {
             var result = subject.signup(request, Locale.ENGLISH);
 
             // then
-            verify(problemComposer).ofViolations(
+            verify(problemComposer).compose(
                     eq(INVALID_SIGNUP),
                     eq("SignupRequest{email='null', displayName='null'}"),
                     violationsCaptor.capture()
