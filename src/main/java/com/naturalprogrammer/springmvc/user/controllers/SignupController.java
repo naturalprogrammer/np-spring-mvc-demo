@@ -4,7 +4,7 @@ import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.user.dto.SignupRequest;
 import com.naturalprogrammer.springmvc.user.dto.UserResource;
 import com.naturalprogrammer.springmvc.user.services.SignupService;
-import com.naturalprogrammer.springmvc.user.services.SignupService.SignupResult;
+import com.naturalprogrammer.springmvc.user.services.SignupService.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -54,13 +54,13 @@ public class SignupController {
         return toResponse(signupService.signup(request, locale));
     }
 
-    private ResponseEntity<?> toResponse(SignupResult result) {
+    private ResponseEntity<?> toResponse(Result result) {
         return switch (result) {
-            case SignupResult.Success success -> ResponseEntity
+            case Result.Success success -> ResponseEntity
                     .status(HttpStatus.CREATED)
                     .header(LOCATION, USERS + "/" + success.response().id())
                     .body(success.response());
-            case SignupResult.ValidationError error -> Problem.toResponse(error.problem());
+            case Result.Error error -> Problem.toResponse(error.problem());
         };
     }
 }

@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 public class PasswordValidator implements ConstraintValidator<ValidPassword, String> {
 
     // At least 1 upper, lower, special characters and digit, min 8 chars, max 50 chars
-    private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()!])(?=\\S+$).{"
+    public static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()!])(?=\\S+$).{"
             + MyUser.PASSWORD_MIN + "," + MyUser.PASSWORD_MAX + "}$";
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(PASSWORD_REGEX);
 

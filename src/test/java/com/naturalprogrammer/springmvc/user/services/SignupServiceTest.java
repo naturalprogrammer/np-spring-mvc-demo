@@ -4,7 +4,7 @@ import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
 import com.naturalprogrammer.springmvc.user.dto.SignupRequest;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
-import com.naturalprogrammer.springmvc.user.services.SignupService.SignupResult.ValidationError;
+import com.naturalprogrammer.springmvc.user.services.SignupService.Result.Error;
 import jakarta.validation.ConstraintViolation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -69,7 +69,7 @@ class SignupServiceTest {
         @BeforeEach
         void setUp() {
             mockValidator(validator);
-            given(problemComposer.compose(any(), any(), any())).willReturn(problem);
+            given(problemComposer.ofViolations(any(), any(), any())).willReturn(problem);
         }
 
         @ParameterizedTest
@@ -84,7 +84,7 @@ class SignupServiceTest {
             var result = subject.signup(request, Locale.ENGLISH);
 
             // then
-            verify(problemComposer).compose(
+            verify(problemComposer).ofViolations(
                     eq(INVALID_SIGNUP),
                     eq("SignupRequest{email='null', displayName='null'}"),
                     violationsCaptor.capture()
@@ -99,8 +99,8 @@ class SignupServiceTest {
 
             assertThat(passwordViolation.getMessageTemplate()).isEqualTo("{com.naturalprogrammer.spring.invalid.password}");
             assertThat(passwordViolation.getMessage()).isEqualTo("Password must have least 1 upper, lower, special characters and digit, min 8 chars, max 50 chars");
-            assertThat(result).isInstanceOf(ValidationError.class);
-            assertThat(((ValidationError) result).problem()).isEqualTo(problem);
+            assertThat(result).isInstanceOf(Error.class);
+            assertThat(((Error) result).problem()).isEqualTo(problem);
             verifyNoMoreInteractions(userRepository, userService, clock, passwordEncoder);
         }
     }
