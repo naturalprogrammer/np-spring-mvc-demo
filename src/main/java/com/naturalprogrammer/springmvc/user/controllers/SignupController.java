@@ -50,7 +50,7 @@ public class SignupController {
             @Schema(example = "en-IN")
             @RequestHeader(name = ACCEPT_LANGUAGE, required = false) String language) {
 
-        Locale locale = language == null ? Locale.ENGLISH : Locale.forLanguageTag(language);
+        Locale locale = language == null ? Locale.forLanguageTag("en-IN") : Locale.forLanguageTag(language);
         return toResponse(signupService.signup(request, locale));
     }
 

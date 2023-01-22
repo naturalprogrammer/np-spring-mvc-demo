@@ -1,6 +1,7 @@
 package com.naturalprogrammer.springmvc.common.error;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Set;
@@ -41,7 +42,7 @@ public record Problem(
     public static ResponseEntity<Problem> toResponse(Problem problem) {
         return ResponseEntity
                 .status(problem.status())
-                .header(CONTENT_TYPE, Problem.CONTENT_TYPE)
+                .header(HttpHeaders.CONTENT_TYPE, Problem.CONTENT_TYPE)
                 .body(problem);
     }
 }
