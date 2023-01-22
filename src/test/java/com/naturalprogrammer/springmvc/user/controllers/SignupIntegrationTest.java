@@ -17,6 +17,8 @@ import java.util.UUID;
 
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_SIGNUP;
+import static com.naturalprogrammer.springmvc.common.error.ProblemType.USED_EMAIL;
+import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.http.HttpHeaders.LOCATION;
@@ -79,21 +81,16 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
     @Test
     void should_preventSignup_when_displayNameIsBlank() throws Exception {
 
-        // given
-        var email = "user12styz@example.com";
-        var password = "Password9!";
-        var displayName = "   ";
-
         // when, then
         mvc.perform(post(USERS)
                         .contentType(SignupRequest.CONTENT_TYPE)
                         .content("""
                                    {
-                                        "email" : "%s",
-                                        "password" : "%s",
-                                        "displayName" : "%s"
+                                        "email" : "user23Alpha@example.com",
+                                        "password" : "Password9!",
+                                        "displayName" : "  "
                                    }     
-                                """.formatted(email, password, displayName)))
+                                """))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().contentType(Problem.CONTENT_TYPE))
                 .andExpect(jsonPath("id").isString())
@@ -113,6 +110,34 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
                         ")]").exists());
 
         assertThat(userRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    void should_preventSignup_when_emailIsAlreadyUsed() throws Exception {
+
+        // given
+        var user = userRepository.save(randomUser());
+
+        // when, then
+        mvc.perform(post(USERS)
+                        .contentType(SignupRequest.CONTENT_TYPE)
+                        .content("""
+                                   {
+                                        "email" : "%s",
+                                        "password" : "Password9!",
+                                        "displayName" : "Sanjay457 Patel983"
+                                   }     
+                                """.formatted(user.getEmail())))
+                .andExpect(status().isConflict())
+                .andExpect(content().contentType(Problem.CONTENT_TYPE))
+                .andExpect(jsonPath("id").isString())
+                .andExpect(jsonPath("type").value(USED_EMAIL.getType()))
+                .andExpect(jsonPath("title").value("Email already used"))
+                .andExpect(jsonPath("status").value("409"))
+                .andExpect(jsonPath("errors", hasSize(1)))
+                .andExpect(jsonPath("errors[0].code").value("UsedEmail"))
+                .andExpect(jsonPath("errors[0].message").value("Email already used"))
+                .andExpect(jsonPath("errors[0].field").value("email"));
     }
 
 }

@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Set;
+import java.util.List;
 
 // https://www.rfc-editor.org/rfc/rfc7807
 public record Problem(
@@ -35,7 +35,7 @@ public record Problem(
 
         String instance,
 
-        Set<Error> errors
+        List<Error> errors
 ) {
     public static final String CONTENT_TYPE = "application/problem+json";
 

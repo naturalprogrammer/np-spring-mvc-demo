@@ -4,7 +4,7 @@ import com.naturalprogrammer.springmvc.common.error.Problem;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 
-import java.util.Set;
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -28,7 +28,7 @@ public class MyTestUtils {
                 422,
                 "SignupRequest{email='null', displayName='null'}",
                 null,
-                Set.of()
+                Collections.emptyList()
         );
     }
 }

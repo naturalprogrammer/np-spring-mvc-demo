@@ -11,7 +11,8 @@ import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum ProblemType {
 
-    INVALID_SIGNUP("/problems/invalid-signup", "invalid-signup", UNPROCESSABLE_ENTITY);
+    INVALID_SIGNUP("/problems/invalid-signup", "invalid-signup", UNPROCESSABLE_ENTITY),
+    USED_EMAIL("/problems/used-email", "used-email", HttpStatus.CONFLICT);
 
     private final String type;
     private final String title;

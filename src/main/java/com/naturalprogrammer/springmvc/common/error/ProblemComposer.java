@@ -5,9 +5,9 @@ import jakarta.validation.ConstraintViolation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -15,10 +15,30 @@ public class ProblemComposer {
 
     private final MessageGetter messageGetter;
 
-    public <T> Problem compose(
+
+    public Problem compose(
             ProblemType type,
             String detail,
-            Set<ConstraintViolation<T>> violations
+            ErrorCode error,
+            String field
+    ) {
+        return compose(type, detail, List.of(
+                getError(error.getCode(), error.getMessage(), field)
+        ));
+    }
+
+    public Error getError(String code, String messageKey, String field) {
+        return new Error(
+                code,
+                messageGetter.getMessage(messageKey),
+                field
+        );
+    }
+
+    public Problem compose(
+            ProblemType type,
+            String detail,
+            List<Error> errors
     ) {
         return new Problem(
                 UUID.randomUUID().toString(),
@@ -27,12 +47,20 @@ public class ProblemComposer {
                 type.getStatus().value(),
                 detail,
                 null,
-                toErrors(violations)
+                errors
         );
     }
 
-    private <T> Set<Error> toErrors(Set<ConstraintViolation<T>> violations) {
-        return violations.stream().map(this::toError).collect(Collectors.toSet());
+    public <T> Problem ofViolations(
+            ProblemType type,
+            String detail,
+            Set<ConstraintViolation<T>> violations
+    ) {
+        return compose(type, detail, toErrors(violations));
+    }
+
+    private <T> List<Error> toErrors(Set<ConstraintViolation<T>> violations) {
+        return violations.stream().map(this::toError).toList();
     }
 
     private Error toError(ConstraintViolation<?> violation) {
