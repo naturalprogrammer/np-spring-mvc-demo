@@ -37,19 +37,19 @@ public class JwsService extends AbstractJwtService {
 
     @Override
     @SneakyThrows
-    public Token createToken(Aud aud, Subject subject, long validForMillis, Map<String, Object> claims) {
+    public String createToken(String aud, String subject, long validForMillis, Map<String, Object> claims) {
         var jws = new JWSObject(
                 new JWSHeader.Builder(JWSAlgorithm.RS256).keyID(keyId).build(),
                 createPayload(aud, subject, validForMillis, claims)
         );
         jws.sign(signer);
-        return new Token(jws.serialize());
+        return jws.serialize();
     }
 
     @Override
     @SneakyThrows
-    protected ParseResult parseToken(Token token) {
-        var jws = JWSObject.parse(token.value());
+    protected ParseResult parseToken(String token) {
+        var jws = JWSObject.parse(token);
         return jws.verify(verifier)
                 ? new ParseResult.Success(JWTClaimsSet.parse(jws.getPayload().toJSONObject()))
                 : new ParseResult.VerificationFailed();
