@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Locale;
 
+import static com.naturalprogrammer.springmvc.common.CommonUtils.UNKNOWN;
+import static com.naturalprogrammer.springmvc.common.CommonUtils.X_FORWARDED_FOR;
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
 import static org.springframework.http.HttpHeaders.ACCEPT_LANGUAGE;
 import static org.springframework.http.HttpHeaders.LOCATION;
@@ -48,10 +50,11 @@ public class SignupController {
     public ResponseEntity<?> signup(
             @RequestBody SignupRequest request,
             @Schema(example = "en-IN")
-            @RequestHeader(name = ACCEPT_LANGUAGE, required = false) String language) {
+            @RequestHeader(name = ACCEPT_LANGUAGE, required = false) String language,
+            @RequestHeader(name = X_FORWARDED_FOR, required = false) String clientIp) {
 
         Locale locale = language == null ? Locale.forLanguageTag("en-IN") : Locale.forLanguageTag(language);
-        return toResponse(signupService.signup(request, locale));
+        return toResponse(signupService.signup(request, locale, clientIp == null ? UNKNOWN : clientIp));
     }
 
     private ResponseEntity<?> toResponse(Result result) {

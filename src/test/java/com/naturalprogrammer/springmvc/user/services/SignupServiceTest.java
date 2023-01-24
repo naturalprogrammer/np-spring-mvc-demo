@@ -80,7 +80,7 @@ class SignupServiceTest {
             var request = new SignupRequest(null, password, null);
 
             // when
-            var result = subject.signup(request, Locale.ENGLISH);
+            var result = subject.signup(request, Locale.ENGLISH, null);
 
             // then
             verify(problemComposer).compose(

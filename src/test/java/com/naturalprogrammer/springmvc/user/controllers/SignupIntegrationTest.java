@@ -2,19 +2,26 @@ package com.naturalprogrammer.springmvc.user.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalprogrammer.springmvc.common.error.Problem;
+import com.naturalprogrammer.springmvc.common.jwt.AbstractJwtService.ParseResult;
+import com.naturalprogrammer.springmvc.common.jwt.Aud;
+import com.naturalprogrammer.springmvc.common.jwt.JwsService;
+import com.naturalprogrammer.springmvc.common.jwt.Token;
 import com.naturalprogrammer.springmvc.helpers.AbstractIntegrationTest;
 import com.naturalprogrammer.springmvc.user.domain.MyUser;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.dto.SignupRequest;
 import com.naturalprogrammer.springmvc.user.dto.UserResource;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
+import com.nimbusds.jwt.JWTClaimsSet;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
+import static com.naturalprogrammer.springmvc.common.CommonUtils.X_FORWARDED_FOR;
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_SIGNUP;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.USED_EMAIL;
@@ -36,6 +43,9 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwsService jwsService;
+
     @Test
     void should_signup() throws Exception {
 
@@ -43,10 +53,12 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
         var email = "user12styz@example.com";
         var password = "Password9!";
         var displayName = "Sanjay567 Patel336";
+        var clientIp = "192.55.352.1";
 
         // when, then
         var response = mvc.perform(post(USERS)
                         .contentType(SignupRequest.CONTENT_TYPE)
+                        .header(X_FORWARDED_FOR, clientIp)
                         .content("""
                                    {
                                         "email" : "%s",
@@ -76,6 +88,14 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
         assertThat(user.getTokensValidFrom()).isBeforeOrEqualTo(Instant.now());
 
         assertThat(response.getHeader(LOCATION)).isEqualTo(USERS + "/" + userResource.id());
+        JWTClaimsSet claims = ((ParseResult.Success)
+                jwsService.parseToken(new Token(userResource.token()), new Aud(clientIp)))
+                .claims();
+        assertThat(claims.getIssuer()).isEqualTo("https://www.my-super-site.example.com");
+        assertThat(claims.getIssueTime()).isBeforeOrEqualTo(Instant.now());
+        assertThat(claims.getSubject()).isEqualTo(userResource.id());
+        assertThat(claims.getAudience()).isEqualTo(List.of(clientIp));
+        assertThat(claims.getExpirationTime()).isAfter(Instant.now());
     }
 
     @Test

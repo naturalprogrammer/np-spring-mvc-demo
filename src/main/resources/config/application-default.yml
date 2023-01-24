@@ -9,3 +9,8 @@ spring:
 
 logging.level:
   org.apache.kafka: OFF
+
+my:
+  jws: # Generated using https://www.javainuse.com/rsagenerator (Key size 2048)
+    public-key: classpath:/config/rsa-2048-public-key.txt
+    private-key: classpath:/config/rsa-2048-private-key.txt
