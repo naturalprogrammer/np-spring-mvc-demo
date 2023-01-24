@@ -21,7 +21,8 @@ public class JwsService extends AbstractJwtService {
     private final JWSSigner signer;
     private final JWSVerifier verifier;
 
-    public JwsService(Clock clock, MyProperties properties) throws JOSEException {
+    @SneakyThrows
+    public JwsService(Clock clock, MyProperties properties) {
         super(clock, properties);
 
         keyId = properties.jws().id();

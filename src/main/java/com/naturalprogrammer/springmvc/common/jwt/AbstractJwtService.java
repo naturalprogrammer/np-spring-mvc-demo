@@ -11,9 +11,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
 
-/**
- * Common JWT Service
- */
 @RequiredArgsConstructor
 public abstract class AbstractJwtService {
 
@@ -44,13 +41,21 @@ public abstract class AbstractJwtService {
 	protected abstract ParseResult parseToken(String token);
 
 	public ParseResult parseToken(String token, String aud) {
-		return parseToken(token).map(claims -> verifyAudience(claims, aud));
+		return parseToken(token)
+				.map(this::verifyExpiration)
+				.map(claims -> verifyAudience(claims, aud));
 	}
 
 	private ParseResult verifyAudience(JWTClaimsSet claims, String aud) {
 		return claims.getAudience().contains(aud)
 				? new ParseResult.Success(claims)
 				: new ParseResult.WrongAudience();
+	}
+
+	private ParseResult verifyExpiration(JWTClaimsSet claims) {
+		return claims.getExpirationTime().after(Date.from(clock.instant()))
+				? new ParseResult.Success(claims)
+				: new ParseResult.ExpiredToken();
 	}
 
 	public sealed interface ParseResult {
@@ -61,6 +66,10 @@ public abstract class AbstractJwtService {
 		}
 
 		record WrongAudience() implements ParseResult {
+		}
+
+		record ExpiredToken() implements ParseResult {
+
 		}
 
 		default ParseResult map(Function<JWTClaimsSet, ParseResult> function) {
