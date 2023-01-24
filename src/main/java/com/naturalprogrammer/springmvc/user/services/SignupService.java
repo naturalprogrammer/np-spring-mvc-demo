@@ -4,6 +4,10 @@ import com.naturalprogrammer.springmvc.common.error.ErrorCode;
 import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
+import com.naturalprogrammer.springmvc.common.jwt.Aud;
+import com.naturalprogrammer.springmvc.common.jwt.JwsService;
+import com.naturalprogrammer.springmvc.common.jwt.Subject;
+import com.naturalprogrammer.springmvc.common.jwt.Token;
 import com.naturalprogrammer.springmvc.user.domain.MyUser;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.dto.SignupRequest;
@@ -22,6 +26,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
+import static java.util.concurrent.TimeUnit.DAYS;
 import static org.apache.commons.lang3.StringUtils.trim;
 
 @Slf4j
@@ -34,9 +39,10 @@ public class SignupService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final JwsService jwsService;
     private final Clock clock;
 
-    public Result signup(SignupRequest request, Locale locale) {
+    public Result signup(SignupRequest request, Locale locale, String clientId) {
 
         request = new SignupRequest(
                 trim(request.email()), trim(request.password()), trim(request.displayName())
@@ -58,14 +64,17 @@ public class SignupService {
         }
 
         MyUser user = userRepository.save(createUser(request, locale));
-        String token = ""; // TODO: Create a JWT token for the user
+        Token token = jwsService.createToken(
+                new Aud(clientId),
+                new Subject(user.getId().toString()),
+                DAYS.toMillis(1)
+        );
         UserResource resource = userService.toResponse(user, token);
         log.info("Returning {} for {}", resource, user);
         return new Result.Success(resource);
     }
 
     private MyUser createUser(SignupRequest request, Locale locale) {
-
         MyUser user = new MyUser();
         user.setId(UUID.randomUUID());
         user.setEmail(request.email());

@@ -41,3 +41,10 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+
+my:
+  homepage: https://www.my-super-site.example.com
+  jws:
+    id: ~
+    public-key: ~
+    private-key: ~
