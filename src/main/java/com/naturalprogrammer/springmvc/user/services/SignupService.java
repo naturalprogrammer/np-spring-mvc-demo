@@ -4,10 +4,7 @@ import com.naturalprogrammer.springmvc.common.error.ErrorCode;
 import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
-import com.naturalprogrammer.springmvc.common.jwt.Aud;
 import com.naturalprogrammer.springmvc.common.jwt.JwsService;
-import com.naturalprogrammer.springmvc.common.jwt.Subject;
-import com.naturalprogrammer.springmvc.common.jwt.Token;
 import com.naturalprogrammer.springmvc.user.domain.MyUser;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.dto.SignupRequest;
@@ -63,10 +60,10 @@ public class SignupService {
             return new Result.Error(problem);
         }
 
-        MyUser user = userRepository.save(createUser(request, locale));
-        Token token = jwsService.createToken(
-                new Aud(clientId),
-                new Subject(user.getId().toString()),
+        var user = userRepository.save(createUser(request, locale));
+        var token = jwsService.createToken(
+                clientId,
+                user.getId().toString(),
                 DAYS.toMillis(1)
         );
         UserResource resource = userService.toResponse(user, token);

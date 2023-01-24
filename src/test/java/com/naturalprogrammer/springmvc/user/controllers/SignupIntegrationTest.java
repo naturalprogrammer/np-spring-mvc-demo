@@ -3,9 +3,7 @@ package com.naturalprogrammer.springmvc.user.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.common.jwt.AbstractJwtService.ParseResult;
-import com.naturalprogrammer.springmvc.common.jwt.Aud;
 import com.naturalprogrammer.springmvc.common.jwt.JwsService;
-import com.naturalprogrammer.springmvc.common.jwt.Token;
 import com.naturalprogrammer.springmvc.helpers.AbstractIntegrationTest;
 import com.naturalprogrammer.springmvc.user.domain.MyUser;
 import com.naturalprogrammer.springmvc.user.domain.Role;
@@ -88,9 +86,7 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
         assertThat(user.getTokensValidFrom()).isBeforeOrEqualTo(Instant.now());
 
         assertThat(response.getHeader(LOCATION)).isEqualTo(USERS + "/" + userResource.id());
-        JWTClaimsSet claims = ((ParseResult.Success)
-                jwsService.parseToken(new Token(userResource.token()), new Aud(clientIp)))
-                .claims();
+        JWTClaimsSet claims = ((ParseResult.Success) jwsService.parseToken(userResource.token(), clientIp)).claims();
         assertThat(claims.getIssuer()).isEqualTo("https://www.my-super-site.example.com");
         assertThat(claims.getIssueTime()).isBeforeOrEqualTo(Instant.now());
         assertThat(claims.getSubject()).isEqualTo(userResource.id());

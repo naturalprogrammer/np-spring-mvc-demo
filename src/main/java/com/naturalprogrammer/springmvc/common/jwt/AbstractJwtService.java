@@ -20,35 +20,35 @@ public abstract class AbstractJwtService {
 	private final Clock clock;
 	private final MyProperties properties;
 
-	protected Payload createPayload(Aud aud, Subject subject, Long validForMillis, Map<String, Object> claims) {
+	protected Payload createPayload(String aud, String subject, Long validForMillis, Map<String, Object> claims) {
 
 		var now = clock.instant();
 
 		var builder = new JWTClaimsSet.Builder()
 				.issuer(properties.homepage())
-				.subject(subject.value())
+				.subject(subject)
 				.issueTime(Date.from(now))
-				.audience(aud.value())
+				.audience(aud)
 				.expirationTime(Date.from(now.plusMillis(validForMillis + 1)));
 		claims.forEach(builder::claim);
 
 		return new Payload(builder.build().toJSONObject());
 	}
 
-	public Token createToken(Aud aud, Subject subject, Long expirationMillis) {
+	public String createToken(String aud, String subject, Long expirationMillis) {
 		return createToken(aud, subject, expirationMillis, Collections.emptyMap());
 	}
 
-	public abstract Token createToken(Aud aud, Subject subject, long validForMillis, Map<String, Object> claims);
+	public abstract String createToken(String aud, String subject, long validForMillis, Map<String, Object> claims);
 
-	protected abstract ParseResult parseToken(Token token);
+	protected abstract ParseResult parseToken(String token);
 
-	public ParseResult parseToken(Token token, Aud aud) {
+	public ParseResult parseToken(String token, String aud) {
 		return parseToken(token).map(claims -> verifyAudience(claims, aud));
 	}
 
-	private ParseResult verifyAudience(JWTClaimsSet claims, Aud aud) {
-		return claims.getAudience().contains(aud.value())
+	private ParseResult verifyAudience(JWTClaimsSet claims, String aud) {
+		return claims.getAudience().contains(aud)
 				? new ParseResult.Success(claims)
 				: new ParseResult.WrongAudience();
 	}
