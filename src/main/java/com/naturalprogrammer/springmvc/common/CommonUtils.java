@@ -1,6 +1,6 @@
 package com.naturalprogrammer.springmvc.common;
 
-import com.naturalprogrammer.springmvc.user.domain.MyUser;
+import com.naturalprogrammer.springmvc.user.domain.User;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ public final class CommonUtils {
     public static final String X_FORWARDED_FOR = "X-Forwarded-For";
     public static final String CONTENT_TYPE_PREFIX = "application/vnd.com.naturalprogrammer.";
 
-    public Optional<MyUser> getUser() {
+    public Optional<User> getUser() {
 
         return Optional.empty();
 //        var auth = SecurityContextHolder.getContext().getAuthentication();

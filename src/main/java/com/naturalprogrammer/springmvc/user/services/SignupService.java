@@ -5,8 +5,8 @@ import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.common.jwt.JwsService;
-import com.naturalprogrammer.springmvc.user.domain.MyUser;
 import com.naturalprogrammer.springmvc.user.domain.Role;
+import com.naturalprogrammer.springmvc.user.domain.User;
 import com.naturalprogrammer.springmvc.user.dto.SignupRequest;
 import com.naturalprogrammer.springmvc.user.dto.UserResource;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
@@ -71,8 +71,8 @@ public class SignupService {
         return new Result.Success(resource);
     }
 
-    private MyUser createUser(SignupRequest request, Locale locale) {
-        MyUser user = new MyUser();
+    private User createUser(SignupRequest request, Locale locale) {
+        User user = new User();
         user.setId(UUID.randomUUID());
         user.setEmail(request.email());
         user.setPassword(passwordEncoder.encode(request.password()));
