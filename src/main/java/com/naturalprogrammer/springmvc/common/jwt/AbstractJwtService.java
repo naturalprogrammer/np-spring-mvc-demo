@@ -32,8 +32,8 @@ public abstract class AbstractJwtService {
 		return new Payload(builder.build().toJSONObject());
 	}
 
-	public String createToken(String aud, String subject, Long expirationMillis) {
-		return createToken(aud, subject, expirationMillis, Collections.emptyMap());
+	public String createToken(String aud, String subject, long validForMillis) {
+		return createToken(aud, subject, validForMillis, Collections.emptyMap());
 	}
 
 	public abstract String createToken(String aud, String subject, long validForMillis, Map<String, Object> claims);

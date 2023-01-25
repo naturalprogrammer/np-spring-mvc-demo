@@ -1,5 +1,6 @@
 package com.naturalprogrammer.springmvc.config;
 
+import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,8 +20,8 @@ import static com.naturalprogrammer.springmvc.common.Path.USERS;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationConverter jwtAuthenticationConverter;
     private final MyProperties properties;
+    private final UserRepository userRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -31,7 +32,7 @@ public class SecurityConfig {
                 .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(configurer -> configurer.jwt()
                         .decoder(jwtDecoder(properties))
-                        .jwtAuthenticationConverter(jwtAuthenticationConverter)
+                        .jwtAuthenticationConverter(new JwtAuthenticationConverter(userRepository))
                 )
                 .authorizeHttpRequests(config ->
                         config

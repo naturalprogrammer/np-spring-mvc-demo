@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.time.Clock;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -79,7 +80,7 @@ public class SignupService {
         user.setDisplayName(request.displayName());
         user.setLocale(locale);
         user.setRoles(List.of(Role.EMAIL_UNVERIFIED, Role.USER));
-        user.setTokensValidFrom(clock.instant());
+        user.setTokensValidFrom(clock.instant().truncatedTo(ChronoUnit.SECONDS));
         return user;
     }
 
