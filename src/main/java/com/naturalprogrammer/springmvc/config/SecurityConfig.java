@@ -20,17 +20,17 @@ import static com.naturalprogrammer.springmvc.common.Path.USERS;
 public class SecurityConfig {
 
     private final JwtAuthenticationConverter jwtAuthenticationConverter;
+    private final MyProperties properties;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         return http
-//                .formLogin().and()
-//                .logout().disable()
                 .cors().and()
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(configurer -> configurer.jwt()
+                        .decoder(jwtDecoder(properties))
                         .jwtAuthenticationConverter(jwtAuthenticationConverter)
                 )
                 .authorizeHttpRequests(config ->
@@ -53,8 +53,7 @@ public class SecurityConfig {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    @Bean
-    public JwtDecoder jwtDecoder(MyProperties properties) {
+    private JwtDecoder jwtDecoder(MyProperties properties) {
         return NimbusJwtDecoder.withPublicKey(properties.jws().publicKey()).build();
     }
 }

@@ -1,6 +1,6 @@
 package com.naturalprogrammer.springmvc.user;
 
-import com.naturalprogrammer.springmvc.user.domain.MyUser;
+import com.naturalprogrammer.springmvc.user.domain.User;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.datafaker.Faker;
@@ -14,8 +14,8 @@ public class UserTestUtils {
 
     private static final Faker FAKER = new Faker();
 
-    public static MyUser randomUser() {
-        var user = new MyUser();
+    public static User randomUser() {
+        var user = new User();
         user.setId(UUID.randomUUID());
         user.setEmail(FAKER.internet().emailAddress());
         user.setPassword("{noop}Password9!");

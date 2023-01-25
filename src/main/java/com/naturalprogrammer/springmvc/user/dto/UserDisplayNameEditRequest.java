@@ -1,6 +1,6 @@
 package com.naturalprogrammer.springmvc.user.dto;
 
-import com.naturalprogrammer.springmvc.user.domain.MyUser;
+import com.naturalprogrammer.springmvc.user.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -9,7 +9,7 @@ import static com.naturalprogrammer.springmvc.common.CommonUtils.CONTENT_TYPE_PR
 
 public record UserDisplayNameEditRequest(
         @NotBlank
-        @Size(min = MyUser.NAME_MIN, max = MyUser.NAME_MAX)
+        @Size(min = User.NAME_MIN, max = User.NAME_MAX)
         @Schema(example = "Sanjay Patel")
         String displayName
 ) {

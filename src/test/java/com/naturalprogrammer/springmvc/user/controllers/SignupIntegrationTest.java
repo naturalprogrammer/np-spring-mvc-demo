@@ -5,8 +5,8 @@ import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.common.jwt.AbstractJwtService.ParseResult;
 import com.naturalprogrammer.springmvc.common.jwt.JwsService;
 import com.naturalprogrammer.springmvc.helpers.AbstractIntegrationTest;
-import com.naturalprogrammer.springmvc.user.domain.MyUser;
 import com.naturalprogrammer.springmvc.user.domain.Role;
+import com.naturalprogrammer.springmvc.user.domain.User;
 import com.naturalprogrammer.springmvc.user.dto.SignupRequest;
 import com.naturalprogrammer.springmvc.user.dto.UserResource;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
@@ -76,7 +76,7 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
 
         var userResource = mapper.readValue(response.getContentAsString(), UserResource.class);
 
-        MyUser user = userRepository.findById(UUID.fromString(userResource.id())).orElseThrow();
+        User user = userRepository.findById(UUID.fromString(userResource.id())).orElseThrow();
         assertThat(user.getEmail()).isEqualTo(email);
         assertThat(passwordEncoder.matches(password, user.getPassword())).isTrue();
         assertThat(user.getDisplayName()).isEqualTo(displayName);

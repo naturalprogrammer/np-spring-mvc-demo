@@ -1,6 +1,6 @@
 package com.naturalprogrammer.springmvc.user.dto;
 
-import com.naturalprogrammer.springmvc.user.domain.MyUser;
+import com.naturalprogrammer.springmvc.user.domain.User;
 import com.naturalprogrammer.springmvc.user.validators.ValidPassword;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
@@ -13,7 +13,7 @@ public record SignupRequest(
 
         @Email
         @NotBlank
-        @Size(max = MyUser.EMAIL_MAX)
+        @Size(max = User.EMAIL_MAX)
         @Schema(example = "sanjay@example.com")
         String email,
 
@@ -22,7 +22,7 @@ public record SignupRequest(
         String password,
 
         @NotBlank
-        @Size(min = MyUser.NAME_MIN, max = MyUser.NAME_MAX)
+        @Size(min = User.NAME_MIN, max = User.NAME_MAX)
         @Schema(example = "Sanjay Patel")
         String displayName
 ) {

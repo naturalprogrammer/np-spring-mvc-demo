@@ -16,7 +16,7 @@ import java.util.Locale;
 @Getter
 @Setter
 @ToString
-public class MyUser extends AbstractEntity {
+public class User extends AbstractEntity {
 
     public static final int EMAIL_MAX = 1024;
     public static final int NAME_MIN = 1;
@@ -49,8 +49,7 @@ public class MyUser extends AbstractEntity {
 
     public List<SimpleGrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(role -> "ROLE_" + role.name())
-                .map(SimpleGrantedAuthority::new)
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
                 .toList();
     }
 }
