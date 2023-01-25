@@ -5,10 +5,10 @@ import com.naturalprogrammer.springmvc.user.dto.SignupRequest;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
-import static com.naturalprogrammer.springmvc.common.error.ProblemType.GENERIC_ERROR;
-import static com.naturalprogrammer.springmvc.common.error.ProblemType.HTTP_MESSAGE_NOT_READABLE;
+import static com.naturalprogrammer.springmvc.common.error.ProblemType.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -19,6 +19,24 @@ class MyControllerAdviceIntegrationTest extends AbstractIntegrationTest {
 
     @MockBean
     private UserRepository userRepository;
+
+    @Test
+    void should_handleHttpMediaTypeNotSupportedException() throws Exception {
+
+        // when, then
+        mvc.perform(post(USERS)
+                        .contentType(MediaType.APPLICATION_JSON) // Unsupported media type
+                        .content("{}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(Problem.CONTENT_TYPE))
+                .andExpect(jsonPath("id").isString())
+                .andExpect(jsonPath("type").value(HTTP_MEDIA_TYPE_NOT_SUPPORTED.getType()))
+                .andExpect(jsonPath("title").value("Http media type not supported. Maybe you aren't using the VND type?"))
+                .andExpect(jsonPath("detail").value("Content-Type 'application/json' is not supported"))
+                .andExpect(jsonPath("status").value("400"))
+                .andExpect(jsonPath("errors", hasSize(0)));
+    }
+
 
     @Test
     void should_handleHttpMessageNotReadableException() throws Exception {

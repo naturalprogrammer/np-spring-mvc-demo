@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -45,4 +46,11 @@ public class MyUser extends AbstractEntity {
     // A JWT issued before this won't be valid
     @Column(nullable = false)
     private Instant tokensValidFrom;
+
+    public List<SimpleGrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(role -> "ROLE_" + role.name())
+                .map(SimpleGrantedAuthority::new)
+                .toList();
+    }
 }

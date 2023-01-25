@@ -78,7 +78,7 @@ public class SignupService {
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setDisplayName(request.displayName());
         user.setLocale(locale);
-        user.setRoles(List.of(Role.UNVERIFIED));
+        user.setRoles(List.of(Role.EMAIL_UNVERIFIED, Role.USER));
         user.setTokensValidFrom(clock.instant());
         return user;
     }

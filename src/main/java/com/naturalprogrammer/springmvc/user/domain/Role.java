@@ -1,5 +1,8 @@
 package com.naturalprogrammer.springmvc.user.domain;
 
 public enum Role {
-    UNVERIFIED, ADMIN
+    USER, // Business user
+    ADMIN, // Admin
+    EMAIL_UNVERIFIED, // Email unverified
+    VERIFIED // Verified
 }

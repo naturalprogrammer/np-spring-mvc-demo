@@ -81,7 +81,7 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
         assertThat(passwordEncoder.matches(password, user.getPassword())).isTrue();
         assertThat(user.getDisplayName()).isEqualTo(displayName);
         assertThat(user.getLocale().toLanguageTag()).isEqualTo("en-IN");
-        assertThat(user.getRoles()).contains(Role.UNVERIFIED);
+        assertThat(user.getRoles()).contains(Role.EMAIL_UNVERIFIED, Role.USER);
         assertThat(user.getNewEmail()).isNull();
         assertThat(user.getTokensValidFrom()).isBeforeOrEqualTo(Instant.now());
 
