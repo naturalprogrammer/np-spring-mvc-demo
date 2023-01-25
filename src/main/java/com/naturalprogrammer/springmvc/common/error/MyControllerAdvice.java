@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -17,6 +18,14 @@ import static com.naturalprogrammer.springmvc.common.error.Problem.toResponse;
 public class MyControllerAdvice {
 
     private final ProblemComposer problemComposer;
+
+    @ExceptionHandler(value = HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<Problem> handleException(HttpMediaTypeNotSupportedException ex) {
+
+        var problem = problemComposer.compose(ProblemType.HTTP_MEDIA_TYPE_NOT_SUPPORTED, ex.getMessage());
+        log.info("HttpMediaTypeNotSupportedException (%s): %s".formatted(ex.getMessage(), problem), ex);
+        return toResponse(problem);
+    }
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public ResponseEntity<Problem> handleException(HttpMessageNotReadableException ex) {
