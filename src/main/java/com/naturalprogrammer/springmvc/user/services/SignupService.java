@@ -1,38 +1,31 @@
 package com.naturalprogrammer.springmvc.user.services;
 
-import com.naturalprogrammer.springmvc.common.error.ErrorCode;
-import com.naturalprogrammer.springmvc.common.error.Problem;
-import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
-import com.naturalprogrammer.springmvc.common.error.ProblemType;
+import com.naturalprogrammer.springmvc.common.error.*;
 import com.naturalprogrammer.springmvc.common.jwt.JwsService;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.domain.User;
 import com.naturalprogrammer.springmvc.user.dto.SignupRequest;
 import com.naturalprogrammer.springmvc.user.dto.UserResource;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
-import jakarta.validation.ConstraintViolation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.time.Clock;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.DAYS;
-import static org.apache.commons.lang3.StringUtils.trim;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SignupService {
 
-    private final LocalValidatorFactoryBean validator;
+    private final BeanValidator validator;
     private final ProblemComposer problemComposer;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -42,15 +35,13 @@ public class SignupService {
 
     public Result signup(SignupRequest request, Locale locale, String clientId) {
 
-        request = new SignupRequest(
-                trim(request.email()), trim(request.password()), trim(request.displayName())
-        );
-        log.info("Received {}", request);
-        Set<ConstraintViolation<SignupRequest>> violations = validator.validate(request);
-        if (!violations.isEmpty()) {
-            var problem = problemComposer.compose(ProblemType.INVALID_SIGNUP, request.toString(), violations);
-            return new Result.Error(problem);
-        }
+        var trimmedRequest = request.trimmed();
+        return validator.validate(trimmedRequest, ProblemType.INVALID_SIGNUP)
+                .map(problem -> (Result) new Result.Error(problem))
+                .orElseGet(() -> signupValidated(trimmedRequest, locale, clientId));
+    }
+
+    private Result signupValidated(SignupRequest request, Locale locale, String clientId) {
 
         if (userRepository.existsByEmail(request.email())) {
             var problem = problemComposer.compose(
@@ -68,7 +59,7 @@ public class SignupService {
                 DAYS.toMillis(1)
         );
         UserResource resource = userService.toResponse(user, token);
-        log.info("Returning {} for {}", resource, user);
+        log.info("Signed up {}. Returning {}", user, resource);
         return new Result.Success(resource);
     }
 
@@ -79,7 +70,7 @@ public class SignupService {
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setDisplayName(request.displayName());
         user.setLocale(locale);
-        user.setRoles(List.of(Role.EMAIL_UNVERIFIED, Role.USER));
+        user.setRoles(Set.of(Role.EMAIL_UNVERIFIED, Role.USER));
         user.setTokensValidFrom(clock.instant().truncatedTo(ChronoUnit.SECONDS));
         return user;
     }

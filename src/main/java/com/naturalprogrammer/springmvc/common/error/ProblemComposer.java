@@ -3,6 +3,7 @@ package com.naturalprogrammer.springmvc.common.error;
 import com.naturalprogrammer.springmvc.common.MessageGetter;
 import jakarta.validation.ConstraintViolation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -10,11 +11,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ProblemComposer {
 
     private final MessageGetter messageGetter;
+
+    public Problem composeMessage(ProblemType type, String messageKey, Object... args) {
+        return compose(type, messageGetter.getMessage(messageKey, args), Collections.emptyList());
+    }
 
     public Problem compose(ProblemType type, String detail) {
         return compose(type, detail, Collections.emptyList());
@@ -44,7 +50,8 @@ public class ProblemComposer {
             String detail,
             List<Error> errors
     ) {
-        return new Problem(
+
+        var problem = new Problem(
                 UUID.randomUUID().toString(),
                 type.getType(),
                 messageGetter.getMessage(type.getTitle()),
@@ -53,6 +60,8 @@ public class ProblemComposer {
                 null,
                 errors
         );
+        log.info("Faced {}", problem);
+        return problem;
     }
 
     public <T> Problem compose(

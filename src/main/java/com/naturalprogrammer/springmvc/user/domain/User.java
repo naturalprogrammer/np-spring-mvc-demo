@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 @Entity
 @Table(name = "usr")
@@ -37,7 +38,7 @@ public class User extends AbstractEntity {
     private Locale locale;
 
     @Enumerated(EnumType.STRING)
-    private List<Role> roles = Collections.emptyList();
+    private Set<Role> roles = Collections.emptySet();
 
     @Column(length = EMAIL_MAX)
     private String newEmail;
@@ -46,4 +47,7 @@ public class User extends AbstractEntity {
     @Column(nullable = false)
     private Instant tokensValidFrom;
 
+    public boolean hasRoles(Role ...roles) {
+        return this.roles.containsAll(List.of(roles));
+    }
 }
