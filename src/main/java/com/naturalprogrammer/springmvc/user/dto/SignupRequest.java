@@ -6,9 +6,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.extern.slf4j.Slf4j;
 
 import static com.naturalprogrammer.springmvc.common.CommonUtils.CONTENT_TYPE_PREFIX;
+import static org.apache.commons.lang3.StringUtils.trim;
 
+@Slf4j
 public record SignupRequest(
 
         @Email
@@ -26,6 +29,15 @@ public record SignupRequest(
         @Schema(example = "Sanjay Patel")
         String displayName
 ) {
+
+    public SignupRequest trimmed() {
+        var trimmed = new SignupRequest(
+                trim(email), trim(password), trim(displayName)
+        );
+        log.info("Trimmed {} to  {}", this, trimmed);
+        return trimmed;
+    }
+
     @Override
     public String toString() {
         return "SignupRequest{" +

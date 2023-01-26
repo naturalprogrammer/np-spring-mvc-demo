@@ -24,5 +24,15 @@ public record UserResource(
         )
         String token
 ) {
-        public static final String CONTENT_TYPE = CONTENT_TYPE_PREFIX + "user.v1+json";
+    public static final String CONTENT_TYPE = CONTENT_TYPE_PREFIX + "user.v1+json";
+
+    @Override
+    public String toString() {
+        return "UserResource{" +
+                "id='" + id + '\'' +
+                ", email='" + email + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", locale='" + locale + '\'' +
+                '}';
+    }
 }
