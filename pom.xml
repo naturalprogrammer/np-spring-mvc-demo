@@ -67,6 +67,12 @@
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.0.2</version>
         </dependency>
+        <!-- https://github.com/jbock-java/either -->
+        <dependency>
+            <groupId>io.github.jbock-java</groupId>
+            <artifactId>either</artifactId>
+            <version>1.5.2</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

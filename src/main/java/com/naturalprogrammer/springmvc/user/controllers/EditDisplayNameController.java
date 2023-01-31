@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+import static com.naturalprogrammer.springmvc.common.CommonUtils.toResponse;
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
-import static org.springframework.http.HttpHeaders.LOCATION;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,17 +48,6 @@ public class EditDisplayNameController {
             @PathVariable UUID id,
             @RequestBody UserDisplayNameEditRequest request
     ) {
-        return toResponse(displayNameEditor.edit(id, request));
+        return toResponse(displayNameEditor.edit(id, request), ResponseEntity::ok);
     }
-
-    private ResponseEntity<?> toResponse(DisplayNameEditor.Result result) {
-        return switch (result) {
-            case DisplayNameEditor.Result.Success success -> ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .header(LOCATION, USERS + "/" + success.response().id())
-                    .body(success.response());
-            case DisplayNameEditor.Result.Error error -> Problem.toResponse(error.problem());
-        };
-    }
-
 }
