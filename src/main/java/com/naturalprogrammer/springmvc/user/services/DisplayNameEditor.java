@@ -8,6 +8,7 @@ import com.naturalprogrammer.springmvc.user.domain.User;
 import com.naturalprogrammer.springmvc.user.dto.UserDisplayNameEditRequest;
 import com.naturalprogrammer.springmvc.user.dto.UserResource;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
+import io.jbock.util.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,22 +25,21 @@ public class DisplayNameEditor {
     private final UserRepository userRepository;
     private final UserService userService;
 
-    public Result edit(UUID userId, UserDisplayNameEditRequest request) {
+    public Either<Problem, UserResource> edit(UUID userId, UserDisplayNameEditRequest request) {
 
         var trimmedRequest = request.trimmed();
-        return validator.validate(trimmedRequest, ProblemType.INVALID_DISPLAY_NAME)
-                .map(problem -> (Result) new Result.Error(problem))
-                .orElseGet(() -> editValidated(userId, trimmedRequest));
+        return validator.validateAndGet(trimmedRequest, ProblemType.INVALID_DISPLAY_NAME, () ->
+                editValidated(userId, trimmedRequest));
     }
 
-    private Result editValidated(UUID userId, UserDisplayNameEditRequest request) {
+    private Either<Problem, UserResource> editValidated(UUID userId, UserDisplayNameEditRequest request) {
 
         return userRepository.findById(userId)
                 .map(user -> edit(user, request))
                 .orElse(notFound(userId, request));
     }
 
-    private Result edit(User user, UserDisplayNameEditRequest request) {
+    private Either<Problem, UserResource> edit(User user, UserDisplayNameEditRequest request) {
 
         if (userService.isSelfOrAdmin(user.getId())) {
 
@@ -48,22 +48,14 @@ public class DisplayNameEditor {
             var resource = userService.toResponse(user, null);
 
             log.info("Edited name for {}. Returning {}", user, resource);
-            return new Result.Success(resource);
+            return Either.right(resource);
         }
         return notFound(user.getId(), request);
     }
 
-    private Result notFound(UUID userId, UserDisplayNameEditRequest request) {
+    private Either<Problem, UserResource> notFound(UUID userId, UserDisplayNameEditRequest request) {
         log.warn("User {} not found when trying to edit displayName to {}", userId, request);
         var problem = problemComposer.composeMessage(ProblemType.NOT_FOUND, "user-not-found", userId);
-        return new Result.Error(problem);
-    }
-
-    public sealed interface Result {
-        record Success(UserResource response) implements DisplayNameEditor.Result {
-        }
-
-        record Error(Problem problem) implements DisplayNameEditor.Result {
-        }
+        return Either.left(problem);
     }
 }

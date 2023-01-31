@@ -7,6 +7,7 @@ import com.naturalprogrammer.springmvc.user.domain.User;
 import com.naturalprogrammer.springmvc.user.dto.SignupRequest;
 import com.naturalprogrammer.springmvc.user.dto.UserResource;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
+import io.jbock.util.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,15 +34,14 @@ public class SignupService {
     private final JwsService jwsService;
     private final Clock clock;
 
-    public Result signup(SignupRequest request, Locale locale, String clientId) {
+    public Either<Problem, UserResource> signup(SignupRequest request, Locale locale, String clientId) {
 
         var trimmedRequest = request.trimmed();
-        return validator.validate(trimmedRequest, ProblemType.INVALID_SIGNUP)
-                .map(problem -> (Result) new Result.Error(problem))
-                .orElseGet(() -> signupValidated(trimmedRequest, locale, clientId));
+        return validator.validateAndGet(trimmedRequest, ProblemType.INVALID_SIGNUP, () ->
+                signupValidated(trimmedRequest, locale, clientId));
     }
 
-    private Result signupValidated(SignupRequest request, Locale locale, String clientId) {
+    private Either<Problem, UserResource> signupValidated(SignupRequest request, Locale locale, String clientId) {
 
         if (userRepository.existsByEmail(request.email())) {
             var problem = problemComposer.compose(
@@ -49,7 +49,7 @@ public class SignupService {
                     request.toString(),
                     ErrorCode.USED_EMAIL,
                     "email");
-            return new Result.Error(problem);
+            return Either.left(problem);
         }
 
         var user = userRepository.save(createUser(request, locale));
@@ -60,7 +60,7 @@ public class SignupService {
         );
         UserResource resource = userService.toResponse(user, token);
         log.info("Signed up {}. Returning {}", user, resource);
-        return new Result.Success(resource);
+        return Either.right(resource);
     }
 
     private User createUser(SignupRequest request, Locale locale) {
@@ -73,13 +73,5 @@ public class SignupService {
         user.setRoles(Set.of(Role.EMAIL_UNVERIFIED, Role.USER));
         user.setTokensValidFrom(clock.instant().truncatedTo(ChronoUnit.SECONDS));
         return user;
-    }
-
-    public sealed interface Result {
-        record Success(UserResource response) implements Result {
-        }
-
-        record Error(Problem problem) implements Result {
-        }
     }
 }

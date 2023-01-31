@@ -4,7 +4,6 @@ import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.user.dto.SignupRequest;
 import com.naturalprogrammer.springmvc.user.dto.UserResource;
 import com.naturalprogrammer.springmvc.user.services.SignupService;
-import com.naturalprogrammer.springmvc.user.services.SignupService.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,8 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Locale;
 
-import static com.naturalprogrammer.springmvc.common.CommonUtils.UNKNOWN;
-import static com.naturalprogrammer.springmvc.common.CommonUtils.X_FORWARDED_FOR;
+import static com.naturalprogrammer.springmvc.common.CommonUtils.*;
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
 import static org.springframework.http.HttpHeaders.ACCEPT_LANGUAGE;
 import static org.springframework.http.HttpHeaders.LOCATION;
@@ -54,16 +52,13 @@ public class SignupController {
             @RequestHeader(name = X_FORWARDED_FOR, required = false) String clientIp) {
 
         Locale locale = language == null ? Locale.forLanguageTag("en-IN") : Locale.forLanguageTag(language);
-        return toResponse(signupService.signup(request, locale, clientIp == null ? UNKNOWN : clientIp));
-    }
-
-    private ResponseEntity<?> toResponse(Result result) {
-        return switch (result) {
-            case Result.Success success -> ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .header(LOCATION, USERS + "/" + success.response().id())
-                    .body(success.response());
-            case Result.Error error -> Problem.toResponse(error.problem());
-        };
+        return toResponse(
+                signupService.signup(request, locale, clientIp == null ? UNKNOWN : clientIp),
+                userResource ->
+                        ResponseEntity
+                                .status(HttpStatus.CREATED)
+                                .header(LOCATION, USERS + "/" + userResource.id())
+                                .body(userResource)
+        );
     }
 }
