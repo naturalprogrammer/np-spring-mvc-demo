@@ -17,7 +17,7 @@ import java.util.Map;
 @Component
 public class JwsService extends AbstractJwtService {
 
-    private final String keyId;
+    private final JWSHeader header;
     private final JWSSigner signer;
     private final JWSVerifier verifier;
 
@@ -25,7 +25,10 @@ public class JwsService extends AbstractJwtService {
     public JwsService(Clock clock, MyProperties properties) {
         super(clock, properties);
 
-        keyId = properties.jws().id();
+        header = new JWSHeader.Builder(JWSAlgorithm.RS256)
+                .keyID(properties.jws().id())
+                .build();
+
         var key = new RSAKey
                 .Builder(properties.jws().publicKey())
                 .privateKey(properties.jws().privateKey())
@@ -39,10 +42,7 @@ public class JwsService extends AbstractJwtService {
     @Override
     @SneakyThrows
     public String createToken(String aud, String subject, long validForMillis, Map<String, Object> claims) {
-        var jws = new JWSObject(
-                new JWSHeader.Builder(JWSAlgorithm.RS256).keyID(keyId).build(),
-                createPayload(aud, subject, validForMillis, claims)
-        );
+        var jws = new JWSObject(header, createPayload(aud, subject, validForMillis, claims));
         jws.sign(signer);
         return jws.serialize();
     }

@@ -1,7 +1,10 @@
 package com.naturalprogrammer.springmvc.user.services;
 
+import com.naturalprogrammer.springmvc.common.MessageGetter;
 import com.naturalprogrammer.springmvc.common.error.*;
 import com.naturalprogrammer.springmvc.common.jwt.JwsService;
+import com.naturalprogrammer.springmvc.common.mail.MailData;
+import com.naturalprogrammer.springmvc.common.mail.MailSender;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.domain.User;
 import com.naturalprogrammer.springmvc.user.dto.SignupRequest;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.Clock;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -32,7 +36,10 @@ public class SignupService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final JwsService jwsService;
+    private final JwsService jweService;
     private final Clock clock;
+    private final MessageGetter messageGetter;
+    private final MailSender mailSender;
 
     public Either<Problem, UserResource> signup(SignupRequest request, Locale locale, String clientId) {
 
@@ -60,7 +67,29 @@ public class SignupService {
         );
         UserResource resource = userService.toResponse(user, token);
         log.info("Signed up {}. Returning {}", user, resource);
+        sendVerificationMail(user);
         return Either.right(resource);
+    }
+
+    private void sendVerificationMail(User user) {
+        var verificationToken = createVerificationToken(user);
+        var mail = new MailData(
+                user.getEmail(),
+                messageGetter.getMessage("verification-mail-subject"),
+                messageGetter.getMessage("verification-mail-body", user.getDisplayName(), verificationToken),
+                null
+        );
+        mailSender.send(mail);
+    }
+
+    private String createVerificationToken(User user) {
+        var userIdStr = user.getId().toString();
+        return jweService.createToken(
+                userIdStr,
+                userIdStr,
+                DAYS.toMillis(2L),
+                Map.of("email", user.getEmail())
+        );
     }
 
     private User createUser(SignupRequest request, Locale locale) {

@@ -19,12 +19,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-class JwsServiceTest {
+class JwtServiceTest {
 
     private final Clock clock = mock(Clock.class);
     private final MyProperties properties = mockProperties();
 
-    private final JwsService service = new JwsService(clock, properties);
+    private final JwsService jwsService = new JwsService(clock, properties);
+    private final JweService jweService = new JweService(clock, properties);
+
     private final String homePage = "http://test";
 
     private final String aud = "129.456.255.25";
@@ -37,15 +39,24 @@ class JwsServiceTest {
     }
 
     @Test
-    void should_createAndParseToken() {
+    void should_createAndParseJws() {
+        should_createAndParseToken(jwsService);
+    }
+
+    @Test
+    void should_createAndParseJwe() {
+        should_createAndParseToken(jweService);
+    }
+
+    private void should_createAndParseToken(AbstractJwtService jwtService) {
 
         // given
         var validForMillis = 15000;
         Map<String, Object> claims = Map.of("claim1", "value1");
 
         // when
-        var token = service.createToken(aud, subject, validForMillis, claims);
-        var parseResult = service.parseToken(token, aud);
+        var token = jwtService.createToken(aud, subject, validForMillis, claims);
+        var parseResult = jwtService.parseToken(token, aud);
 
         // then
         assertThat(parseResult).isInstanceOf(ParseResult.Success.class);
@@ -61,26 +72,44 @@ class JwsServiceTest {
     }
 
     @Test
-    void should_failParsing_when_wrongAudience() {
+    void should_failParsingJws_when_wrongAudience() {
+        should_failParsing_when_wrongAudience(jwsService);
+    }
+
+    @Test
+    void should_failParsingJwe_when_wrongAudience() {
+        should_failParsing_when_wrongAudience(jwsService);
+    }
+
+    private void should_failParsing_when_wrongAudience(AbstractJwtService jwtService) {
 
         // given
-        var token = service.createToken(aud, subject, 15000L);
+        var token = jwtService.createToken(aud, subject, 15000L);
 
         // when
-        var parseResult = service.parseToken(token, "wrong-audience");
+        var parseResult = jwtService.parseToken(token, "wrong-audience");
 
         // then
         assertThat(parseResult).isInstanceOf(ParseResult.WrongAudience.class);
     }
 
     @Test
-    void should_failParsing_when_tokenExpired() {
+    void should_failParsingJws_when_tokenExpired() {
+        should_failParsing_when_tokenExpired(jwsService);
+    }
+
+    @Test
+    void should_failParsingJwe_when_tokenExpired() {
+        should_failParsing_when_tokenExpired(jweService);
+    }
+
+    private void should_failParsing_when_tokenExpired(AbstractJwtService jwtService) {
 
         // given
-        var token = service.createToken(aud, subject, -100000L);
+        var token = jwtService.createToken(aud, subject, -100000L);
 
         // when
-        var parseResult = service.parseToken(token, aud);
+        var parseResult = jwtService.parseToken(token, aud);
 
         // then
         assertThat(parseResult).isInstanceOf(ParseResult.ExpiredToken.class);
@@ -96,9 +125,13 @@ class JwsServiceTest {
         return new MyProperties(
                 homePage,
                 new MyProperties.Jws(
-                        "my-test-key",
+                        "test-jws-key",
                         key.toRSAPublicKey(),
                         key.toRSAPrivateKey()
+                ),
+                new MyProperties.Jwe(
+                        "test-jwe-key",
+                        "BCBD9D4139418B06DAB351F31B83052D"
                 )
         );
     }

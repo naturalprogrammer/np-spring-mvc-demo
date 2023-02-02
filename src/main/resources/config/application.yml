@@ -16,6 +16,18 @@ spring:
       use-new-id-generator-mappings: false
       ddl-auto: validate
 
+  mail:
+    host: ~
+    port: ~
+    username: ~
+    password: ~
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  
   kafka:
     bootstrap-servers: ~
     security:
@@ -45,6 +57,13 @@ management:
 my:
   homepage: https://www.my-super-site.example.com
   jws:
+    # a UUID generated independently
     id: ~
+    # Generated using https://www.javainuse.com/rsagenerator (Key size 2048)
     public-key: ~
     private-key: ~
+  jwe:
+    # a UUID generated independently
+    id: ~
+    # An aes-128-cbc key generated at https://asecuritysite.com/encryption/keygen (take the "key" field)
+    key: BCBD9D4139418B06DAB351F31B83052D

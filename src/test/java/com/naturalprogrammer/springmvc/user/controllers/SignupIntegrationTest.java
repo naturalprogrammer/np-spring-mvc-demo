@@ -23,6 +23,7 @@ import static com.naturalprogrammer.springmvc.common.CommonUtils.X_FORWARDED_FOR
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_SIGNUP;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.USED_EMAIL;
+import static com.naturalprogrammer.springmvc.common.mail.LoggingMailSender.sentMails;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -52,6 +53,7 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
         var password = "Password9!";
         var displayName = "Sanjay567 Patel336";
         var clientIp = "192.55.352.1";
+        sentMails().clear();
 
         // when, then
         var response = mvc.perform(post(USERS)
@@ -92,6 +94,12 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
         assertThat(claims.getSubject()).isEqualTo(userResource.id());
         assertThat(claims.getAudience()).isEqualTo(List.of(clientIp));
         assertThat(claims.getExpirationTime()).isAfter(Instant.now());
+
+        assertThat(sentMails()).hasSize(1);
+        var mailData = sentMails().get(0);
+        assertThat(mailData.to()).isEqualTo(email);
+        assertThat(mailData.bodyHtml()).contains(displayName);
+        assertThat(mailData.subject()).isEqualTo("Please verify your email");
     }
 
     @Test
