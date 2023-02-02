@@ -11,6 +11,10 @@ logging.level:
   org.apache.kafka: OFF
 
 my:
-  jws: # Generated using https://www.javainuse.com/rsagenerator (Key size 2048)
+  jws:
+    id: e0498dad-4f5f-40cf-86e3-2726ec78463d
     public-key: classpath:/config/rsa-2048-public-key.txt
     private-key: classpath:/config/rsa-2048-private-key.txt
+  jwe:
+    id: c00f9459-82cb-48bc-882d-66b3b65258b4
+    key: 841D8A6C80CBA4FCAD32D5367C18C53B

@@ -8,13 +8,20 @@ import java.security.interfaces.RSAPublicKey;
 @ConfigurationProperties(prefix = "my")
 public record MyProperties(
         String homepage,
-        Jws jws
+        Jws jws,
+        Jwe jwe
 ) {
 
     public record Jws(
             String id,
             RSAPublicKey publicKey,
             RSAPrivateKey privateKey
+    ) {
+    }
+
+    public record Jwe(
+            String id,
+            String key
     ) {
     }
 }
