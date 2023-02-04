@@ -15,7 +15,7 @@ import java.util.Set;
 @Table(name = "usr")
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public class User extends AbstractEntity {
 
     public static final int EMAIL_MAX = 1024;

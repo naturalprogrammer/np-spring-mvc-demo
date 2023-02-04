@@ -17,6 +17,10 @@ public enum ProblemType {
     INVALID_SIGNUP("/problems/invalid-signup", "invalid-signup", UNPROCESSABLE_ENTITY),
     USED_EMAIL("/problems/used-email", "used-email", CONFLICT),
     INVALID_DISPLAY_NAME("/problems/invalid-display-name", "invalid-display-name", UNPROCESSABLE_ENTITY),
+    INVALID_VERIFICATION_TOKEN("/problems/invalid-verification-token", "invalid-verification-token", UNPROCESSABLE_ENTITY),
+    JWT_VERIFICATION_FAILED("/problems/jwt-verification-failed", "jwt-verification-failed", FORBIDDEN),
+    WRONG_JWT_AUDIENCE("/problems/wrong-jwt-audience", "wrong-jwt-audience", FORBIDDEN),
+    EXPIRED_JWT("/problems/expired-jwt", "expired-jwt", FORBIDDEN),
     NOT_FOUND("/problems/not-found", "not-found", HttpStatus.NOT_FOUND);
 
     private final String type;

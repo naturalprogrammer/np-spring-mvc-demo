@@ -1,11 +1,13 @@
 package com.naturalprogrammer.springmvc.common.jwt;
 
+import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.config.MyProperties;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.JWTClaimsSet;
+import io.jbock.util.Either;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -23,6 +25,7 @@ public class JwsService extends AbstractJwtService {
 
     @SneakyThrows
     public JwsService(Clock clock, MyProperties properties) {
+        
         super(clock, properties);
 
         header = new JWSHeader.Builder(JWSAlgorithm.RS256)
@@ -41,18 +44,18 @@ public class JwsService extends AbstractJwtService {
 
     @Override
     @SneakyThrows
-    public String createToken(String aud, String subject, long validForMillis, Map<String, Object> claims) {
-        var jws = new JWSObject(header, createPayload(aud, subject, validForMillis, claims));
+    public String createToken(String subject, long validForMillis, Map<String, Object> claims) {
+        var jws = new JWSObject(header, createPayload(subject, validForMillis, claims));
         jws.sign(signer);
         return jws.serialize();
     }
 
     @Override
     @SneakyThrows
-    protected ParseResult parseToken(String token) {
+    protected Either<ProblemType, JWTClaimsSet> getClaims(String token) {
         var jws = JWSObject.parse(token);
         return jws.verify(verifier)
-                ? new ParseResult.Success(JWTClaimsSet.parse(jws.getPayload().toJSONObject()))
-                : new ParseResult.VerificationFailed();
+                ? Either.right(JWTClaimsSet.parse(jws.getPayload().toJSONObject()))
+                : Either.left(ProblemType.JWT_VERIFICATION_FAILED);
     }
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@ToString
 @MappedSuperclass
 public abstract class AbstractEntity {
 
@@ -35,4 +37,8 @@ public abstract class AbstractEntity {
 
     @Version
     private Integer version;
+
+    public String getIdStr() {
+        return id.toString();
+    }
 }

@@ -30,6 +30,9 @@ import static java.util.concurrent.TimeUnit.DAYS;
 @RequiredArgsConstructor
 public class SignupService {
 
+    public static final long SIGNUP_TOKEN_VALID_MILLIS = DAYS.toMillis(1);
+    public static final long VERIFICATION_TOKEN_VALID_MILLIS = DAYS.toMillis(2);
+    
     private final BeanValidator validator;
     private final ProblemComposer problemComposer;
     private final PasswordEncoder passwordEncoder;
@@ -41,14 +44,14 @@ public class SignupService {
     private final MessageGetter messageGetter;
     private final MailSender mailSender;
 
-    public Either<Problem, UserResource> signup(SignupRequest request, Locale locale, String clientId) {
+    public Either<Problem, UserResource> signup(SignupRequest request, Locale locale) {
 
         var trimmedRequest = request.trimmed();
         return validator.validateAndGet(trimmedRequest, ProblemType.INVALID_SIGNUP, () ->
-                signupValidated(trimmedRequest, locale, clientId));
+                signupValidated(trimmedRequest, locale));
     }
 
-    private Either<Problem, UserResource> signupValidated(SignupRequest request, Locale locale, String clientId) {
+    private Either<Problem, UserResource> signupValidated(SignupRequest request, Locale locale) {
 
         if (userRepository.existsByEmail(request.email())) {
             var problem = problemComposer.compose(
@@ -61,9 +64,8 @@ public class SignupService {
 
         var user = userRepository.save(createUser(request, locale));
         var token = jwsService.createToken(
-                clientId,
-                user.getId().toString(),
-                DAYS.toMillis(1)
+                user.getIdStr(),
+                SIGNUP_TOKEN_VALID_MILLIS
         );
         UserResource resource = userService.toResponse(user, token);
         log.info("Signed up {}. Returning {}", user, resource);
@@ -83,11 +85,10 @@ public class SignupService {
     }
 
     private String createVerificationToken(User user) {
-        var userIdStr = user.getId().toString();
+        var userIdStr = user.getIdStr();
         return jweService.createToken(
                 userIdStr,
-                userIdStr,
-                DAYS.toMillis(2L),
+                VERIFICATION_TOKEN_VALID_MILLIS,
                 Map.of("email", user.getEmail())
         );
     }
@@ -99,7 +100,7 @@ public class SignupService {
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setDisplayName(request.displayName());
         user.setLocale(locale);
-        user.setRoles(Set.of(Role.EMAIL_UNVERIFIED, Role.USER));
+        user.setRoles(Set.of(Role.UNVERIFIED, Role.USER));
         user.setTokensValidFrom(clock.instant().truncatedTo(ChronoUnit.SECONDS));
         return user;
     }

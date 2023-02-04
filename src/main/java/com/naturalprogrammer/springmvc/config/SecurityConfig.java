@@ -44,6 +44,7 @@ public class SecurityConfig {
                         config
                                 .requestMatchers(HttpMethod.POST, USERS).permitAll()
                                 .requestMatchers(HttpMethod.PATCH, USERS + "/*/display-name").authenticated()
+                                .requestMatchers(HttpMethod.POST, USERS + "/*/verification").authenticated()
                                 .requestMatchers(HttpMethod.GET,
                                         "/v3/api-docs/**",
                                         "/favicon.ico",
