@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import net.datafaker.Faker;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -21,7 +22,7 @@ public class UserTestUtils {
         user.setPassword("{noop}Password9!");
         user.setDisplayName(FAKER.name().fullName());
         user.setLocale(Locale.forLanguageTag("en-IN"));
-        user.setTokensValidFrom(Instant.now());
+        user.setTokensValidFrom(Instant.now().truncatedTo(ChronoUnit.SECONDS));
         return user;
     }
 }

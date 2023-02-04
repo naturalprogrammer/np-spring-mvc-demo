@@ -1,5 +1,6 @@
 package com.naturalprogrammer.springmvc.common.jwt;
 
+import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.config.MyProperties;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
@@ -8,6 +9,7 @@ import com.nimbusds.jose.JWEObject;
 import com.nimbusds.jose.crypto.DirectDecrypter;
 import com.nimbusds.jose.crypto.DirectEncrypter;
 import com.nimbusds.jwt.JWTClaimsSet;
+import io.jbock.util.Either;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -38,17 +40,17 @@ public class JweService extends AbstractJwtService {
 
     @Override
     @SneakyThrows
-    public String createToken(String aud, String subject, long validForMillis, Map<String, Object> claims) {
-        var jwe = new JWEObject(header, createPayload(aud, subject, validForMillis, claims));
+    public String createToken(String subject, long validForMillis, Map<String, Object> claims) {
+        var jwe = new JWEObject(header, createPayload(subject, validForMillis, claims));
         jwe.encrypt(encrypter);
         return jwe.serialize();
     }
 
     @Override
     @SneakyThrows
-    protected ParseResult parseToken(String token) {
+    protected Either<ProblemType, JWTClaimsSet> getClaims(String token) {
         var jwe = JWEObject.parse(token);
         jwe.decrypt(decrypter);
-        return new ParseResult.Success(JWTClaimsSet.parse(jwe.getPayload().toJSONObject()));
+        return Either.right(JWTClaimsSet.parse(jwe.getPayload().toJSONObject()));
     }
 }

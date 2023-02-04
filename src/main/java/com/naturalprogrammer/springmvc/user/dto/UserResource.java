@@ -1,6 +1,9 @@
 package com.naturalprogrammer.springmvc.user.dto;
 
+import com.naturalprogrammer.springmvc.user.domain.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.util.Set;
 
 import static com.naturalprogrammer.springmvc.common.CommonUtils.CONTENT_TYPE_PREFIX;
 
@@ -17,6 +20,9 @@ public record UserResource(
 
         @Schema(example = "en-IN")
         String locale,
+
+        @Schema(example = "['USER', 'UNVERIFIED]")
+        Set<Role> roles,
 
         @Schema(
                 title = "Optional bearer access-token for accessing the API next time",

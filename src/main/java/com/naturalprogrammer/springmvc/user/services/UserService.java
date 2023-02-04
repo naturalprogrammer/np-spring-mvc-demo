@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+import static org.apache.commons.lang3.ObjectUtils.notEqual;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -21,10 +23,11 @@ public class UserService {
 
     public UserResource toResponse(User user, String token) {
         return new UserResource(
-                user.getId().toString(),
+                user.getIdStr(),
                 user.getEmail(),
                 user.getDisplayName(),
                 user.getLocale().toLanguageTag(),
+                user.getRoles(),
                 token
         );
     }
@@ -37,7 +40,7 @@ public class UserService {
     }
 
     private boolean isSelf(UUID currentUserId, UUID userId) {
-        if (currentUserId != userId) {
+        if (notEqual(currentUserId, userId)) {
             log.info("Current user {} is not same as user {}", currentUserId, userId);
             return false;
         }

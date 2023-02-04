@@ -2,7 +2,6 @@ package com.naturalprogrammer.springmvc.user.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalprogrammer.springmvc.common.error.Problem;
-import com.naturalprogrammer.springmvc.common.jwt.AbstractJwtService.ParseResult;
 import com.naturalprogrammer.springmvc.common.jwt.JwsService;
 import com.naturalprogrammer.springmvc.helpers.AbstractIntegrationTest;
 import com.naturalprogrammer.springmvc.user.domain.Role;
@@ -26,6 +25,7 @@ import static com.naturalprogrammer.springmvc.common.error.ProblemType.USED_EMAI
 import static com.naturalprogrammer.springmvc.common.mail.LoggingMailSender.sentMails;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -72,6 +72,8 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("email").value(email))
                 .andExpect(jsonPath("displayName").value(displayName))
                 .andExpect(jsonPath("locale").value("en-IN"))
+                .andExpect(jsonPath("roles", hasSize(1)))
+                .andExpect(jsonPath("roles", contains(Role.UNVERIFIED)))
                 .andExpect(jsonPath("token").isString())
                 .andReturn()
                 .getResponse();
@@ -83,12 +85,14 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
         assertThat(passwordEncoder.matches(password, user.getPassword())).isTrue();
         assertThat(user.getDisplayName()).isEqualTo(displayName);
         assertThat(user.getLocale().toLanguageTag()).isEqualTo("en-IN");
-        assertThat(user.getRoles()).contains(Role.EMAIL_UNVERIFIED, Role.USER);
+        assertThat(user.getRoles()).contains(Role.UNVERIFIED, Role.USER);
         assertThat(user.getNewEmail()).isNull();
         assertThat(user.getTokensValidFrom()).isBeforeOrEqualTo(Instant.now());
 
         assertThat(response.getHeader(LOCATION)).isEqualTo(USERS + "/" + userResource.id());
-        JWTClaimsSet claims = ((ParseResult.Success) jwsService.parseToken(userResource.token(), clientIp)).claims();
+        var parseResult = jwsService.parseToken(userResource.token());
+        assertThat(parseResult.isRight()).isTrue();
+        JWTClaimsSet claims = parseResult.getRight().orElseThrow();
         assertThat(claims.getIssuer()).isEqualTo("https://www.my-super-site.example.com");
         assertThat(claims.getIssueTime()).isBeforeOrEqualTo(Instant.now());
         assertThat(claims.getSubject()).isEqualTo(userResource.id());
