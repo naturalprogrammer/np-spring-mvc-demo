@@ -1,6 +1,7 @@
 package com.naturalprogrammer.springmvc.config;
 
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
+import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.NullSecurityContextRepository;
 
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
 
@@ -29,6 +31,10 @@ public class SecurityConfig {
         return http
                 .cors().and()
                 .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
+                .securityContext(customizer -> customizer.securityContextRepository(new NullSecurityContextRepository()))
                 .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(configurer -> configurer.jwt()
                         .decoder(jwtDecoder(properties))
@@ -44,7 +50,7 @@ public class SecurityConfig {
                                         "/swagger-ui.html",
                                         "/swagger-ui/**"
                                 ).permitAll()
-                                .requestMatchers(HttpMethod.GET, "/error").permitAll()
+                                .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                                 .anyRequest().denyAll()
                 ).build();
     }
