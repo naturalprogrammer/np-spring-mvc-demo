@@ -16,9 +16,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
-import static com.naturalprogrammer.springmvc.common.CommonUtils.X_FORWARDED_FOR;
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_SIGNUP;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.USED_EMAIL;
@@ -52,13 +52,11 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
         var email = "user12styz@example.com";
         var password = "Password9!";
         var displayName = "Sanjay567 Patel336";
-        var clientIp = "192.55.352.1";
         sentMails().clear();
 
         // when, then
         var response = mvc.perform(post(USERS)
                         .contentType(SignupRequest.CONTENT_TYPE)
-                        .header(X_FORWARDED_FOR, clientIp)
                         .content("""
                                    {
                                         "email" : "%s",
@@ -73,7 +71,7 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("displayName").value(displayName))
                 .andExpect(jsonPath("locale").value("en-IN"))
                 .andExpect(jsonPath("roles", hasSize(1)))
-                .andExpect(jsonPath("roles", contains(Role.UNVERIFIED)))
+                .andExpect(jsonPath("roles", contains(Role.UNVERIFIED.name())))
                 .andExpect(jsonPath("token").isString())
                 .andReturn()
                 .getResponse();
@@ -85,7 +83,8 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
         assertThat(passwordEncoder.matches(password, user.getPassword())).isTrue();
         assertThat(user.getDisplayName()).isEqualTo(displayName);
         assertThat(user.getLocale().toLanguageTag()).isEqualTo("en-IN");
-        assertThat(user.getRoles()).contains(Role.UNVERIFIED, Role.USER);
+        assertThat(user.getRoles()).hasSize(1);
+        assertThat(user.getRoles()).contains(Role.UNVERIFIED);
         assertThat(user.getNewEmail()).isNull();
         assertThat(user.getTokensValidFrom()).isBeforeOrEqualTo(Instant.now());
 
@@ -96,7 +95,7 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
         assertThat(claims.getIssuer()).isEqualTo("https://www.my-super-site.example.com");
         assertThat(claims.getIssueTime()).isBeforeOrEqualTo(Instant.now());
         assertThat(claims.getSubject()).isEqualTo(userResource.id());
-        assertThat(claims.getAudience()).isEqualTo(List.of(clientIp));
+        assertThat(claims.getAudience()).isEqualTo(List.of("https://www.my-super-site.example.com"));
         assertThat(claims.getExpirationTime()).isAfter(Instant.now());
 
         assertThat(sentMails()).hasSize(1);
@@ -112,6 +111,7 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
         // when, then
         mvc.perform(post(USERS)
                         .contentType(SignupRequest.CONTENT_TYPE)
+                        .locale(Locale.forLanguageTag("or"))
                         .content("""
                                    {
                                         "email" : "user23Alpha@example.com",
@@ -133,7 +133,7 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
                         ")]").exists())
                 .andExpect(jsonPath("errors[?(" +
                         "@.code == 'NotBlank' &&" +
-                        "@.message == 'must not be blank' &&" +
+                        "@.message == 'ଖାଲି ହେବା ଉଚିତ୍ ନୁହେଁ' &&" +
                         "@.field == 'displayName'" +
                         ")]").exists());
 
