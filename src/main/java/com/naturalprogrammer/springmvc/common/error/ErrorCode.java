@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum ErrorCode {
 
-    USED_EMAIL("UsedEmail", ProblemType.USED_EMAIL.getTitle());
+    USED_EMAIL("UsedEmail", ProblemType.USED_EMAIL.getTitle()),
+    TOKEN_VERIFICATION_FAILED("TokenVerificationFailed", ProblemType.TOKEN_VERIFICATION_FAILED.getTitle());
 
     private final String code;
     private final String message;

@@ -47,10 +47,14 @@ public class JweService extends AbstractJwtService {
     }
 
     @Override
-    @SneakyThrows
     protected Either<ProblemType, JWTClaimsSet> getClaims(String token) {
-        var jwe = JWEObject.parse(token);
-        jwe.decrypt(decrypter);
-        return Either.right(JWTClaimsSet.parse(jwe.getPayload().toJSONObject()));
+        try {
+            var jwe = JWEObject.parse(token);
+            jwe.decrypt(decrypter);
+            return Either.right(JWTClaimsSet.parse(jwe.getPayload().toJSONObject()));
+        } catch (Exception ex) {
+            log.warn("JWE decryption failed", ex);
+            return Either.left(ProblemType.TOKEN_VERIFICATION_FAILED);
+        }
     }
 }

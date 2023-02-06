@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -149,7 +148,7 @@ class JwtServiceTest {
         var parseResult = anotherJwsService.parseToken(token);
 
         // then
-        assertThat(parseResult.getLeft()).hasValue(ProblemType.JWT_VERIFICATION_FAILED);
+        assertThat(parseResult.getLeft()).hasValue(ProblemType.TOKEN_VERIFICATION_FAILED);
     }
 
     @Test
@@ -161,10 +160,10 @@ class JwtServiceTest {
         var anotherJweService = new JweService(clock, properties);
 
         // when
-        var thrown = catchThrowable(() -> anotherJweService.parseToken(token));
-                
+        var parseResult = anotherJweService.parseToken(token);
+
         // then
-        assertThat(thrown).isInstanceOf(JOSEException.class);
+        assertThat(parseResult.getLeft()).hasValue(ProblemType.TOKEN_VERIFICATION_FAILED);
     }
 
 }
