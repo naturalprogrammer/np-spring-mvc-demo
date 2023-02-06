@@ -1,9 +1,6 @@
 package com.naturalprogrammer.springmvc.user.services;
 
-import com.naturalprogrammer.springmvc.common.error.BeanValidator;
-import com.naturalprogrammer.springmvc.common.error.Problem;
-import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
-import com.naturalprogrammer.springmvc.common.error.ProblemType;
+import com.naturalprogrammer.springmvc.common.error.*;
 import com.naturalprogrammer.springmvc.common.jwt.JweService;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.domain.User;
@@ -33,8 +30,9 @@ public class EmailVerifier {
 
     public Either<Problem, UserResource> verify(UUID userId, UserVerificationRequest request) {
 
-        return validator.validateAndGet(request, ProblemType.INVALID_VERIFICATION_TOKEN, () ->
-                verifyValidated(userId, request));
+        return validator
+                .validateAndGet(request, ProblemType.INVALID_VERIFICATION_TOKEN, () ->
+                        verifyValidated(userId, request));
     }
 
     private Either<Problem, UserResource> verifyValidated(UUID userId, UserVerificationRequest request) {
@@ -49,7 +47,11 @@ public class EmailVerifier {
         if (userService.isSelfOrAdmin(user.getId())) {
             return jweService
                     .parseToken(request.emailVerificationToken())
-                    .mapLeft(problemType -> problemComposer.compose(problemType, request.emailVerificationToken()))
+                    .mapLeft(problemType -> problemComposer.compose(
+                            problemType,
+                            request.emailVerificationToken(),
+                            ErrorCode.TOKEN_VERIFICATION_FAILED,
+                            "emailVerificationToken"))
                     .flatMap(claims -> verify(user, claims));
         }
         return notFound(user.getId(), request);
@@ -61,12 +63,12 @@ public class EmailVerifier {
 
         if (notEqual(claims.getSubject(), userIdStr) ||
                 notEqual(claims.getClaim("email"), user.getEmail()))
-            return Either.left(problemComposer.compose(ProblemType.JWT_VERIFICATION_FAILED, claims.toString()));
+            return Either.left(problemComposer.compose(ProblemType.TOKEN_VERIFICATION_FAILED, claims.toString()));
 
         user.getRoles().remove(Role.UNVERIFIED);
         user.getRoles().add(Role.VERIFIED);
         userRepository.save(user);
-        return Either.right(userService.toResponse(user, null));
+        return Either.right(userService.toResponse(user));
     }
 
     private Either<Problem, UserResource> notFound(UUID userId, UserVerificationRequest request) {

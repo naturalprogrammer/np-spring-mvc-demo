@@ -45,7 +45,7 @@ public class DisplayNameEditor {
 
             user.setDisplayName(request.displayName());
             userRepository.save(user);
-            var resource = userService.toResponse(user, null);
+            var resource = userService.toResponse(user);
 
             log.info("Edited name for {}. Returning {}", user, resource);
             return Either.right(resource);

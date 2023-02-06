@@ -56,6 +56,6 @@ public class JwsService extends AbstractJwtService {
         var jws = JWSObject.parse(token);
         return jws.verify(verifier)
                 ? Either.right(JWTClaimsSet.parse(jws.getPayload().toJSONObject()))
-                : Either.left(ProblemType.JWT_VERIFICATION_FAILED);
+                : Either.left(ProblemType.TOKEN_VERIFICATION_FAILED);
     }
 }

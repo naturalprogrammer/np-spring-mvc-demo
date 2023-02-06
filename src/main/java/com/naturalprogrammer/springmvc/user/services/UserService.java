@@ -21,6 +21,10 @@ public class UserService {
     private final CommonUtils commonUtils;
     private final UserRepository userRepository;
 
+    public UserResource toResponse(User user) {
+        return toResponse(user, null);
+    }
+
     public UserResource toResponse(User user, String token) {
         return new UserResource(
                 user.getIdStr(),
