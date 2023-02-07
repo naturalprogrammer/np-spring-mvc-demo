@@ -6,7 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.Instant;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -38,7 +38,7 @@ public class User extends AbstractEntity {
     private Locale locale;
 
     @Enumerated(EnumType.STRING)
-    private Set<Role> roles = Collections.emptySet();
+    private Set<Role> roles = new HashSet<>();
 
     @Column(length = EMAIL_MAX)
     private String newEmail;

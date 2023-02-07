@@ -1,4 +1,4 @@
-package com.naturalprogrammer.springmvc.user.services;
+package com.naturalprogrammer.springmvc.user.usecases.verification;
 
 import com.naturalprogrammer.springmvc.common.error.*;
 import com.naturalprogrammer.springmvc.common.jwt.JweService;
@@ -7,6 +7,7 @@ import com.naturalprogrammer.springmvc.user.domain.User;
 import com.naturalprogrammer.springmvc.user.dto.UserResource;
 import com.naturalprogrammer.springmvc.user.dto.UserVerificationRequest;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
+import com.naturalprogrammer.springmvc.user.services.UserService;
 import com.nimbusds.jwt.JWTClaimsSet;
 import io.jbock.util.Either;
 import lombok.RequiredArgsConstructor;
@@ -20,29 +21,39 @@ import static org.apache.commons.lang3.ObjectUtils.notEqual;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class EmailVerifier {
+public class UserVerifier {
 
     private final BeanValidator validator;
-    private final ProblemComposer problemComposer;
     private final UserRepository userRepository;
-    private final UserService userService;
-    private final JweService jweService;
+    private final ExistingUserVerifier existingUserVerifier;
+    private final NotFoundHandler notFoundHandler;
 
     public Either<Problem, UserResource> verify(UUID userId, UserVerificationRequest request) {
 
-        return validator
-                .validateAndGet(request, ProblemType.INVALID_VERIFICATION_TOKEN, () ->
-                        verifyValidated(userId, request));
+        return validator.validateAndGet(request, ProblemType.INVALID_VERIFICATION_TOKEN, () ->
+                verifyValidated(userId, request));
     }
 
     private Either<Problem, UserResource> verifyValidated(UUID userId, UserVerificationRequest request) {
 
         return userRepository.findById(userId)
-                .map(user -> verify(user, request))
-                .orElse(notFound(userId, request));
+                .map(user -> existingUserVerifier.verify(user, request))
+                .orElse(notFoundHandler.notFound(userId, request));
     }
 
-    private Either<Problem, UserResource> verify(User user, UserVerificationRequest request) {
+}
+
+@Service
+@RequiredArgsConstructor
+class ExistingUserVerifier {
+
+    private final ProblemComposer problemComposer;
+    private final UserRepository userRepository;
+    private final UserService userService;
+    private final JweService jweService;
+    private final NotFoundHandler notFoundHandler;
+
+    public Either<Problem, UserResource> verify(User user, UserVerificationRequest request) {
 
         if (userService.isSelfOrAdmin(user.getId())) {
             return jweService
@@ -54,7 +65,7 @@ public class EmailVerifier {
                             "emailVerificationToken"))
                     .flatMap(claims -> verify(user, claims));
         }
-        return notFound(user.getId(), request);
+        return notFoundHandler.notFound(user.getId(), request);
     }
 
     private Either<Problem, UserResource> verify(User user, JWTClaimsSet claims) {
@@ -71,7 +82,16 @@ public class EmailVerifier {
         return Either.right(userService.toResponse(user));
     }
 
-    private Either<Problem, UserResource> notFound(UUID userId, UserVerificationRequest request) {
+}
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+class NotFoundHandler {
+
+    private final ProblemComposer problemComposer;
+
+    public Either<Problem, UserResource> notFound(UUID userId, UserVerificationRequest request) {
         log.warn("User {} not found when trying to verify email with {}", userId, request);
         var problem = problemComposer.composeMessage(ProblemType.NOT_FOUND, "user-not-found", userId);
         return Either.left(problem);

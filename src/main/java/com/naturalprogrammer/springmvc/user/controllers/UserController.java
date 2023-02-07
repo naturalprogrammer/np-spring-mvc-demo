@@ -6,8 +6,8 @@ import com.naturalprogrammer.springmvc.user.dto.UserDisplayNameEditRequest;
 import com.naturalprogrammer.springmvc.user.dto.UserResource;
 import com.naturalprogrammer.springmvc.user.dto.UserVerificationRequest;
 import com.naturalprogrammer.springmvc.user.services.DisplayNameEditor;
-import com.naturalprogrammer.springmvc.user.services.EmailVerifier;
 import com.naturalprogrammer.springmvc.user.services.SignupService;
+import com.naturalprogrammer.springmvc.user.usecases.verification.UserVerifier;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -35,7 +35,7 @@ import static org.springframework.http.HttpHeaders.LOCATION;
 public class UserController {
 
     private final SignupService signupService;
-    private final EmailVerifier emailVerifier;
+    private final UserVerifier userVerifier;
     private final DisplayNameEditor displayNameEditor;
 
     @Operation(summary = "Signup")
@@ -88,7 +88,7 @@ public class UserController {
             @PathVariable UUID id,
             @RequestBody UserVerificationRequest request
     ) {
-        return toResponse(emailVerifier.verify(id, request), ResponseEntity::ok);
+        return toResponse(userVerifier.verify(id, request), ResponseEntity::ok);
     }
 
     @Operation(summary = "Edit display name")
