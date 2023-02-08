@@ -1,4 +1,4 @@
-package com.naturalprogrammer.springmvc.user.dto;
+package com.naturalprogrammer.springmvc.user.services;
 
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import io.swagger.v3.oas.annotations.media.Schema;

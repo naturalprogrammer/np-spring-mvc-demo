@@ -1,4 +1,4 @@
-package com.naturalprogrammer.springmvc.user.dto;
+package com.naturalprogrammer.springmvc.user.features.verification;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import static com.naturalprogrammer.springmvc.common.CommonUtils.CONTENT_TYPE_PREFIX;
 
 @Slf4j
-public record UserVerificationRequest(
+record UserVerificationRequest(
         @NotBlank
         @Size(max = 5000)
         @Schema(example = "{token received via email}")

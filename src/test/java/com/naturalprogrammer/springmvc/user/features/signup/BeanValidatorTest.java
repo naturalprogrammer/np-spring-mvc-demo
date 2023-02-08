@@ -1,6 +1,8 @@
-package com.naturalprogrammer.springmvc.common.error;
+package com.naturalprogrammer.springmvc.user.features.signup;
 
-import com.naturalprogrammer.springmvc.user.dto.SignupRequest;
+import com.naturalprogrammer.springmvc.common.error.BeanValidator;
+import com.naturalprogrammer.springmvc.common.error.Problem;
+import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
 import jakarta.validation.ConstraintViolation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

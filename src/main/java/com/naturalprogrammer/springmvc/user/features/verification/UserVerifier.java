@@ -1,12 +1,11 @@
-package com.naturalprogrammer.springmvc.user.usecases.verification;
+package com.naturalprogrammer.springmvc.user.features.verification;
 
 import com.naturalprogrammer.springmvc.common.error.*;
 import com.naturalprogrammer.springmvc.common.jwt.JweService;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.domain.User;
-import com.naturalprogrammer.springmvc.user.dto.UserResource;
-import com.naturalprogrammer.springmvc.user.dto.UserVerificationRequest;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
+import com.naturalprogrammer.springmvc.user.services.UserResource;
 import com.naturalprogrammer.springmvc.user.services.UserService;
 import com.nimbusds.jwt.JWTClaimsSet;
 import io.jbock.util.Either;
