@@ -1,4 +1,4 @@
-package com.naturalprogrammer.springmvc.user.services;
+package com.naturalprogrammer.springmvc.user.features.signup;
 
 import com.naturalprogrammer.springmvc.common.MessageGetter;
 import com.naturalprogrammer.springmvc.common.error.*;
@@ -7,9 +7,9 @@ import com.naturalprogrammer.springmvc.common.mail.MailData;
 import com.naturalprogrammer.springmvc.common.mail.MailSender;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.domain.User;
-import com.naturalprogrammer.springmvc.user.dto.SignupRequest;
-import com.naturalprogrammer.springmvc.user.dto.UserResource;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
+import com.naturalprogrammer.springmvc.user.services.UserResource;
+import com.naturalprogrammer.springmvc.user.services.UserService;
 import io.jbock.util.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +28,11 @@ import static java.util.concurrent.TimeUnit.DAYS;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SignupService {
+class SignupService {
 
     public static final long SIGNUP_TOKEN_VALID_MILLIS = DAYS.toMillis(1);
     public static final long VERIFICATION_TOKEN_VALID_MILLIS = DAYS.toMillis(2);
-    
+
     private final BeanValidator validator;
     private final ProblemComposer problemComposer;
     private final PasswordEncoder passwordEncoder;

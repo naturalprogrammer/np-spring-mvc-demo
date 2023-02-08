@@ -1,4 +1,4 @@
-package com.naturalprogrammer.springmvc.user.controllers;
+package com.naturalprogrammer.springmvc.user.features.verification;
 
 import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.common.jwt.JweService;
@@ -6,9 +6,8 @@ import com.naturalprogrammer.springmvc.common.jwt.JwsService;
 import com.naturalprogrammer.springmvc.config.MyProperties;
 import com.naturalprogrammer.springmvc.helpers.AbstractIntegrationTest;
 import com.naturalprogrammer.springmvc.user.domain.Role;
-import com.naturalprogrammer.springmvc.user.dto.UserResource;
-import com.naturalprogrammer.springmvc.user.dto.UserVerificationRequest;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
+import com.naturalprogrammer.springmvc.user.services.UserResource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,8 +19,6 @@ import static com.naturalprogrammer.springmvc.common.Path.USERS;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_VERIFICATION_TOKEN;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.TOKEN_VERIFICATION_FAILED;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
-import static com.naturalprogrammer.springmvc.user.services.SignupService.SIGNUP_TOKEN_VALID_MILLIS;
-import static com.naturalprogrammer.springmvc.user.services.SignupService.VERIFICATION_TOKEN_VALID_MILLIS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
@@ -31,7 +28,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-class VerifyEmailIntegrationTest extends AbstractIntegrationTest {
+class UserVerificationIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
@@ -50,10 +47,10 @@ class VerifyEmailIntegrationTest extends AbstractIntegrationTest {
         user.setRoles(Set.of(Role.UNVERIFIED));
         user = userRepository.save(user);
         var userIdStr = user.getIdStr();
-        var accessToken = jwsService.createToken(userIdStr, SIGNUP_TOKEN_VALID_MILLIS);
+        var accessToken = jwsService.createToken(userIdStr, 1342534L);
         var verificationToken = jweService.createToken(
                 userIdStr,
-                VERIFICATION_TOKEN_VALID_MILLIS,
+                34453278L,
                 Map.of("email", user.getEmail())
         );
 
@@ -99,7 +96,7 @@ class VerifyEmailIntegrationTest extends AbstractIntegrationTest {
 
         // given
         var userIdStr = "foo-user-id";
-        var accessToken = jwsService.createToken(userIdStr, -SIGNUP_TOKEN_VALID_MILLIS);
+        var accessToken = jwsService.createToken(userIdStr, -34523716);
 
         // when, then
         mvc.perform(post(USERS + "/{id}/verification", userIdStr)
@@ -122,7 +119,7 @@ class VerifyEmailIntegrationTest extends AbstractIntegrationTest {
         user.setRoles(Set.of(Role.UNVERIFIED));
         user = userRepository.save(user);
         var userIdStr = user.getIdStr();
-        var accessToken = jwsService.createToken(userIdStr, SIGNUP_TOKEN_VALID_MILLIS);
+        var accessToken = jwsService.createToken(userIdStr, 34529L);
 
         // when, then
         mvc.perform(post(USERS + "/{id}/verification", userIdStr)
@@ -156,7 +153,7 @@ class VerifyEmailIntegrationTest extends AbstractIntegrationTest {
         user.setRoles(Set.of(Role.UNVERIFIED));
         user = userRepository.save(user);
         var userIdStr = user.getIdStr();
-        var accessToken = jwsService.createToken(userIdStr, SIGNUP_TOKEN_VALID_MILLIS);
+        var accessToken = jwsService.createToken(userIdStr, 456339L);
 
         var properties = mock(MyProperties.class, RETURNS_DEEP_STUBS);
         given(properties.jwe().key()).willReturn("D5585149683470B0E2098D28B8D3AD33");
@@ -164,7 +161,7 @@ class VerifyEmailIntegrationTest extends AbstractIntegrationTest {
 
         var verificationToken = anotherJweService.createToken(
                 userIdStr,
-                VERIFICATION_TOKEN_VALID_MILLIS,
+                564439L,
                 Map.of("email", user.getEmail())
         );
 

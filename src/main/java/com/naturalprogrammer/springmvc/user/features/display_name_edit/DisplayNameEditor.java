@@ -1,13 +1,13 @@
-package com.naturalprogrammer.springmvc.user.services;
+package com.naturalprogrammer.springmvc.user.features.display_name_edit;
 
 import com.naturalprogrammer.springmvc.common.error.BeanValidator;
 import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.user.domain.User;
-import com.naturalprogrammer.springmvc.user.dto.UserDisplayNameEditRequest;
-import com.naturalprogrammer.springmvc.user.dto.UserResource;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
+import com.naturalprogrammer.springmvc.user.services.UserResource;
+import com.naturalprogrammer.springmvc.user.services.UserService;
 import io.jbock.util.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class DisplayNameEditor {
+class DisplayNameEditor {
 
     private final BeanValidator validator;
     private final ProblemComposer problemComposer;

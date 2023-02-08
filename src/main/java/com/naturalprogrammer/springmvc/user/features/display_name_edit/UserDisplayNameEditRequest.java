@@ -1,4 +1,4 @@
-package com.naturalprogrammer.springmvc.user.dto;
+package com.naturalprogrammer.springmvc.user.features.display_name_edit;
 
 import com.naturalprogrammer.springmvc.user.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,7 +10,7 @@ import static com.naturalprogrammer.springmvc.common.CommonUtils.CONTENT_TYPE_PR
 import static org.apache.commons.lang3.StringUtils.trim;
 
 @Slf4j
-public record UserDisplayNameEditRequest(
+record UserDisplayNameEditRequest(
         @NotBlank
         @Size(min = User.NAME_MIN, max = User.NAME_MAX)
         @Schema(example = "Sanjay Patel")
@@ -23,5 +23,5 @@ public record UserDisplayNameEditRequest(
         return trimmed;
     }
 
-    public static final String CONTENT_TYPE = CONTENT_TYPE_PREFIX + "user-display-name-edit-request.v1+json";
+    static final String CONTENT_TYPE = CONTENT_TYPE_PREFIX + "user-display-name-edit-request.v1+json";
 }

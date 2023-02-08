@@ -1,4 +1,4 @@
-package com.naturalprogrammer.springmvc.user.dto;
+package com.naturalprogrammer.springmvc.user.features.signup;
 
 import com.naturalprogrammer.springmvc.user.domain.User;
 import com.naturalprogrammer.springmvc.user.validators.ValidPassword;
@@ -12,7 +12,7 @@ import static com.naturalprogrammer.springmvc.common.CommonUtils.CONTENT_TYPE_PR
 import static org.apache.commons.lang3.StringUtils.trim;
 
 @Slf4j
-public record SignupRequest(
+record SignupRequest(
 
         @Email
         @NotBlank
