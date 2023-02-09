@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
+import java.util.Date;
 import java.util.Map;
 
 @Slf4j
@@ -40,8 +41,8 @@ public class JweService extends AbstractJwtService {
 
     @Override
     @SneakyThrows
-    public String createToken(String subject, long validForMillis, Map<String, Object> claims) {
-        var jwe = new JWEObject(header, createPayload(subject, validForMillis, claims));
+    public String createToken(String subject, Date validUntil, Map<String, Object> claims) {
+        var jwe = new JWEObject(header, createPayload(subject, validUntil, claims));
         jwe.encrypt(encrypter);
         return jwe.serialize();
     }

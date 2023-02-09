@@ -20,9 +20,9 @@ import static com.naturalprogrammer.springmvc.common.Path.USERS;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "User", description = "User API")
-public class LoginController {
+public class AuthTokenController {
 
-    private final LoginService loginService;
+    private final AuthTokenCreator authTokenCreator;
     private final AccessTokenCreator accessTokenCreator;
 
     @Operation(summary = "Login")
@@ -38,11 +38,11 @@ public class LoginController {
                             schema = @Schema(implementation = Problem.class))
             )
     })
-    @PostMapping(value = "/login", consumes = LoginRequest.CONTENT_TYPE, produces = LoginRequest.CONTENT_TYPE)
-    public ResponseEntity<?> login(
-            @RequestBody LoginRequest request
+    @PostMapping(value = "/auth-token", consumes = AuthTokenRequest.CONTENT_TYPE, produces = AuthTokenRequest.CONTENT_TYPE)
+    public ResponseEntity<?> createAuthToken(
+            @RequestBody AuthTokenRequest request
     ) {
-        return toResponse(loginService.login(request), ResponseEntity::ok);
+        return toResponse(authTokenCreator.login(request), ResponseEntity::ok);
     }
 
     @Operation(summary = "Get Access Token")
@@ -59,7 +59,7 @@ public class LoginController {
             )
     })
     @GetMapping(value = USERS + "/{id}/access-token", produces = AccessTokenResource.CONTENT_TYPE)
-    public ResponseEntity<?> getAccessToken(
+    public ResponseEntity<?> createAccessToken(
             @PathVariable UUID id
     ) {
         return toResponse(accessTokenCreator.create(id), ResponseEntity::ok);

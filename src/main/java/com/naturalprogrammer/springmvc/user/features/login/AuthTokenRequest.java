@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Email;
 
 import static com.naturalprogrammer.springmvc.common.CommonUtils.CONTENT_TYPE_PREFIX;
 
-public record LoginRequest(
+record AuthTokenRequest(
 
         @Email
         String email,
@@ -13,16 +13,14 @@ public record LoginRequest(
         @ValidPassword
         String password,
 
-        Long resourceTokenValidForMillis,
-        Long accessTokenValidForMillis
+        Long resourceTokenValidForMillis
 
 ) {
     @Override
     public String toString() {
-        return "LoginRequest{" +
+        return "AuthTokenRequest{" +
                 "email='" + email + '\'' +
                 ", resourceTokenValidForMillis=" + resourceTokenValidForMillis +
-                ", accessTokenValidForMillis=" + accessTokenValidForMillis +
                 '}';
     }
 

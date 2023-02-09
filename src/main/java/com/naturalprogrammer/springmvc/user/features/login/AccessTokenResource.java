@@ -4,13 +4,13 @@ import static com.naturalprogrammer.springmvc.common.CommonUtils.CONTENT_TYPE_PR
 
 public record AccessTokenResource(
         String accessToken,
-        String accessTokenValidTill
+        String accessTokenValidUntil
 ) {
 
     @Override
     public String toString() {
         return "AuthTokenResource{" +
-                ", accessTokenValidTill='" + accessTokenValidTill + '\'' +
+                ", accessTokenValidUntil='" + accessTokenValidUntil + '\'' +
                 '}';
     }
 

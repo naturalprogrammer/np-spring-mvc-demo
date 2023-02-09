@@ -18,7 +18,7 @@ public abstract class AbstractJwtService {
 	private final Clock clock;
 	private final MyProperties properties;
 
-	protected Payload createPayload(String subject, Long validForMillis, Map<String, Object> claims) {
+	protected Payload createPayload(String subject, Date validUntil, Map<String, Object> claims) {
 
 		var now = clock.instant();
 
@@ -27,17 +27,17 @@ public abstract class AbstractJwtService {
 				.subject(subject)
 				.issueTime(Date.from(now))
 				.audience(properties.homepage())
-				.expirationTime(Date.from(now.plusMillis(validForMillis + 1)));
+				.expirationTime(validUntil);
 		claims.forEach(builder::claim);
 
 		return new Payload(builder.build().toJSONObject());
 	}
 
-	public String createToken(String subject, long validForMillis) {
-		return createToken(subject, validForMillis, Collections.emptyMap());
+	public String createToken(String subject, Date validUntil) {
+		return createToken(subject, validUntil, Collections.emptyMap());
 	}
 
-	public abstract String createToken(String subject, long validForMillis, Map<String, Object> claims);
+	public abstract String createToken(String subject, Date validUntil, Map<String, Object> claims);
 
 	protected abstract Either<ProblemType, JWTClaimsSet> getClaims(String token);
 
