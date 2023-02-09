@@ -7,4 +7,5 @@ import lombok.NoArgsConstructor;
 public final class Path {
 
     public static final String USERS = "/users";
+    public static final String AUTH_TOKENS = "/auth-tokens";
 }

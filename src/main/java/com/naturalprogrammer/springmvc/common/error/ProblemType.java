@@ -21,6 +21,7 @@ public enum ProblemType {
     TOKEN_VERIFICATION_FAILED("/problems/token-verification-failed", "token-verification-failed", FORBIDDEN),
     WRONG_JWT_AUDIENCE("/problems/wrong-jwt-audience", "wrong-jwt-audience", FORBIDDEN),
     EXPIRED_JWT("/problems/expired-jwt", "expired-jwt", FORBIDDEN),
+    WRONG_CREDENTIALS("/problems/wrong-credentials", "wrong-credentials", UNAUTHORIZED),
     NOT_FOUND("/problems/not-found", "not-found", HttpStatus.NOT_FOUND);
 
     private final String type;

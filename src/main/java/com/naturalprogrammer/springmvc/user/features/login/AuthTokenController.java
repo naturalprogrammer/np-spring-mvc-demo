@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 import static com.naturalprogrammer.springmvc.common.CommonUtils.toResponse;
+import static com.naturalprogrammer.springmvc.common.Path.AUTH_TOKENS;
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
 
 
@@ -25,9 +26,9 @@ public class AuthTokenController {
     private final AuthTokenCreator authTokenCreator;
     private final AccessTokenCreator accessTokenCreator;
 
-    @Operation(summary = "Login")
+    @Operation(summary = "Create Auth Tokens")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Created Auth Tokens",
+            @ApiResponse(responseCode = "200", description = "Created Refresh nd Access Tokens",
                     content = @Content(
                             mediaType = AuthTokenResource.CONTENT_TYPE,
                             schema = @Schema(implementation = AuthTokenResource.class))
@@ -38,11 +39,11 @@ public class AuthTokenController {
                             schema = @Schema(implementation = Problem.class))
             )
     })
-    @PostMapping(value = "/auth-token", consumes = AuthTokenRequest.CONTENT_TYPE, produces = AuthTokenRequest.CONTENT_TYPE)
+    @PostMapping(value = AUTH_TOKENS, consumes = AuthTokenRequest.CONTENT_TYPE, produces = AuthTokenResource.CONTENT_TYPE)
     public ResponseEntity<?> createAuthToken(
             @RequestBody AuthTokenRequest request
     ) {
-        return toResponse(authTokenCreator.login(request), ResponseEntity::ok);
+        return toResponse(authTokenCreator.create(request), ResponseEntity::ok);
     }
 
     @Operation(summary = "Get Access Token")
