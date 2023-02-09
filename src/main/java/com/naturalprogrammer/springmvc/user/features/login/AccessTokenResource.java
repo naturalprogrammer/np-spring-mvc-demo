@@ -1,10 +1,12 @@
 package com.naturalprogrammer.springmvc.user.features.login;
 
+import java.time.Instant;
+
 import static com.naturalprogrammer.springmvc.common.CommonUtils.CONTENT_TYPE_PREFIX;
 
 public record AccessTokenResource(
         String accessToken,
-        String accessTokenValidUntil
+        Instant accessTokenValidUntil
 ) {
 
     @Override

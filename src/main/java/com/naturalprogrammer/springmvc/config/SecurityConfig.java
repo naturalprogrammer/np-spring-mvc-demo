@@ -1,11 +1,9 @@
 package com.naturalprogrammer.springmvc.config;
 
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
-import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,6 +16,9 @@ import org.springframework.security.web.context.NullSecurityContextRepository;
 
 import static com.naturalprogrammer.springmvc.common.Path.AUTH_TOKENS;
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
+import static com.naturalprogrammer.springmvc.user.features.login.AuthScope.RESOURCE_TOKEN;
+import static jakarta.servlet.DispatcherType.ERROR;
+import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 @RequiredArgsConstructor
@@ -43,17 +44,18 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(config ->
                         config
-                                .requestMatchers(HttpMethod.POST, USERS).permitAll()
-                                .requestMatchers(HttpMethod.PATCH, USERS + "/*/display-name").authenticated()
-                                .requestMatchers(HttpMethod.POST, USERS + "/*/verification").authenticated()
-                                .requestMatchers(HttpMethod.POST, AUTH_TOKENS).permitAll()
-                                .requestMatchers(HttpMethod.GET,
+                                .requestMatchers(POST, USERS).permitAll()
+                                .requestMatchers(POST, AUTH_TOKENS).permitAll()
+                                .requestMatchers(PATCH, USERS + "/*/display-name").authenticated()
+                                .requestMatchers(POST, USERS + "/*/verification").authenticated()
+                                .requestMatchers(GET, USERS + "/*/access-token").hasAuthority(RESOURCE_TOKEN.authority())
+                                .requestMatchers(GET,
                                         "/v3/api-docs/**",
                                         "/favicon.ico",
                                         "/swagger-ui.html",
                                         "/swagger-ui/**"
                                 ).permitAll()
-                                .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
+                                .dispatcherTypeMatchers(ERROR).permitAll()
                                 .anyRequest().denyAll()
                 ).build();
     }

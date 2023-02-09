@@ -1,10 +1,8 @@
 package com.naturalprogrammer.springmvc.user.services;
 
 import com.naturalprogrammer.springmvc.common.CommonUtils;
-import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.domain.User;
 import com.naturalprogrammer.springmvc.user.features.login.AuthTokenResource;
-import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,7 +17,6 @@ import static org.apache.commons.lang3.ObjectUtils.notEqual;
 public class UserService {
 
     private final CommonUtils commonUtils;
-    private final UserRepository userRepository;
 
     public UserResource toResponse(User user) {
         return toResponse(user, null);
@@ -36,25 +33,24 @@ public class UserService {
         );
     }
 
-    public boolean isSelfOrAdmin(UUID userId) {
+    public boolean isSelfOrAdmin(User user) {
 
         return commonUtils.getUserId()
-                .map(currentUserId -> isSelf(currentUserId, userId) || isAdmin(currentUserId))
+                .map(currentUserId -> isSelf(currentUserId, user) || isAdmin(user))
                 .orElse(false);
     }
 
-    private boolean isSelf(UUID currentUserId, UUID userId) {
-        if (notEqual(currentUserId, userId)) {
-            log.info("Current user {} is not same as user {}", currentUserId, userId);
+    private boolean isSelf(UUID currentUserId, User user) {
+        if (notEqual(currentUserId, user.getId())) {
+            log.info("Current user {} is not same as user {}", currentUserId, user);
             return false;
         }
         return true;
     }
 
-    private boolean isAdmin(UUID currentUserId) {
+    private boolean isAdmin(User currentUser) {
 
-        var currentUser = userRepository.findById(currentUserId).orElseThrow();
-        if (currentUser.hasRoles(Role.ADMIN, Role.VERIFIED))
+        if (currentUser.isAdmin())
             return true;
 
         log.warn("Current user {} is not an admin", currentUser);
