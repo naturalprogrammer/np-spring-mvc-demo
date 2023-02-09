@@ -69,9 +69,7 @@ class ExistingUserVerifier {
 
     private Either<Problem, UserResource> verify(User user, JWTClaimsSet claims) {
 
-        var userIdStr = user.getIdStr();
-
-        if (notEqual(claims.getSubject(), userIdStr) ||
+        if (notEqual(claims.getSubject(), user.getIdStr()) ||
                 notEqual(claims.getClaim("email"), user.getEmail()))
             return Either.left(problemComposer.compose(ProblemType.TOKEN_VERIFICATION_FAILED, claims.toString()));
 

@@ -2,11 +2,12 @@ package com.naturalprogrammer.springmvc.user.features.signup;
 
 import com.naturalprogrammer.springmvc.common.MessageGetter;
 import com.naturalprogrammer.springmvc.common.error.*;
-import com.naturalprogrammer.springmvc.common.jwt.JwsService;
+import com.naturalprogrammer.springmvc.common.jwt.JweService;
 import com.naturalprogrammer.springmvc.common.mail.MailData;
 import com.naturalprogrammer.springmvc.common.mail.MailSender;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.domain.User;
+import com.naturalprogrammer.springmvc.user.features.login.AuthTokenCreator;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import com.naturalprogrammer.springmvc.user.services.UserResource;
 import com.naturalprogrammer.springmvc.user.services.UserService;
@@ -18,28 +19,22 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.temporal.ChronoUnit;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
-import static java.util.concurrent.TimeUnit.DAYS;
+import java.util.*;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 class SignupService {
 
-    public static final long SIGNUP_TOKEN_VALID_MILLIS = DAYS.toMillis(1);
-    public static final long VERIFICATION_TOKEN_VALID_MILLIS = DAYS.toMillis(2);
+    public static final long VERIFICATION_TOKEN_VALID_DAYS = 1;
 
     private final BeanValidator validator;
     private final ProblemComposer problemComposer;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final UserService userService;
-    private final JwsService jwsService;
-    private final JwsService jweService;
+    private final AuthTokenCreator authTokenCreator;
+    private final JweService jweService;
     private final Clock clock;
     private final MessageGetter messageGetter;
     private final MailSender mailSender;
@@ -63,9 +58,9 @@ class SignupService {
         }
 
         var user = userRepository.save(createUser(request, locale));
-        var token = jwsService.createToken(
-                user.getIdStr(),
-                SIGNUP_TOKEN_VALID_MILLIS
+        var token = authTokenCreator.create(
+                user.getId(),
+                request.resourceTokenValidForMillis()
         );
         UserResource resource = userService.toResponse(user, token);
         log.info("Signed up {}. Returning {}", user, resource);
@@ -85,10 +80,9 @@ class SignupService {
     }
 
     private String createVerificationToken(User user) {
-        var userIdStr = user.getIdStr();
         return jweService.createToken(
-                userIdStr,
-                VERIFICATION_TOKEN_VALID_MILLIS,
+                user.getIdStr(),
+                Date.from(clock.instant().plus(VERIFICATION_TOKEN_VALID_DAYS, ChronoUnit.DAYS)),
                 Map.of("email", user.getEmail())
         );
     }

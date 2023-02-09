@@ -55,7 +55,7 @@ class BeanValidatorTest {
     void should_preventSignup_when_passwordIsInvalid(String password) {
 
         // given
-        var request = new SignupRequest(null, password, null);
+        var request = new SignupRequest(null, password, null, null);
         given(problemComposer.compose(any(), any(), anySet())).willReturn(problem);
 
         // when
@@ -64,7 +64,7 @@ class BeanValidatorTest {
         // then
         verify(problemComposer).compose(
                 eq(INVALID_SIGNUP),
-                eq("SignupRequest{email='null', displayName='null'}"),
+                eq("SignupRequest{email='null', displayName='null', resourceTokenValidForMillis=null}"),
                 violationsCaptor.capture()
         );
 
@@ -84,7 +84,7 @@ class BeanValidatorTest {
     void should_beNoProblem_when_valid() {
 
         // given
-        var request = new SignupRequest("email@example.com", "Password9!", "Some name");
+        var request = new SignupRequest("email@example.com", "Password9!", "Some name", null);
 
         // when
         var possibleProblem = subject.validate(request, INVALID_SIGNUP);

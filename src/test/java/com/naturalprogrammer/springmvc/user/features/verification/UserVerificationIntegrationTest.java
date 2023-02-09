@@ -12,12 +12,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Clock;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_VERIFICATION_TOKEN;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.TOKEN_VERIFICATION_FAILED;
+import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.futureTime;
+import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.pastTime;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -39,6 +43,8 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     private JweService jweService;
 
+    private final Date future = futureTime();
+
     @Test
     void should_verifyEmail() throws Exception {
 
@@ -47,10 +53,10 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
         user.setRoles(Set.of(Role.UNVERIFIED));
         user = userRepository.save(user);
         var userIdStr = user.getIdStr();
-        var accessToken = jwsService.createToken(userIdStr, 1342534L);
+        var accessToken = jwsService.createToken(userIdStr, future);
         var verificationToken = jweService.createToken(
                 userIdStr,
-                34453278L,
+                future,
                 Map.of("email", user.getEmail())
         );
 
@@ -80,7 +86,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
     void emailVerification_should_respondWith401_when_notLoggedIn() throws Exception {
 
         // when, then
-        mvc.perform(post(USERS + "/{id}/verification", "foo-user-id")
+        mvc.perform(post(USERS + "/{id}/verification", UUID.randomUUID())
                         .contentType(UserVerificationRequest.CONTENT_TYPE)
                         .content("""
                                    {
@@ -95,11 +101,11 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
     void emailVerification_should_respondWith401_when_ExpiredToken() throws Exception {
 
         // given
-        var userIdStr = "foo-user-id";
-        var accessToken = jwsService.createToken(userIdStr, -34523716);
+        var userId = UUID.randomUUID();
+        var accessToken = jwsService.createToken(userId.toString(), pastTime());
 
         // when, then
-        mvc.perform(post(USERS + "/{id}/verification", userIdStr)
+        mvc.perform(post(USERS + "/{id}/verification", userId)
                         .contentType(UserVerificationRequest.CONTENT_TYPE)
                         .header(AUTHORIZATION, "Bearer " + accessToken)
                         .content("""
@@ -119,7 +125,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
         user.setRoles(Set.of(Role.UNVERIFIED));
         user = userRepository.save(user);
         var userIdStr = user.getIdStr();
-        var accessToken = jwsService.createToken(userIdStr, 34529L);
+        var accessToken = jwsService.createToken(userIdStr, future);
 
         // when, then
         mvc.perform(post(USERS + "/{id}/verification", userIdStr)
@@ -153,7 +159,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
         user.setRoles(Set.of(Role.UNVERIFIED));
         user = userRepository.save(user);
         var userIdStr = user.getIdStr();
-        var accessToken = jwsService.createToken(userIdStr, 456339L);
+        var accessToken = jwsService.createToken(userIdStr, future);
 
         var properties = mock(MyProperties.class, RETURNS_DEEP_STUBS);
         given(properties.jwe().key()).willReturn("D5585149683470B0E2098D28B8D3AD33");
@@ -161,7 +167,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
 
         var verificationToken = anotherJweService.createToken(
                 userIdStr,
-                564439L,
+                future,
                 Map.of("email", user.getEmail())
         );
 

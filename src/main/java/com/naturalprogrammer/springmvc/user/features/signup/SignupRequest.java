@@ -27,24 +27,27 @@ record SignupRequest(
         @NotBlank
         @Size(min = User.NAME_MIN, max = User.NAME_MAX)
         @Schema(example = "Sanjay Patel")
-        String displayName
+        String displayName,
+
+        Long resourceTokenValidForMillis
 ) {
 
     public SignupRequest trimmed() {
         var trimmed = new SignupRequest(
-                trim(email), trim(password), trim(displayName)
+                trim(email), trim(password), trim(displayName), resourceTokenValidForMillis
         );
         log.info("Trimmed {} to  {}", this, trimmed);
         return trimmed;
     }
+
+    public static final String CONTENT_TYPE = CONTENT_TYPE_PREFIX + "signup-request.v1+json";
 
     @Override
     public String toString() {
         return "SignupRequest{" +
                 "email='" + email + '\'' +
                 ", displayName='" + displayName + '\'' +
+                ", resourceTokenValidForMillis=" + resourceTokenValidForMillis +
                 '}';
     }
-
-    public static final String CONTENT_TYPE = CONTENT_TYPE_PREFIX + "signup-request.v1+json";
 }
