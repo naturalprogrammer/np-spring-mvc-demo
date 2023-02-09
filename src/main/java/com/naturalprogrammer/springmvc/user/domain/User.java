@@ -47,7 +47,11 @@ public class User extends AbstractEntity {
     @Column(nullable = false)
     private Instant tokensValidFrom;
 
-    public boolean hasRoles(Role ...roles) {
+    public boolean hasRoles(Role... roles) {
         return this.roles.containsAll(List.of(roles));
+    }
+
+    public boolean isAdmin() {
+        return hasRoles(Role.ADMIN, Role.VERIFIED);
     }
 }

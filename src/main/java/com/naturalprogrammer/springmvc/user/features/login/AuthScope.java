@@ -6,9 +6,13 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public enum Scope {
+public enum AuthScope {
 
     RESOURCE_TOKEN("resource_token");
 
     private final String value;
+
+    public final String authority() {
+        return "SCOPE_" + value;
+    }
 }

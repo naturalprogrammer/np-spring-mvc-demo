@@ -7,7 +7,7 @@ import com.naturalprogrammer.springmvc.common.jwt.JwsService;
 import com.naturalprogrammer.springmvc.helpers.AbstractIntegrationTest;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.domain.User;
-import com.naturalprogrammer.springmvc.user.features.login.Scope;
+import com.naturalprogrammer.springmvc.user.features.login.AuthScope;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import com.naturalprogrammer.springmvc.user.services.UserResource;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -129,7 +129,7 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
                 userResource.id(),
                 jwsService.parseToken(userResource.authToken().resourceToken()),
                 resourceTokenValidForMillis,
-                Scope.RESOURCE_TOKEN.getValue()
+                AuthScope.RESOURCE_TOKEN.getValue()
         );
 
         assertThat(sentMails()).hasSize(1);

@@ -64,7 +64,7 @@ public class AuthTokenCreator {
         var resourceToken = jwsService.createToken(
                 userIdStr,
                 Date.from(resourceTokenValidUntil),
-                Map.of("scope", Scope.RESOURCE_TOKEN.getValue())
+                Map.of("scope", AuthScope.RESOURCE_TOKEN.getValue())
         );
         var accessToken = jwsService.createToken(userIdStr, Date.from(accessTokenValidUntil));
 

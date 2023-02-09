@@ -49,7 +49,7 @@ class ExistingUserVerifierTest {
     void should_preventVerification_when_userIsNotSelfOrAdmin() {
 
         // given
-        given(userService.isSelfOrAdmin(user.getId())).willReturn(false);
+        given(userService.isSelfOrAdmin(user)).willReturn(false);
         given(notFoundHandler.notFound(user.getId(), request)).willReturn(Either.left(problem));
 
         // when
@@ -70,7 +70,7 @@ class ExistingUserVerifierTest {
                 .claim(claimName, UUID.randomUUID().toString())
                 .build();
 
-        given(userService.isSelfOrAdmin(user.getId())).willReturn(true);
+        given(userService.isSelfOrAdmin(user)).willReturn(true);
         given(jweService.parseToken(request.emailVerificationToken())).willReturn(Either.right(claims));
         given(problemComposer.compose(ProblemType.TOKEN_VERIFICATION_FAILED, claims.toString())).willReturn(problem);
 
