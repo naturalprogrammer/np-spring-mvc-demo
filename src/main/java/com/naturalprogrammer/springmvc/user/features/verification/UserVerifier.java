@@ -37,7 +37,7 @@ public class UserVerifier {
 
         return userRepository.findById(userId)
                 .map(user -> existingUserVerifier.verify(user, request))
-                .orElse(notFoundHandler.notFound(userId, request));
+                .orElseGet(() -> notFoundHandler.notFound(userId, request));
     }
 
 }

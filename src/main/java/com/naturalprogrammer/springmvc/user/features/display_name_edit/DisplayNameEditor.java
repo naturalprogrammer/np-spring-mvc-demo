@@ -36,7 +36,7 @@ class DisplayNameEditor {
 
         return userRepository.findById(userId)
                 .map(user -> edit(user, request))
-                .orElse(notFound(userId, request));
+                .orElseGet(() -> notFound(userId, request));
     }
 
     private Either<Problem, UserResource> edit(User user, UserDisplayNameEditRequest request) {

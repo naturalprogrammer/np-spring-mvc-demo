@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.NullSecurityContextRepository;
 
+import static com.naturalprogrammer.springmvc.common.Path.AUTH_TOKENS;
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
 
 @Configuration
@@ -45,6 +46,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, USERS).permitAll()
                                 .requestMatchers(HttpMethod.PATCH, USERS + "/*/display-name").authenticated()
                                 .requestMatchers(HttpMethod.POST, USERS + "/*/verification").authenticated()
+                                .requestMatchers(HttpMethod.POST, AUTH_TOKENS).permitAll()
                                 .requestMatchers(HttpMethod.GET,
                                         "/v3/api-docs/**",
                                         "/favicon.ico",
