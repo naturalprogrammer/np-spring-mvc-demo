@@ -7,10 +7,20 @@ spring:
     security:
       protocol: PLAINTEXT
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 1011974249454-6gq0hr01gqh3cndoqnss5r69tkk2nd84.apps.googleusercontent.com
+            client-secret: saDA6Cj60wipncFM-hzBD-C6
+
 logging.level:
   org.apache.kafka: OFF
 
 my:
+  homepage: https://localhost:9090
+  oauth2-authentication-success-url: http://localhost:9090/social-login-success?token=
   jws:
     id: e0498dad-4f5f-40cf-86e3-2726ec78463d
     public-key: classpath:/config/rsa-2048-public-key.txt

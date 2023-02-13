@@ -12,6 +12,7 @@ import static com.naturalprogrammer.springmvc.common.CommonUtils.CONTENT_TYPE_PR
 import static org.apache.commons.lang3.StringUtils.trim;
 
 @Slf4j
+public
 record SignupRequest(
 
         @Email

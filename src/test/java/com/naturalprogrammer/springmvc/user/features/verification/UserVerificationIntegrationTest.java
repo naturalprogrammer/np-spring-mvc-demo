@@ -2,10 +2,10 @@ package com.naturalprogrammer.springmvc.user.features.verification;
 
 import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.common.jwt.JweService;
-import com.naturalprogrammer.springmvc.common.jwt.JwsService;
 import com.naturalprogrammer.springmvc.config.MyProperties;
 import com.naturalprogrammer.springmvc.helpers.AbstractIntegrationTest;
 import com.naturalprogrammer.springmvc.user.domain.Role;
+import com.naturalprogrammer.springmvc.user.features.login.AuthTokenCreator;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import com.naturalprogrammer.springmvc.user.services.UserResource;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
     private UserRepository userRepository;
 
     @Autowired
-    private JwsService jwsService;
+    private AuthTokenCreator authTokenCreator;
 
     @Autowired
     private JweService jweService;
@@ -53,7 +53,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
         user.setRoles(Set.of(Role.UNVERIFIED));
         user = userRepository.save(user);
         var userIdStr = user.getIdStr();
-        var accessToken = jwsService.createToken(userIdStr, future);
+        var accessToken = authTokenCreator.createAccessToken(userIdStr, future.toInstant());
         var verificationToken = jweService.createToken(
                 userIdStr,
                 future,
@@ -102,7 +102,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
 
         // given
         var userId = UUID.randomUUID();
-        var accessToken = jwsService.createToken(userId.toString(), pastTime());
+        var accessToken = authTokenCreator.createAccessToken(userId.toString(), pastTime().toInstant());
 
         // when, then
         mvc.perform(post(USERS + "/{id}/verification", userId)
@@ -125,7 +125,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
         user.setRoles(Set.of(Role.UNVERIFIED));
         user = userRepository.save(user);
         var userIdStr = user.getIdStr();
-        var accessToken = jwsService.createToken(userIdStr, future);
+        var accessToken = authTokenCreator.createAccessToken(userIdStr, future.toInstant());
 
         // when, then
         mvc.perform(post(USERS + "/{id}/verification", userIdStr)
@@ -159,7 +159,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
         user.setRoles(Set.of(Role.UNVERIFIED));
         user = userRepository.save(user);
         var userIdStr = user.getIdStr();
-        var accessToken = jwsService.createToken(userIdStr, future);
+        var accessToken = authTokenCreator.createAccessToken(userIdStr, future.toInstant());
 
         var properties = mock(MyProperties.class, RETURNS_DEEP_STUBS);
         given(properties.jwe().key()).willReturn("D5585149683470B0E2098D28B8D3AD33");
