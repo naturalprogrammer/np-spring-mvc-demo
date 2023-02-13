@@ -1,7 +1,16 @@
 spring:
+
   datasource:
     url: jdbc:tc:postgresql:15.1://np-spring-mvc-demo-tc
     password: np-password-tc
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: dummy
+            client-secret: dummy
 
 my:
   jws:

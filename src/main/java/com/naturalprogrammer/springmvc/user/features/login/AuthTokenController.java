@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.UUID;
 
 import static com.naturalprogrammer.springmvc.common.CommonUtils.toResponse;
@@ -28,7 +29,7 @@ public class AuthTokenController {
 
     @Operation(summary = "Create Auth Tokens")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Created Refresh nd Access Tokens",
+            @ApiResponse(responseCode = "200", description = "Created Refresh and Access Tokens",
                     content = @Content(
                             mediaType = AuthTokenResource.CONTENT_TYPE,
                             schema = @Schema(implementation = AuthTokenResource.class))
@@ -44,6 +45,24 @@ public class AuthTokenController {
             @RequestBody AuthTokenRequest request
     ) {
         return toResponse(authTokenCreator.create(request), ResponseEntity::ok);
+    }
+
+    @Operation(summary = "Create Auth Tokens Using Resource Token")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Created Refresh and Access Tokens",
+                    content = @Content(
+                            mediaType = AuthTokenResource.CONTENT_TYPE,
+                            schema = @Schema(implementation = AuthTokenResource.class))
+            ),
+            @ApiResponse(responseCode = "422", description = "Invalid input",
+                    content = @Content(
+                            mediaType = Problem.CONTENT_TYPE,
+                            schema = @Schema(implementation = Problem.class))
+            )
+    })
+    @PostMapping(value = USERS + "/{id}/resource-token", produces = AuthTokenResource.CONTENT_TYPE)
+    public ResponseEntity<?> createAuthToken(Principal principal) {
+        return ResponseEntity.ok(authTokenCreator.create(principal.getName(), null));
     }
 
     @Operation(summary = "Get Access Token")

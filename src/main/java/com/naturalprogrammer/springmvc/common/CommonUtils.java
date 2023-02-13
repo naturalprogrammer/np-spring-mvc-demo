@@ -1,12 +1,18 @@
 package com.naturalprogrammer.springmvc.common;
 
 import com.naturalprogrammer.springmvc.common.error.Problem;
+import com.naturalprogrammer.springmvc.config.sociallogin.SocialUser;
 import io.jbock.util.Either;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
+import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -20,12 +26,45 @@ public class CommonUtils {
     public Optional<UUID> getUserId() {
 
         var auth = SecurityContextHolder.getContext().getAuthentication();
-        return auth instanceof JwtAuthenticationToken
-                ? Optional.of(UUID.fromString(auth.getName()))
-                : Optional.empty();
+        return switch (auth) {
+            case JwtAuthenticationToken jwtAuth -> Optional.of(UUID.fromString(jwtAuth.getName()));
+            case SocialUser socialUser -> Optional.of(socialUser.getUserId());
+            default -> Optional.empty();
+        };
     }
 
     public static <T> ResponseEntity<?> toResponse(Either<Problem, T> either, Function<T, ResponseEntity<T>> success) {
         return either.fold(Problem::toResponse, success);
     }
+
+    public static Optional<Cookie> fetchCookie(HttpServletRequest request, String name) {
+
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null)
+            for (Cookie cookie : cookies)
+                if (cookie.getName().equals(name))
+                    return Optional.of(cookie);
+
+        return Optional.empty();
+    }
+
+    /**
+     * Serializes an object
+     */
+    public static String serialize(Serializable obj) {
+
+        return Base64.getUrlEncoder().encodeToString(
+                SerializationUtils.serialize(obj));
+    }
+
+    /**
+     * Deserializes an object
+     */
+    public static <T> T deserialize(String serializedObj) {
+
+        return SerializationUtils.deserialize(
+                Base64.getUrlDecoder().decode(serializedObj));
+    }
+
 }

@@ -16,8 +16,16 @@ spring:
       use-new-id-generator-mappings: false
       ddl-auto: validate
 
+  security:
+    strategy: MODE_INHERITABLETHREADLOCAL
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ~
+            client-secret: ~
+
   mail:
-    host: ~
     port: ~
     username: ~
     password: ~
@@ -53,15 +61,19 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+  endpoints:
+    jmx.exposure.exclude: "*"
+    web.exposure.include: health, info, beans, metrics, threaddump, prometheus
 
 my:
-  homepage: https://www.my-super-site.example.com
-  jws:
-    # a UUID generated independently
-    id: ~
-    # Generated using https://www.javainuse.com/rsagenerator (Key size 2048)
-    public-key: ~
-    private-key: ~
+  homepage: ~
+  oauth2-authentication-success-url: ~
+jws:
+  # a UUID generated independently
+  id: ~
+  # Generated using https://www.javainuse.com/rsagenerator (Key size 2048)
+  public-key: ~
+  private-key: ~
   jwe:
     # a UUID generated independently
     id: ~

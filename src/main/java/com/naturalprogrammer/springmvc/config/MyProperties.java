@@ -8,6 +8,7 @@ import java.security.interfaces.RSAPublicKey;
 @ConfigurationProperties(prefix = "my")
 public record MyProperties(
         String homepage,
+        String oauth2AuthenticationSuccessUrl,
         Jws jws,
         Jwe jwe
 ) {
