@@ -5,6 +5,7 @@ import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -12,6 +13,8 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.NullSecurityContextRepository;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static com.naturalprogrammer.springmvc.common.Path.AUTH_TOKENS;
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
@@ -77,5 +80,15 @@ public class SecurityConfig {
 
     private JwtDecoder jwtDecoder(MyProperties properties) {
         return NimbusJwtDecoder.withPublicKey(properties.jws().publicKey()).build();
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(@NonNull CorsRegistry registry) {
+                registry.addMapping("/**").allowedOrigins(properties.homepage());
+            }
+        };
     }
 }

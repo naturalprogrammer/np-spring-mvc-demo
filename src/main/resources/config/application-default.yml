@@ -19,8 +19,8 @@ logging.level:
   org.apache.kafka: OFF
 
 my:
-  homepage: https://localhost:9090
-  oauth2-authentication-success-url: http://localhost:9090/social-login-success?token=
+  homepage: http://localhost:3000
+  oauth2-authentication-success-url: http://localhost:3000/social-login-success?token=
   jws:
     id: e0498dad-4f5f-40cf-86e3-2726ec78463d
     public-key: classpath:/config/rsa-2048-public-key.txt
