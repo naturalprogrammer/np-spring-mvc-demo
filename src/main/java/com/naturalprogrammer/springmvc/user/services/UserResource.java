@@ -1,7 +1,7 @@
 package com.naturalprogrammer.springmvc.user.services;
 
 import com.naturalprogrammer.springmvc.user.domain.Role;
-import com.naturalprogrammer.springmvc.user.features.login.AuthTokenResource;
+import com.naturalprogrammer.springmvc.user.features.login.ResourceTokenResource;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Set;
@@ -27,7 +27,7 @@ public record UserResource(
         Set<Role> roles,
 
         @Schema(title = "Access and resource tokens for accessing the API. Optional")
-        AuthTokenResource authToken
+        ResourceTokenResource authToken
 ) {
     public static final String CONTENT_TYPE = CONTENT_TYPE_PREFIX + "user.v1+json";
 }

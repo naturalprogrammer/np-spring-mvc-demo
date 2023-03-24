@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 
@@ -28,9 +29,14 @@ public class CommonUtils {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         return switch (auth) {
             case JwtAuthenticationToken jwtAuth -> Optional.of(UUID.fromString(jwtAuth.getName()));
-            case SocialUser socialUser -> Optional.of(socialUser.getUserId());
+            case OAuth2AuthenticationToken oAuth2AuthenticationToken -> getUserId(oAuth2AuthenticationToken);
             default -> Optional.empty();
         };
+    }
+
+    private Optional<UUID> getUserId(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
+        var socialUser = (SocialUser) oAuth2AuthenticationToken.getPrincipal();
+        return Optional.of(socialUser.getUserId());
     }
 
     public static <T> ResponseEntity<?> toResponse(Either<Problem, T> either, Function<T, ResponseEntity<T>> success) {

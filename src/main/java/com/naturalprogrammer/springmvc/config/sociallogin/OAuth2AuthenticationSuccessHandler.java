@@ -61,6 +61,6 @@ public class OAuth2AuthenticationSuccessHandler
                 AUTHORIZATION_REQUEST_COOKIE_NAME,
                 REDIRECT_URI_COOKIE_PARAM_NAME);
 
-        return targetUrl + refreshingResourceToken;
+        return targetUrl.formatted(userId, refreshingResourceToken);
     }
 }

@@ -11,11 +11,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.UUID;
 
 import static com.naturalprogrammer.springmvc.common.CommonUtils.toResponse;
-import static com.naturalprogrammer.springmvc.common.Path.AUTH_TOKENS;
+import static com.naturalprogrammer.springmvc.common.Path.LOGIN;
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
 
 
@@ -27,52 +26,58 @@ public class AuthTokenController {
     private final AuthTokenCreator authTokenCreator;
     private final AccessTokenCreator accessTokenCreator;
 
-    @Operation(summary = "Create Auth Tokens")
+    @Operation(summary = "Login using email and password")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Created Refresh and Access Tokens",
+            @ApiResponse(responseCode = "200", description = "Refresh and access tokens",
                     content = @Content(
-                            mediaType = AuthTokenResource.CONTENT_TYPE,
-                            schema = @Schema(implementation = AuthTokenResource.class))
+                            mediaType = ResourceTokenResource.CONTENT_TYPE,
+                            schema = @Schema(implementation = ResourceTokenResource.class))
             ),
             @ApiResponse(responseCode = "422", description = "Invalid input",
                     content = @Content(
                             mediaType = Problem.CONTENT_TYPE,
                             schema = @Schema(implementation = Problem.class))
+            ),
+            @ApiResponse(responseCode = "401", description = "Invalid credentials",
+                    content = @Content(
+                            mediaType = Problem.CONTENT_TYPE,
+                            schema = @Schema(implementation = Problem.class))
             )
     })
-    @PostMapping(value = AUTH_TOKENS, consumes = AuthTokenRequest.CONTENT_TYPE, produces = AuthTokenResource.CONTENT_TYPE)
-    public ResponseEntity<?> createAuthToken(
-            @RequestBody AuthTokenRequest request
-    ) {
+    @PostMapping(value = LOGIN, consumes = LoginRequest.CONTENT_TYPE, produces = ResourceTokenResource.CONTENT_TYPE)
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         return toResponse(authTokenCreator.create(request), ResponseEntity::ok);
     }
 
-    @Operation(summary = "Create Auth Tokens Using Resource Token")
+    @Operation(summary = "Create tokens using resource token")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Created Refresh and Access Tokens",
+            @ApiResponse(responseCode = "200", description = "Refresh and access token",
                     content = @Content(
-                            mediaType = AuthTokenResource.CONTENT_TYPE,
-                            schema = @Schema(implementation = AuthTokenResource.class))
+                            mediaType = ResourceTokenResource.CONTENT_TYPE,
+                            schema = @Schema(implementation = ResourceTokenResource.class))
             ),
-            @ApiResponse(responseCode = "422", description = "Invalid input",
+            @ApiResponse(responseCode = "404", description = "User not found or insufficient rights",
                     content = @Content(
                             mediaType = Problem.CONTENT_TYPE,
                             schema = @Schema(implementation = Problem.class))
             )
     })
-    @PostMapping(value = USERS + "/{id}/resource-token", produces = AuthTokenResource.CONTENT_TYPE)
-    public ResponseEntity<?> createAuthToken(Principal principal) {
-        return ResponseEntity.ok(authTokenCreator.create(principal.getName(), null));
+    @GetMapping(value = USERS + "/{id}/resource-token", produces = ResourceTokenResource.CONTENT_TYPE)
+    public ResponseEntity<?> createResourceToken(
+            @PathVariable UUID id,
+            @RequestParam(required = false) Long refreshTokenValidForMillis
+    ) {
+        return toResponse(authTokenCreator.create(id, refreshTokenValidForMillis), ResponseEntity::ok);
     }
 
     @Operation(summary = "Get Access Token")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Access Token",
+            @ApiResponse(responseCode = "200", description = "Access token",
                     content = @Content(
                             mediaType = AccessTokenResource.CONTENT_TYPE,
                             schema = @Schema(implementation = AccessTokenResource.class))
             ),
-            @ApiResponse(responseCode = "422", description = "Invalid input",
+            @ApiResponse(responseCode = "404", description = "User not found or insufficient rights",
                     content = @Content(
                             mediaType = Problem.CONTENT_TYPE,
                             schema = @Schema(implementation = Problem.class))

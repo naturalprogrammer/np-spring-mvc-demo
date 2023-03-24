@@ -11,7 +11,7 @@ public record AccessTokenResource(
 
     @Override
     public String toString() {
-        return "AuthTokenResource{" +
+        return "ResourceTokenResource{" +
                 ", accessTokenValidUntil='" + accessTokenValidUntil + '\'' +
                 '}';
     }

@@ -3,7 +3,7 @@ package com.naturalprogrammer.springmvc.user.services;
 import com.naturalprogrammer.springmvc.common.CommonUtils;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.domain.User;
-import com.naturalprogrammer.springmvc.user.features.login.AuthTokenResource;
+import com.naturalprogrammer.springmvc.user.features.login.ResourceTokenResource;
 import com.naturalprogrammer.springmvc.user.features.signup.SignupRequest;
 import com.naturalprogrammer.springmvc.user.features.verification.VerificationMailSender;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
@@ -36,7 +36,7 @@ public class UserService {
         return toResponse(user, null);
     }
 
-    public UserResource toResponse(User user, AuthTokenResource token) {
+    public UserResource toResponse(User user, ResourceTokenResource token) {
         return new UserResource(
                 user.getId(),
                 user.getEmail(),
@@ -47,19 +47,34 @@ public class UserService {
         );
     }
 
-    public boolean isSelfOrAdmin(User user) {
+    public boolean isSelfOrAdmin(UUID userId) {
 
         return commonUtils.getUserId()
-                .map(currentUserId -> isSelf(currentUserId, user) || isAdmin(user))
+                .map(currentUserId -> isSelf(currentUserId, userId) || isAdmin(userId))
                 .orElse(false);
     }
 
-    private boolean isSelf(UUID currentUserId, User user) {
-        if (notEqual(currentUserId, user.getId())) {
-            log.info("Current user {} is not same as user {}", currentUserId, user);
+    public boolean isSelfOrAdmin(User user) {
+
+        return commonUtils.getUserId()
+                .map(currentUserId -> isSelf(currentUserId, user.getId()) || isAdmin(user))
+                .orElse(false);
+    }
+
+    private boolean isSelf(UUID currentUserId, UUID userId) {
+        if (notEqual(currentUserId, userId)) {
+            log.info("Current user {} is not same as user {}", currentUserId, userId);
             return false;
         }
         return true;
+    }
+
+    private boolean isAdmin(UUID userId) {
+
+        return userRepository
+                .findById(userId)
+                .map(this::isAdmin)
+                .orElse(false);
     }
 
     private boolean isAdmin(User currentUser) {

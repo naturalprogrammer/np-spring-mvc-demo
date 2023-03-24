@@ -10,7 +10,7 @@ public enum AuthScope {
 
     NORMAL("normal"),
     ACCESS_TOKEN("access_token"),
-    AUTH_TOKEN("auth_token");
+    RESOURCE_TOKEN("resource_token");
 
     private final String value;
 

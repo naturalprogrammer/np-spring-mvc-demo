@@ -1,11 +1,60 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Spring MVC Demo Application</title>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>Demo</title>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width"/>
+    <base href="/"/>
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
 </head>
 <body>
-<h1>This is Spring MVC Demo Application</h1>
-<a href="http://localhost:8080/oauth2/authorization/google">Google Login</a>
+<div class="container unauthenticated">
+    Login With Google: <a
+        href="/oauth2/authorization/google?myRedirectUri=http%3A%2F%2Flocalhost%3A8080%3FuserId%3D%25s%26resourceToken%3D%25s%26uid%3Da-random-unique-id">click
+    here</a>
+</div>
+<div class="container authenticated" style="display:none">
+    Logged in as: <span id="user"></span>
+</div>
+<script type="text/javascript">
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('userId');
+    const refreshingResourceToken = urlParams.get('resourceToken');
+    const uid = urlParams.get("uid"); // uid should be "a-random-unique-id"
+    console.log(urlParams.toString());
+
+    function getUser(data) {
+        $.ajax({
+            url: `/users/${userId}`,
+            type: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + data.accessToken,
+            },
+            success: function (user) {
+                $("#user").html(user.displayName);
+                $(".unauthenticated").hide()
+                $(".authenticated").show()
+            }
+        });
+    }
+
+    if (userId) {
+        $.ajax({
+            url: `/users/${userId}/resource-token`,
+            type: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + refreshingResourceToken,
+            },
+            success: function (data) {
+                getUser(data);
+            }
+        });
+    }
+</script>
 </body>
 </html>

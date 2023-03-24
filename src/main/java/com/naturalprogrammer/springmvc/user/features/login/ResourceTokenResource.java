@@ -6,7 +6,7 @@ import java.time.Instant;
 
 import static com.naturalprogrammer.springmvc.common.CommonUtils.CONTENT_TYPE_PREFIX;
 
-public record AuthTokenResource(
+public record ResourceTokenResource(
 
         @Schema(
                 title = "Optional bearer access-token for accessing the API next time",
@@ -35,7 +35,7 @@ public record AuthTokenResource(
 
     @Override
     public String toString() {
-        return "AuthTokenResource{" +
+        return "ResourceTokenResource{" +
                 "resourceTokenValidUntil='" + resourceTokenValidUntil + '\'' +
                 ", accessTokenValidUntil='" + accessTokenValidUntil + '\'' +
                 '}';

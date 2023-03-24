@@ -16,7 +16,7 @@ import org.springframework.security.web.context.NullSecurityContextRepository;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import static com.naturalprogrammer.springmvc.common.Path.AUTH_TOKENS;
+import static com.naturalprogrammer.springmvc.common.Path.LOGIN;
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
 import static com.naturalprogrammer.springmvc.user.features.login.AuthScope.*;
 import static jakarta.servlet.DispatcherType.ERROR;
@@ -58,11 +58,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(config ->
                         config
                                 .requestMatchers(POST, USERS).permitAll()
-                                .requestMatchers(POST, AUTH_TOKENS).permitAll()
+                                .requestMatchers(POST, LOGIN).permitAll()
                                 .requestMatchers(PATCH, USERS + "/*/display-name").hasAuthority(NORMAL.scope())
                                 .requestMatchers(POST, USERS + "/*/verification").hasAuthority(NORMAL.scope())
                                 .requestMatchers(GET, USERS + "/*/access-token").hasAuthority(ACCESS_TOKEN.scope())
-                                .requestMatchers(GET, USERS + "/*/auth-token").hasAuthority(AUTH_TOKEN.scope())
+                                .requestMatchers(GET, USERS + "/*/resource-token").hasAuthority(RESOURCE_TOKEN.scope())
+                                .requestMatchers(GET, USERS + "/*").hasAuthority(NORMAL.scope())
                                 .requestMatchers(GET,
                                         "/",
                                         "/index.html",
@@ -71,10 +72,11 @@ public class SecurityConfig {
                                         "/v3/api-docs/**",
                                         "/favicon.ico",
                                         "/swagger-ui.html",
-                                        "/swagger-ui/**"
+                                        "/swagger-ui/**",
+                                        "/webjars/**"
                                 ).permitAll()
                                 .dispatcherTypeMatchers(ERROR).permitAll()
-                                .anyRequest().permitAll()
+                                .anyRequest().denyAll()
                 ).build();
     }
 
