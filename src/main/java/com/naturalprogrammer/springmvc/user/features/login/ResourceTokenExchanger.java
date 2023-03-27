@@ -1,6 +1,7 @@
 package com.naturalprogrammer.springmvc.user.features.login;
 
 import com.naturalprogrammer.springmvc.common.CommonUtils;
+import com.naturalprogrammer.springmvc.common.error.BeanValidator;
 import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
@@ -22,10 +23,21 @@ import static com.naturalprogrammer.springmvc.config.sociallogin.HttpCookieOAuth
 @RequiredArgsConstructor
 class ResourceTokenExchanger {
 
+    private final BeanValidator validator;
     private final ProblemComposer problemComposer;
     private final AuthTokenCreator authTokenCreator;
 
     public Either<Problem, ResourceTokenResource> exchange(
+            UUID userId,
+            ResourceTokenExchangeRequest exchangeRequest,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        return validator.validateAndGet(exchangeRequest, ProblemType.INVALID_RESOURCE_TOKEN_EXCHANGE_REQUEST, () ->
+                exchangeValidated(userId, exchangeRequest, request, response));
+    }
+
+    private Either<Problem, ResourceTokenResource> exchangeValidated(
             UUID userId,
             ResourceTokenExchangeRequest exchangeRequest,
             HttpServletRequest request,

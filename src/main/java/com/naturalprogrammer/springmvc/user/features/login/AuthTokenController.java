@@ -94,7 +94,7 @@ public class AuthTokenController {
     )
     public ResponseEntity<?> exchangeResourceToken(
             @PathVariable UUID id,
-            ResourceTokenExchangeRequest exchangeRequest,
+            @RequestBody ResourceTokenExchangeRequest exchangeRequest,
             HttpServletRequest request,
             HttpServletResponse response
     ) {
