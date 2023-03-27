@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,7 @@ public class AuthTokenController {
 
     private final AuthTokenCreator authTokenCreator;
     private final AccessTokenCreator accessTokenCreator;
+    private final ResourceTokenExchanger resourceTokenExchanger;
 
     @Operation(summary = "Login using email and password")
     @ApiResponses(value = {
@@ -68,6 +71,33 @@ public class AuthTokenController {
             @RequestParam(required = false) Long refreshTokenValidForMillis
     ) {
         return toResponse(authTokenCreator.create(id, refreshTokenValidForMillis), ResponseEntity::ok);
+    }
+
+    @Operation(summary = "Create tokens using client specific resource token")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Refresh and access token",
+                    content = @Content(
+                            mediaType = ResourceTokenResource.CONTENT_TYPE,
+                            schema = @Schema(implementation = ResourceTokenResource.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "User not found or invalid client or insufficient rights",
+                    content = @Content(
+                            mediaType = Problem.CONTENT_TYPE,
+                            schema = @Schema(implementation = Problem.class))
+            )
+    })
+    @PostMapping(
+            value = USERS + "/{id}/exchange-resource-token",
+            consumes = ResourceTokenExchangeRequest.CONTENT_TYPE,
+            produces = ResourceTokenResource.CONTENT_TYPE
+    )
+    public ResponseEntity<?> exchangeResourceToken(
+            @PathVariable UUID id,
+            ResourceTokenExchangeRequest exchangeRequest,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        return toResponse(resourceTokenExchanger.exchange(id, exchangeRequest, request, response), ResponseEntity::ok);
     }
 
     @Operation(summary = "Get Access Token")

@@ -33,6 +33,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
 	private static final int COOKIE_EXPIRY_SECONDS = 60;
 	public static final String AUTHORIZATION_REQUEST_COOKIE_NAME = "my_oauth2_authorization_request";
 	public static final String REDIRECT_URI_COOKIE_PARAM_NAME = "myRedirectUri";
+	public static final String CLIENT_ID_COOKIE_PARAM_NAME = "myClientId";
 
 	/**
 	 * Load authorization request from cookie
@@ -57,20 +58,23 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
 			return;
 		}
 
-		Cookie cookie = new Cookie(AUTHORIZATION_REQUEST_COOKIE_NAME, CommonUtils.serialize(authorizationRequest));
+		addCookie(response, AUTHORIZATION_REQUEST_COOKIE_NAME, CommonUtils.serialize(authorizationRequest));
+		addParamCookie(request, response, REDIRECT_URI_COOKIE_PARAM_NAME);
+		addParamCookie(request, response, CLIENT_ID_COOKIE_PARAM_NAME);
+	}
+
+	private void addParamCookie(HttpServletRequest request, HttpServletResponse response, String paramName) {
+		String paramValue = request.getParameter(paramName);
+		if (StringUtils.isNotBlank(paramValue))
+			addCookie(response, paramName, paramValue);
+	}
+
+	private void addCookie(HttpServletResponse response, String name, String value) {
+		Cookie cookie = new Cookie(name, value);
 		cookie.setPath("/");
 		cookie.setHttpOnly(true);
 		cookie.setMaxAge(COOKIE_EXPIRY_SECONDS);
 		response.addCookie(cookie);
-
-		String redirectUri = request.getParameter(REDIRECT_URI_COOKIE_PARAM_NAME);
-		if (StringUtils.isNotBlank(redirectUri)) {
-			cookie = new Cookie(REDIRECT_URI_COOKIE_PARAM_NAME, redirectUri);
-			cookie.setPath("/");
-			cookie.setHttpOnly(true);
-			cookie.setMaxAge(COOKIE_EXPIRY_SECONDS);
-			response.addCookie(cookie);
-		}
 	}
 
 	@Override

@@ -50,7 +50,7 @@ public class OAuth2AuthenticationSuccessHandler
                                         HttpServletResponse response) {
 
         var userId = commonUtils.getUserId().orElseThrow();
-        String refreshingResourceToken = authTokenCreator.createRefreshingResourceToken(userId.toString());
+        String refreshingResourceToken = authTokenCreator.createClientSpecificResourceToken(userId.toString());
 
         String targetUrl = CommonUtils
                 .fetchCookie(request, REDIRECT_URI_COOKIE_PARAM_NAME)

@@ -129,7 +129,7 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
                 userResource.id(),
                 jwsService.parseToken(userResource.authToken().resourceToken()),
                 resourceTokenValidForMillis,
-                AuthScope.ACCESS_TOKEN.getValue()
+                AuthScope.RESOURCE_TOKEN.getValue()
         );
 
         assertThat(sentMails()).hasSize(1);

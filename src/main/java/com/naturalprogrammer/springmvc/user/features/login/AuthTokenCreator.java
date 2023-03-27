@@ -36,7 +36,7 @@ public class AuthTokenCreator {
     private final Clock clock;
 
     public static final long DEFAULT_RESOURCE_TOKEN_VALID_MILLIS = DAYS.toMillis(30);
-    public static final long REFRESHING_RESOURCE_TOKEN_VALID_MILLIS = MINUTES.toMillis(1);
+    public static final long CLIENT_SPECIFIC_RESOURCE_TOKEN_VALID_MILLIS = MINUTES.toMillis(1);
     public static final long ACCESS_TOKEN_VALID_MILLIS = MINUTES.toMillis(30);
 
     public Either<Problem, ResourceTokenResource> create(LoginRequest loginRequest) {
@@ -44,11 +44,11 @@ public class AuthTokenCreator {
         log.info("Creating AuthToken for {}", loginRequest);
         return userRepository
                 .findByEmail(loginRequest.email())
-                .map(user -> createAuthToken(user, loginRequest))
+                .map(user -> createResourceToken(user, loginRequest))
                 .orElseGet(() -> Either.left(problemComposer.compose(ProblemType.WRONG_CREDENTIALS, loginRequest.toString())));
     }
 
-    private Either<Problem, ResourceTokenResource> createAuthToken(User user, LoginRequest loginRequest) {
+    private Either<Problem, ResourceTokenResource> createResourceToken(User user, LoginRequest loginRequest) {
         return passwordEncoder.matches(loginRequest.password(), user.getPassword())
                 ? Either.right(create(user.getIdStr(), loginRequest.resourceTokenValidForMillis()))
                 : Either.left(problemComposer.compose(ProblemType.WRONG_CREDENTIALS, loginRequest.toString()));
@@ -99,13 +99,13 @@ public class AuthTokenCreator {
     }
 
     public String createResourceToken(String userIdStr, Instant validUntil) {
-        return createTokenWithScope(userIdStr, validUntil, AuthScope.ACCESS_TOKEN);
+        return createTokenWithScope(userIdStr, validUntil, AuthScope.RESOURCE_TOKEN);
     }
 
-    public String createRefreshingResourceToken(String userIdStr) {
+    public String createClientSpecificResourceToken(String userIdStr) {
         var validUntil = clock.instant()
-                .plusMillis(REFRESHING_RESOURCE_TOKEN_VALID_MILLIS + 1)
+                .plusMillis(CLIENT_SPECIFIC_RESOURCE_TOKEN_VALID_MILLIS + 1)
                 .truncatedTo(SECONDS);
-        return createTokenWithScope(userIdStr, validUntil, AuthScope.RESOURCE_TOKEN);
+        return createTokenWithScope(userIdStr, validUntil, AuthScope.EXCHANGE_RESOURCE_TOKEN);
     }
 }

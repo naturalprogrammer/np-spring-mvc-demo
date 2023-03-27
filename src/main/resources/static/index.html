@@ -14,7 +14,7 @@
 <body>
 <div class="container unauthenticated">
     Login With Google: <a
-        href="/oauth2/authorization/google?myRedirectUri=http%3A%2F%2Flocalhost%3A8080%3FuserId%3D%25s%26resourceToken%3D%25s%26uid%3Da-random-unique-id">click
+        href="/oauth2/authorization/google?myClientId=a-unique-id">click
     here</a>
 </div>
 <div class="container authenticated" style="display:none">
@@ -25,7 +25,6 @@
     const urlParams = new URLSearchParams(window.location.search);
     const userId = urlParams.get('userId');
     const refreshingResourceToken = urlParams.get('resourceToken');
-    const uid = urlParams.get("uid"); // uid should be "a-random-unique-id"
     console.log(urlParams.toString());
 
     function getUser(data) {
@@ -45,10 +44,13 @@
 
     if (userId) {
         $.ajax({
-            url: `/users/${userId}/resource-token`,
-            type: 'GET',
+            url: `/users/${userId}/exchange-resource-token`,
+            type: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + refreshingResourceToken,
+            },
+            data: {
+                'myClientId': 'a-unique-id'
             },
             success: function (data) {
                 getUser(data);
