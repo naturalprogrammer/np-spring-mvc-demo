@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.naturalprogrammer.springmvc.common.CommonUtils.deleteCookies;
 import static com.naturalprogrammer.springmvc.config.sociallogin.HttpCookieOAuth2AuthorizationRequestRepository.CLIENT_ID_COOKIE_PARAM_NAME;
-import static com.naturalprogrammer.springmvc.config.sociallogin.HttpCookieOAuth2AuthorizationRequestRepository.deleteCookies;
 
 @Slf4j
 @Service

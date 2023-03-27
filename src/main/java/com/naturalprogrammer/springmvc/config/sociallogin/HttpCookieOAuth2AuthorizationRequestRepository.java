@@ -20,10 +20,11 @@ import com.naturalprogrammer.springmvc.common.CommonUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
+
+import static com.naturalprogrammer.springmvc.common.CommonUtils.deleteCookies;
 
 /**
  * Cookie based repository for storing Authorization requests
@@ -83,20 +84,6 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
 		OAuth2AuthorizationRequest originalRequest = loadAuthorizationRequest(request);
 		deleteCookies(request, response, AUTHORIZATION_REQUEST_COOKIE_NAME);
 		return originalRequest;
-	}
-
-	public static void deleteCookies(HttpServletRequest request, HttpServletResponse response, String... cookiesToDelete) {
-
-		Cookie[] cookies = request.getCookies();
-
-		if (cookies != null)
-			for (Cookie cookie : cookies)
-				if (ArrayUtils.contains(cookiesToDelete, cookie.getName())) {
-					cookie.setValue("");
-					cookie.setPath("/");
-					cookie.setMaxAge(0);
-					response.addCookie(cookie);
-				}
 	}
 
 	private OAuth2AuthorizationRequest deserialize(Cookie cookie) {

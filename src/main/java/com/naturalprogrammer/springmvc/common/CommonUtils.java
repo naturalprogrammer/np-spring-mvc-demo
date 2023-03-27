@@ -5,6 +5,8 @@ import com.naturalprogrammer.springmvc.config.sociallogin.SocialUser;
 import io.jbock.util.Either;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -53,6 +55,20 @@ public class CommonUtils {
                     return Optional.of(cookie);
 
         return Optional.empty();
+    }
+
+    public static void deleteCookies(HttpServletRequest request, HttpServletResponse response, String... cookiesToDelete) {
+
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null)
+            for (Cookie cookie : cookies)
+                if (ArrayUtils.contains(cookiesToDelete, cookie.getName())) {
+                    cookie.setValue("");
+                    cookie.setPath("/");
+                    cookie.setMaxAge(0);
+                    response.addCookie(cookie);
+                }
     }
 
     /**
