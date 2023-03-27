@@ -25,9 +25,10 @@ import static com.naturalprogrammer.springmvc.common.Path.USERS;
 @Tag(name = "User", description = "User API")
 public class AuthTokenController {
 
+    private final LoginService loginService;
     private final AuthTokenCreator authTokenCreator;
-    private final AccessTokenCreator accessTokenCreator;
     private final ResourceTokenExchanger resourceTokenExchanger;
+    private final AccessTokenCreator accessTokenCreator;
 
     @Operation(summary = "Login using email and password")
     @ApiResponses(value = {
@@ -49,7 +50,7 @@ public class AuthTokenController {
     })
     @PostMapping(value = LOGIN, consumes = LoginRequest.CONTENT_TYPE, produces = ResourceTokenResource.CONTENT_TYPE)
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        return toResponse(authTokenCreator.create(request), ResponseEntity::ok);
+        return toResponse(loginService.login(request), ResponseEntity::ok);
     }
 
     @Operation(summary = "Create tokens using resource token")

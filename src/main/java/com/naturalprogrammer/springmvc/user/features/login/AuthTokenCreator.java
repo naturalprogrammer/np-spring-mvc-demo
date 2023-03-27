@@ -4,13 +4,10 @@ import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.common.jwt.JwsService;
-import com.naturalprogrammer.springmvc.user.domain.User;
-import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import com.naturalprogrammer.springmvc.user.services.UserService;
 import io.jbock.util.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -29,8 +26,6 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 public class AuthTokenCreator {
 
     private final UserService userService;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final ProblemComposer problemComposer;
     private final JwsService jwsService;
     private final Clock clock;
@@ -38,21 +33,6 @@ public class AuthTokenCreator {
     public static final long DEFAULT_RESOURCE_TOKEN_VALID_MILLIS = DAYS.toMillis(30);
     public static final long CLIENT_SPECIFIC_RESOURCE_TOKEN_VALID_MILLIS = MINUTES.toMillis(1);
     public static final long ACCESS_TOKEN_VALID_MILLIS = MINUTES.toMillis(30);
-
-    public Either<Problem, ResourceTokenResource> create(LoginRequest loginRequest) {
-
-        log.info("Creating AuthToken for {}", loginRequest);
-        return userRepository
-                .findByEmail(loginRequest.email())
-                .map(user -> createResourceToken(user, loginRequest))
-                .orElseGet(() -> Either.left(problemComposer.compose(ProblemType.WRONG_CREDENTIALS, loginRequest.toString())));
-    }
-
-    private Either<Problem, ResourceTokenResource> createResourceToken(User user, LoginRequest loginRequest) {
-        return passwordEncoder.matches(loginRequest.password(), user.getPassword())
-                ? Either.right(create(user.getIdStr(), loginRequest.resourceTokenValidForMillis()))
-                : Either.left(problemComposer.compose(ProblemType.WRONG_CREDENTIALS, loginRequest.toString()));
-    }
 
     public Either<Problem, ResourceTokenResource> create(
             UUID userId,
