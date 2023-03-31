@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,6 +32,7 @@ public class AuthTokenController {
     private final AccessTokenCreator accessTokenCreator;
 
     @Operation(summary = "Login using email and password")
+    @SecurityRequirements
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Refresh and access tokens",
                     content = @Content(

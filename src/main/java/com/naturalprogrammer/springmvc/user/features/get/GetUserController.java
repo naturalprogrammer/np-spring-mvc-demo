@@ -25,7 +25,7 @@ import static com.naturalprogrammer.springmvc.common.Path.USERS;
 @RequiredArgsConstructor
 @RequestMapping(USERS)
 @Tag(name = "User", description = "User API")
-class UserGetController {
+class GetUserController {
 
     private final UserGetter userGetter;
 

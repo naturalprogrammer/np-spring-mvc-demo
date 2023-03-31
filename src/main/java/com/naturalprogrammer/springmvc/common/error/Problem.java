@@ -32,7 +32,6 @@ public record Problem(
                 title = "Relative URI for more info of the instance",
                 example = "null"
         )
-
         String instance,
 
         List<Error> errors
