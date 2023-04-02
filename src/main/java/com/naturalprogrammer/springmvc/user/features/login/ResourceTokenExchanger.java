@@ -27,7 +27,7 @@ class ResourceTokenExchanger {
     private final ProblemComposer problemComposer;
     private final AuthTokenCreator authTokenCreator;
 
-    public Either<Problem, ResourceTokenResource> exchange(
+    public Either<Problem, AuthTokensResource> exchange(
             UUID userId,
             ResourceTokenExchangeRequest exchangeRequest,
             HttpServletRequest request,
@@ -37,7 +37,7 @@ class ResourceTokenExchanger {
                 exchangeValidated(userId, exchangeRequest, request, response));
     }
 
-    private Either<Problem, ResourceTokenResource> exchangeValidated(
+    private Either<Problem, AuthTokensResource> exchangeValidated(
             UUID userId,
             ResourceTokenExchangeRequest exchangeRequest,
             HttpServletRequest request,
@@ -71,7 +71,7 @@ class ResourceTokenExchanger {
         return problemComposer.compose(ProblemType.NOT_FOUND, "User %s not found".formatted(userId));
     }
 
-    private Either<Problem, ResourceTokenResource> exchangeResourceToken(
+    private Either<Problem, AuthTokensResource> exchangeResourceToken(
             UUID userId,
             Long resourceTokenValidForMillis,
             HttpServletRequest request,

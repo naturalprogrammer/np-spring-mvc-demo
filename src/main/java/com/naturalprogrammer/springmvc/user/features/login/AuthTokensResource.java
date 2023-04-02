@@ -6,7 +6,7 @@ import java.time.Instant;
 
 import static com.naturalprogrammer.springmvc.common.CommonUtils.CONTENT_TYPE_PREFIX;
 
-public record ResourceTokenResource(
+public record AuthTokensResource(
 
         @Schema(
                 title = "Resource-token for generating tokens next time (using GET /user-id/resource-token)",
@@ -35,7 +35,7 @@ public record ResourceTokenResource(
 
     @Override
     public String toString() {
-        return "ResourceTokenResource{" +
+        return "AuthTokensResource{" +
                 "resourceTokenValidUntil='" + resourceTokenValidUntil + '\'' +
                 ", accessTokenValidUntil='" + accessTokenValidUntil + '\'' +
                 '}';

@@ -36,7 +36,7 @@ public class AuthTokenCreator {
     public static final long CLIENT_SPECIFIC_RESOURCE_TOKEN_VALID_MILLIS = MINUTES.toMillis(1);
     public static final long ACCESS_TOKEN_VALID_MILLIS = MINUTES.toMillis(30);
 
-    public Either<Problem, ResourceTokenResource> create(
+    public Either<Problem, AuthTokensResource> create(
             UUID userId,
             Long resourceTokenValidForMillis
     ) {
@@ -45,7 +45,7 @@ public class AuthTokenCreator {
                 : Either.left(problemComposer.compose(ProblemType.NOT_FOUND, "User %s not found".formatted(userId)));
     }
 
-    public ResourceTokenResource create(
+    public AuthTokensResource create(
             String userIdStr,
             Long resourceTokenValidForMillis
     ) {
@@ -58,7 +58,7 @@ public class AuthTokenCreator {
         var resourceToken = createResourceToken(userIdStr, resourceTokenValidUntil);
         var accessToken = createAccessToken(userIdStr, accessTokenValidUntil);
 
-        var authToken = new ResourceTokenResource(
+        var authToken = new AuthTokensResource(
                 resourceToken,
                 accessToken,
                 resourceTokenValidUntil,

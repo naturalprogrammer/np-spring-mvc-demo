@@ -21,7 +21,7 @@ public class LoginService {
     private final ProblemComposer problemComposer;
     private final AuthTokenCreator authTokenCreator;
 
-    public Either<Problem, ResourceTokenResource> login(LoginRequest loginRequest) {
+    public Either<Problem, AuthTokensResource> login(LoginRequest loginRequest) {
 
         log.info("Creating AuthToken for {}", loginRequest);
         return userRepository
@@ -30,7 +30,7 @@ public class LoginService {
                 .orElseGet(() -> Either.left(problemComposer.compose(ProblemType.WRONG_CREDENTIALS, loginRequest.toString())));
     }
 
-    private Either<Problem, ResourceTokenResource> createResourceToken(User user, LoginRequest loginRequest) {
+    private Either<Problem, AuthTokensResource> createResourceToken(User user, LoginRequest loginRequest) {
         return passwordEncoder.matches(loginRequest.password(), user.getPassword())
                 ? Either.right(authTokenCreator.create(user.getIdStr(), loginRequest.resourceTokenValidForMillis()))
                 : Either.left(problemComposer.compose(ProblemType.WRONG_CREDENTIALS, loginRequest.toString()));

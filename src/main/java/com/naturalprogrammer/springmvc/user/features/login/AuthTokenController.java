@@ -36,8 +36,8 @@ public class AuthTokenController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Refresh and access tokens",
                     content = @Content(
-                            mediaType = ResourceTokenResource.CONTENT_TYPE,
-                            schema = @Schema(implementation = ResourceTokenResource.class))
+                            mediaType = AuthTokensResource.CONTENT_TYPE,
+                            schema = @Schema(implementation = AuthTokensResource.class))
             ),
             @ApiResponse(responseCode = "422", description = "Invalid input",
                     content = @Content(
@@ -50,7 +50,7 @@ public class AuthTokenController {
                             schema = @Schema(implementation = Problem.class))
             )
     })
-    @PostMapping(value = LOGIN, consumes = LoginRequest.CONTENT_TYPE, produces = ResourceTokenResource.CONTENT_TYPE)
+    @PostMapping(value = LOGIN, consumes = LoginRequest.CONTENT_TYPE, produces = AuthTokensResource.CONTENT_TYPE)
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         return toResponse(loginService.login(request), ResponseEntity::ok);
     }
@@ -59,8 +59,8 @@ public class AuthTokenController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Refresh and access token",
                     content = @Content(
-                            mediaType = ResourceTokenResource.CONTENT_TYPE,
-                            schema = @Schema(implementation = ResourceTokenResource.class))
+                            mediaType = AuthTokensResource.CONTENT_TYPE,
+                            schema = @Schema(implementation = AuthTokensResource.class))
             ),
             @ApiResponse(responseCode = "404", description = "User not found or insufficient rights",
                     content = @Content(
@@ -68,7 +68,7 @@ public class AuthTokenController {
                             schema = @Schema(implementation = Problem.class))
             )
     })
-    @GetMapping(value = USERS + "/{id}/resource-token", produces = ResourceTokenResource.CONTENT_TYPE)
+    @GetMapping(value = USERS + "/{id}/auth-tokens", produces = AuthTokensResource.CONTENT_TYPE)
     public ResponseEntity<?> createResourceToken(
             @PathVariable UUID id,
             @RequestParam(required = false) Long refreshTokenValidForMillis
@@ -80,8 +80,8 @@ public class AuthTokenController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Refresh and access token",
                     content = @Content(
-                            mediaType = ResourceTokenResource.CONTENT_TYPE,
-                            schema = @Schema(implementation = ResourceTokenResource.class))
+                            mediaType = AuthTokensResource.CONTENT_TYPE,
+                            schema = @Schema(implementation = AuthTokensResource.class))
             ),
             @ApiResponse(responseCode = "404", description = "User not found or invalid client or insufficient rights",
                     content = @Content(
@@ -92,7 +92,7 @@ public class AuthTokenController {
     @PostMapping(
             value = USERS + "/{id}/exchange-resource-token",
             consumes = ResourceTokenExchangeRequest.CONTENT_TYPE,
-            produces = ResourceTokenResource.CONTENT_TYPE
+            produces = AuthTokensResource.CONTENT_TYPE
     )
     public ResponseEntity<?> exchangeResourceToken(
             @PathVariable UUID id,

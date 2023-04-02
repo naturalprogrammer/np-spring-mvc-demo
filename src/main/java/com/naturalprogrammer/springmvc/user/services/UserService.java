@@ -3,7 +3,7 @@ package com.naturalprogrammer.springmvc.user.services;
 import com.naturalprogrammer.springmvc.common.CommonUtils;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.domain.User;
-import com.naturalprogrammer.springmvc.user.features.login.ResourceTokenResource;
+import com.naturalprogrammer.springmvc.user.features.login.AuthTokensResource;
 import com.naturalprogrammer.springmvc.user.features.signup.SignupRequest;
 import com.naturalprogrammer.springmvc.user.features.verification.VerificationMailSender;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
@@ -36,7 +36,7 @@ public class UserService {
         return toResponse(user, null);
     }
 
-    public UserResource toResponse(User user, ResourceTokenResource token) {
+    public UserResource toResponse(User user, AuthTokensResource token) {
         return new UserResource(
                 user.getId(),
                 user.getEmail(),
