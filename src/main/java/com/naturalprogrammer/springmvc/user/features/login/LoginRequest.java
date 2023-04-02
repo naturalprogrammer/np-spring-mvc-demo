@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 
 import static com.naturalprogrammer.springmvc.common.CommonUtils.CONTENT_TYPE_PREFIX;
+import static com.naturalprogrammer.springmvc.user.features.login.AuthTokenCreator.RESOURCE_TOKEN_VALID_MILLIS_DESCR;
 
 record LoginRequest(
 
@@ -16,7 +17,7 @@ record LoginRequest(
         @Schema(example = "Secret99!")
         String password,
 
-        @Schema(example = "33425233")
+        @Schema(example = "1209600000", description = RESOURCE_TOKEN_VALID_MILLIS_DESCR)
         Long resourceTokenValidForMillis
 
 ) {

@@ -31,6 +31,8 @@ public class AuthTokenCreator {
     private final Clock clock;
 
     public static final long DEFAULT_RESOURCE_TOKEN_VALID_MILLIS = DAYS.toMillis(30);
+    public static final String RESOURCE_TOKEN_VALID_MILLIS_DESCR = "For the milliseconds the returned resource-token is valid. E.g. 1209600000 for 15 days. If not provided, default is 30 days";
+
     public static final long CLIENT_SPECIFIC_RESOURCE_TOKEN_VALID_MILLIS = MINUTES.toMillis(1);
     public static final long ACCESS_TOKEN_VALID_MILLIS = MINUTES.toMillis(30);
 

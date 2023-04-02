@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.naturalprogrammer.springmvc.common.CommonUtils.CONTENT_TYPE_PREFIX;
+import static com.naturalprogrammer.springmvc.user.features.login.AuthTokenCreator.RESOURCE_TOKEN_VALID_MILLIS_DESCR;
 import static org.apache.commons.lang3.StringUtils.trim;
 
 @Slf4j
@@ -30,6 +31,7 @@ record SignupRequest(
         @Schema(example = "Sanjay Patel")
         String displayName,
 
+        @Schema(example = "1209600000", description = RESOURCE_TOKEN_VALID_MILLIS_DESCR)
         Long resourceTokenValidForMillis
 ) {
 

@@ -3,6 +3,7 @@ package com.naturalprogrammer.springmvc.user.features.signup;
 import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.user.services.UserResource;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,11 +35,22 @@ class SignupController {
     @SecurityRequirements
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Successfully signed up",
+                    headers = {
+                            @Header(
+                                    name = LOCATION,
+                                    description = "GET the user at this location",
+                                    schema = @Schema(example = "/users/8fd1502e-759d-419f-aaac-e61478fc6406"))
+                    },
                     content = @Content(
                             mediaType = UserResource.CONTENT_TYPE,
                             schema = @Schema(implementation = UserResource.class))
             ),
             @ApiResponse(responseCode = "422", description = "Invalid input",
+                    content = @Content(
+                            mediaType = Problem.CONTENT_TYPE,
+                            schema = @Schema(implementation = Problem.class))
+            ),
+            @ApiResponse(responseCode = "409", description = "Email already used",
                     content = @Content(
                             mediaType = Problem.CONTENT_TYPE,
                             schema = @Schema(implementation = Problem.class))
