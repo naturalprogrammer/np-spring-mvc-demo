@@ -61,8 +61,8 @@ public class SecurityConfig {
                                 .requestMatchers(POST, LOGIN).permitAll()
                                 .requestMatchers(PATCH, USERS + "/*/display-name").hasAuthority(NORMAL.scope())
                                 .requestMatchers(POST, USERS + "/*/verification").hasAuthority(NORMAL.scope())
-                                .requestMatchers(GET, USERS + "/*/access-token").hasAuthority(RESOURCE_TOKEN.scope())
-                                .requestMatchers(GET, USERS + "/*/resource-token").hasAuthority(RESOURCE_TOKEN.scope())
+                                .requestMatchers(GET, USERS + "/*/access-token").hasAuthority(AUTH_TOKENS.scope())
+                                .requestMatchers(GET, USERS + "/*/resource-token").hasAuthority(AUTH_TOKENS.scope())
                                 .requestMatchers(POST, USERS + "/*/exchange-resource-token").hasAuthority(EXCHANGE_RESOURCE_TOKEN.scope())
                                 .requestMatchers(GET, USERS + "/*").hasAuthority(NORMAL.scope())
                                 .requestMatchers(GET,

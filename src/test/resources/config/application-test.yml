@@ -13,6 +13,7 @@ spring:
             client-secret: dummy
 
 my:
+  homepage: http://www.example.com
   jws:
     id: e0498dad-4f5f-40cf-86e3-2726ec78463d
     public-key: classpath:/config/rsa-2048-public-key.txt

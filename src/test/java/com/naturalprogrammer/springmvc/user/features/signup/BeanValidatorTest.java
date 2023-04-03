@@ -19,7 +19,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.util.Set;
 
-import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_SIGNUP;
+import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_DATA;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.mockValidator;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.randomProblem;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,11 +59,11 @@ class BeanValidatorTest {
         given(problemComposer.compose(any(), any(), anySet())).willReturn(problem);
 
         // when
-        var possibleProblem = subject.validate(request, INVALID_SIGNUP);
+        var possibleProblem = subject.validate(request, INVALID_DATA);
 
         // then
         verify(problemComposer).compose(
-                eq(INVALID_SIGNUP),
+                eq(INVALID_DATA),
                 eq("SignupRequest{email='null', displayName='null', resourceTokenValidForMillis=null}"),
                 violationsCaptor.capture()
         );
@@ -87,7 +87,7 @@ class BeanValidatorTest {
         var request = new SignupRequest("email@example.com", "Password9!", "Some name", null);
 
         // when
-        var possibleProblem = subject.validate(request, INVALID_SIGNUP);
+        var possibleProblem = subject.validate(request, INVALID_DATA);
 
         // then
         assertThat(possibleProblem).isEmpty();

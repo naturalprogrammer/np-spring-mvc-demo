@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 public enum AuthScope {
 
     NORMAL("normal"),
-    RESOURCE_TOKEN("resource_token"),
+    AUTH_TOKENS("auth_tokens"),
     EXCHANGE_RESOURCE_TOKEN("exchange_resource_token");
 
     private final String value;

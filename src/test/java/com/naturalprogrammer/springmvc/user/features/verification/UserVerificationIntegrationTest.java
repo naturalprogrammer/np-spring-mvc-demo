@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
-import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_VERIFICATION_TOKEN;
+import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_DATA;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.TOKEN_VERIFICATION_FAILED;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.futureTime;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.pastTime;
@@ -139,8 +139,8 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().contentType(Problem.CONTENT_TYPE))
                 .andExpect(jsonPath("id").isString())
-                .andExpect(jsonPath("type").value(INVALID_VERIFICATION_TOKEN.getType()))
-                .andExpect(jsonPath("title").value("Invalid verification token"))
+                .andExpect(jsonPath("type").value(INVALID_DATA.getType()))
+                .andExpect(jsonPath("title").value("Invalid data given. See \"errors\" for details"))
                 .andExpect(jsonPath("status").value("422"))
                 .andExpect(jsonPath("errors", hasSize(1)))
                 .andExpect(jsonPath("errors[0].code").value("NotBlank"))

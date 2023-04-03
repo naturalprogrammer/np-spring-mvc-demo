@@ -81,7 +81,7 @@ public class AuthTokenCreator {
     }
 
     public String createResourceToken(String userIdStr, Instant validUntil) {
-        return createTokenWithScope(userIdStr, validUntil, AuthScope.RESOURCE_TOKEN);
+        return createTokenWithScope(userIdStr, validUntil, AuthScope.AUTH_TOKENS);
     }
 
     public String createClientSpecificResourceToken(String userIdStr) {

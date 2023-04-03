@@ -33,7 +33,8 @@ class ResourceTokenExchanger {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        return validator.validateAndGet(exchangeRequest, ProblemType.INVALID_RESOURCE_TOKEN_EXCHANGE_REQUEST, () ->
+        log.info("Exchanging resource token for user {}: {}", userId, exchangeRequest);
+        return validator.validateAndGet(exchangeRequest, () ->
                 exchangeValidated(userId, exchangeRequest, request, response));
     }
 

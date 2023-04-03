@@ -25,10 +25,9 @@ class SignupService {
     private final AuthTokenCreator authTokenCreator;
 
     public Either<Problem, UserResource> signup(SignupRequest request, Locale locale) {
-
+        log.info("Signing up {} with locale {}", request, locale);
         var trimmedRequest = request.trimmed();
-        return validator.validateAndGet(trimmedRequest, ProblemType.INVALID_SIGNUP, () ->
-                signupValidated(trimmedRequest, locale));
+        return validator.validateAndGet(trimmedRequest, () -> signupValidated(trimmedRequest, locale));
     }
 
     private Either<Problem, UserResource> signupValidated(SignupRequest request, Locale locale) {

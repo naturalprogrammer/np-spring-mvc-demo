@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import static com.naturalprogrammer.springmvc.common.CommonUtils.CONTENT_TYPE_PREFIX;
 import static com.naturalprogrammer.springmvc.user.features.login.AuthTokenCreator.RESOURCE_TOKEN_VALID_MILLIS_DESCR;
+import static com.naturalprogrammer.springmvc.user.validators.PasswordValidator.PASSWORD_DESCRIPTION;
 import static org.apache.commons.lang3.StringUtils.trim;
 
 @Slf4j
@@ -23,7 +24,7 @@ record SignupRequest(
         String email,
 
         @ValidPassword
-        @Schema(example = "Secret99!", description = "Password must have least 1 upper, lower, special characters and digit, min 8 chars, max 50 chars")
+        @Schema(example = "Secret99!", description = PASSWORD_DESCRIPTION)
         String password,
 
         @NotBlank

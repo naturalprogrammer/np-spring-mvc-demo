@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_DATA;
+
 @Component
 @RequiredArgsConstructor
 public class BeanValidator {
@@ -24,14 +26,11 @@ public class BeanValidator {
                 : Optional.of(problemComposer.compose(problemType, request.toString(), violations));
     }
 
-    public <T, R> Either<Problem, R> validateAndGet(
-            T request,
-            ProblemType problemType,
-            Supplier<Either<Problem, R>> supplier) {
+    public <T, R> Either<Problem, R> validateAndGet(T request, Supplier<Either<Problem, R>> supplier) {
         Set<ConstraintViolation<T>> violations = validator.validate(request);
         return violations.isEmpty()
                 ? supplier.get()
-                : Either.left(problemComposer.compose(problemType, request.toString(), violations));
+                : Either.left(problemComposer.compose(INVALID_DATA, request.toString(), violations));
     }
 
 }

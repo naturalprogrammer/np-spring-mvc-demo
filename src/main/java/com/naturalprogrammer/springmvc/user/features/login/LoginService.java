@@ -1,5 +1,6 @@
 package com.naturalprogrammer.springmvc.user.features.login;
 
+import com.naturalprogrammer.springmvc.common.error.BeanValidator;
 import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
@@ -16,14 +17,21 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class LoginService {
 
+    private final BeanValidator validator;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ProblemComposer problemComposer;
     private final AuthTokenCreator authTokenCreator;
 
-    public Either<Problem, AuthTokensResource> login(LoginRequest loginRequest) {
+    public Either<Problem, AuthTokensResource> login(LoginRequest request) {
 
-        log.info("Creating AuthToken for {}", loginRequest);
+        log.info("Creating AuthToken for {}", request);
+        var trimmedRequest = request.trimmed();
+        return validator.validateAndGet(trimmedRequest, () -> loginValidated(trimmedRequest));
+    }
+
+    private Either<Problem, AuthTokensResource> loginValidated(LoginRequest loginRequest) {
+
         return userRepository
                 .findByEmail(loginRequest.email())
                 .map(user -> createResourceToken(user, loginRequest))

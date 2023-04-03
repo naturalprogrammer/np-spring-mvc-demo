@@ -27,9 +27,9 @@ class DisplayNameEditor {
 
     public Either<Problem, UserResource> edit(UUID userId, UserDisplayNameEditRequest request) {
 
+        log.info("Editing display name for user {}: {}", userId, request);
         var trimmedRequest = request.trimmed();
-        return validator.validateAndGet(trimmedRequest, ProblemType.INVALID_DISPLAY_NAME, () ->
-                editValidated(userId, trimmedRequest));
+        return validator.validateAndGet(trimmedRequest, () -> editValidated(userId, trimmedRequest));
     }
 
     private Either<Problem, UserResource> editValidated(UUID userId, UserDisplayNameEditRequest request) {

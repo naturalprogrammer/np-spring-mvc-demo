@@ -23,7 +23,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
-import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_SIGNUP;
+import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_DATA;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.USED_EMAIL;
 import static com.naturalprogrammer.springmvc.common.mail.LoggingMailSender.sentMails;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
@@ -81,10 +81,10 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("locale").value("en-IN"))
                 .andExpect(jsonPath("roles", hasSize(1)))
                 .andExpect(jsonPath("roles", contains(Role.UNVERIFIED.name())))
-                .andExpect(jsonPath("authToken.resourceToken").isString())
-                .andExpect(jsonPath("authToken.accessToken").isString())
-                .andExpect(jsonPath("authToken.resourceTokenValidUntil").isString())
-                .andExpect(jsonPath("authToken.accessTokenValidUntil").isString())
+                .andExpect(jsonPath("authTokens.resourceToken").isString())
+                .andExpect(jsonPath("authTokens.accessToken").isString())
+                .andExpect(jsonPath("authTokens.resourceTokenValidUntil").isString())
+                .andExpect(jsonPath("authTokens.accessTokenValidUntil").isString())
                 .andReturn()
                 .getResponse();
 
@@ -102,7 +102,7 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
         assertThat(user.getTokensValidFrom()).isAfterOrEqualTo(beginTime);
         assertThat(user.getTokensValidFrom()).isBeforeOrEqualTo(endTime);
 
-        var authToken = userResource.authToken();
+        var authToken = userResource.authTokens();
         assertThat(authToken.resourceToken()).isNotNull();
         assertThat(authToken.accessToken()).isNotNull();
         assertThat(authToken.resourceTokenValidUntil()).isAfterOrEqualTo(
@@ -119,17 +119,17 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
                 beginTime,
                 endTime,
                 userResource.id(),
-                jwsService.parseToken(userResource.authToken().accessToken()),
+                jwsService.parseToken(userResource.authTokens().accessToken()),
                 ACCESS_TOKEN_VALID_MILLIS,
-                null
+                "normal"
         );
         assertClaims(
                 beginTime,
                 endTime,
                 userResource.id(),
-                jwsService.parseToken(userResource.authToken().resourceToken()),
+                jwsService.parseToken(userResource.authTokens().resourceToken()),
                 resourceTokenValidForMillis,
-                AuthScope.RESOURCE_TOKEN.getValue()
+                AuthScope.AUTH_TOKENS.getValue()
         );
 
         assertThat(sentMails()).hasSize(1);
@@ -149,11 +149,11 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
     ) throws ParseException {
         assertThat(parseResult.isRight()).isTrue();
         JWTClaimsSet claims = parseResult.getRight().orElseThrow();
-        assertThat(claims.getIssuer()).isEqualTo("https://www.my-super-site.example.com");
+        assertThat(claims.getIssuer()).isEqualTo("http://www.example.com");
         assertThat(claims.getIssueTime()).isAfterOrEqualTo(beginTime);
         assertThat(claims.getIssueTime()).isBeforeOrEqualTo(endTime);
         assertThat(claims.getSubject()).isEqualTo(userId.toString());
-        assertThat(claims.getAudience()).isEqualTo(List.of("https://www.my-super-site.example.com"));
+        assertThat(claims.getAudience()).isEqualTo(List.of("http://www.example.com"));
         assertThat(claims.getExpirationTime()).isAfterOrEqualTo(beginTime.plusMillis(tokenValidForMillis));
         assertThat(claims.getExpirationTime()).isBeforeOrEqualTo(endTime.plusMillis(tokenValidForMillis));
         assertThat(claims.getStringClaim("scope")).isEqualTo(scope);
@@ -176,8 +176,8 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().contentType(Problem.CONTENT_TYPE))
                 .andExpect(jsonPath("id").isString())
-                .andExpect(jsonPath("type").value(INVALID_SIGNUP.getType()))
-                .andExpect(jsonPath("title").value("Invalid data when signing up"))
+                .andExpect(jsonPath("type").value(INVALID_DATA.getType()))
+                .andExpect(jsonPath("title").value("Invalid data given. See \"errors\" for details"))
                 .andExpect(jsonPath("status").value("422"))
                 .andExpect(jsonPath("errors", hasSize(2)))
                 .andExpect(jsonPath("errors[?(" +

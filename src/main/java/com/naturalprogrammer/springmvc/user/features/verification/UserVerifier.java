@@ -28,9 +28,8 @@ public class UserVerifier {
     private final NotFoundHandler notFoundHandler;
 
     public Either<Problem, UserResource> verify(UUID userId, UserVerificationRequest request) {
-
-        return validator.validateAndGet(request, ProblemType.INVALID_VERIFICATION_TOKEN, () ->
-                verifyValidated(userId, request));
+        log.info("Verifying user {}: {}", userId, request);
+        return validator.validateAndGet(request, () -> verifyValidated(userId, request));
     }
 
     private Either<Problem, UserResource> verifyValidated(UUID userId, UserVerificationRequest request) {
