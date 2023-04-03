@@ -36,7 +36,7 @@ class GetUserController {
                             mediaType = UserResource.CONTENT_TYPE,
                             schema = @Schema(implementation = UserResource.class))
             ),
-            @ApiResponse(responseCode = "404", description = "User not found or insufficient rights",
+            @ApiResponse(responseCode = "404", description = "User not found or insufficient rights (must be self or admin)",
                     content = @Content(
                             mediaType = Problem.CONTENT_TYPE,
                             schema = @Schema(implementation = Problem.class))

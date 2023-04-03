@@ -37,6 +37,11 @@ class DisplayNameEditController {
                     content = @Content(
                             mediaType = Problem.CONTENT_TYPE,
                             schema = @Schema(implementation = Problem.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "User not found or insufficient rights (must be self or admin)",
+                    content = @Content(
+                            mediaType = Problem.CONTENT_TYPE,
+                            schema = @Schema(implementation = Problem.class))
             )
     })
     @PatchMapping(value = "/{id}/display-name",

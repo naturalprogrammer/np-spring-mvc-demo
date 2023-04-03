@@ -44,7 +44,7 @@ public class AuthTokenController {
                             mediaType = Problem.CONTENT_TYPE,
                             schema = @Schema(implementation = Problem.class))
             ),
-            @ApiResponse(responseCode = "401", description = "Invalid credentials",
+            @ApiResponse(responseCode = "401", description = "User not found or password doesn't match",
                     content = @Content(
                             mediaType = Problem.CONTENT_TYPE,
                             schema = @Schema(implementation = Problem.class))
@@ -82,6 +82,11 @@ public class AuthTokenController {
                     content = @Content(
                             mediaType = AuthTokensResource.CONTENT_TYPE,
                             schema = @Schema(implementation = AuthTokensResource.class))
+            ),
+            @ApiResponse(responseCode = "422", description = "Invalid input",
+                    content = @Content(
+                            mediaType = Problem.CONTENT_TYPE,
+                            schema = @Schema(implementation = Problem.class))
             ),
             @ApiResponse(responseCode = "404", description = "User not found or invalid client or insufficient rights",
                     content = @Content(

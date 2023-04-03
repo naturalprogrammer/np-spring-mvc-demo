@@ -61,7 +61,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
         );
 
         // when, then
-        mvc.perform(post(USERS + "/{id}/verification", userIdStr)
+        mvc.perform(post(USERS + "/{id}/verifications", userIdStr)
                         .contentType(UserVerificationRequest.CONTENT_TYPE)
                         .header(AUTHORIZATION, "Bearer " + accessToken)
                         .content("""
@@ -86,7 +86,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
     void emailVerification_should_respondWith401_when_notLoggedIn() throws Exception {
 
         // when, then
-        mvc.perform(post(USERS + "/{id}/verification", UUID.randomUUID())
+        mvc.perform(post(USERS + "/{id}/verifications", UUID.randomUUID())
                         .contentType(UserVerificationRequest.CONTENT_TYPE)
                         .content("""
                                    {
@@ -105,7 +105,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
         var accessToken = authTokenCreator.createAccessToken(userId.toString(), pastTime().toInstant());
 
         // when, then
-        mvc.perform(post(USERS + "/{id}/verification", userId)
+        mvc.perform(post(USERS + "/{id}/verifications", userId)
                         .contentType(UserVerificationRequest.CONTENT_TYPE)
                         .header(AUTHORIZATION, "Bearer " + accessToken)
                         .content("""
@@ -128,7 +128,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
         var accessToken = authTokenCreator.createAccessToken(userIdStr, future.toInstant());
 
         // when, then
-        mvc.perform(post(USERS + "/{id}/verification", userIdStr)
+        mvc.perform(post(USERS + "/{id}/verifications", userIdStr)
                         .contentType(UserVerificationRequest.CONTENT_TYPE)
                         .header(AUTHORIZATION, "Bearer " + accessToken)
                         .content("""
@@ -173,7 +173,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
 
 
         // when, then
-        mvc.perform(post(USERS + "/{id}/verification", userIdStr)
+        mvc.perform(post(USERS + "/{id}/verifications", userIdStr)
                         .contentType(UserVerificationRequest.CONTENT_TYPE)
                         .header(AUTHORIZATION, "Bearer " + accessToken)
                         .content("""

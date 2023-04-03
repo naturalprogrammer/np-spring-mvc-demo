@@ -37,9 +37,19 @@ class UserVerificationController {
                     content = @Content(
                             mediaType = Problem.CONTENT_TYPE,
                             schema = @Schema(implementation = Problem.class))
-            )
+            ),
+            @ApiResponse(responseCode = "404", description = "User not found or insufficient rights (must be self or admin)",
+                    content = @Content(
+                            mediaType = Problem.CONTENT_TYPE,
+                            schema = @Schema(implementation = Problem.class))
+            ),
+            @ApiResponse(responseCode = "403", description = "Token verification failed",
+                    content = @Content(
+                            mediaType = Problem.CONTENT_TYPE,
+                            schema = @Schema(implementation = Problem.class))
+            ),
     })
-    @PostMapping(value = "/{id}/verification",
+    @PostMapping(value = "/{id}/verifications",
             consumes = UserVerificationRequest.CONTENT_TYPE,
             produces = UserResource.CONTENT_TYPE)
     public ResponseEntity<?> verifyEmail(
