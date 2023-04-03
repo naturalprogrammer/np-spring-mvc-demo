@@ -49,7 +49,7 @@ class UserVerificationController {
                             schema = @Schema(implementation = Problem.class))
             ),
     })
-    @PostMapping(value = "/{id}/verifications",
+    @PutMapping(value = "/{id}/verifications",
             consumes = UserVerificationRequest.CONTENT_TYPE,
             produces = UserResource.CONTENT_TYPE)
     public ResponseEntity<?> verifyEmail(
