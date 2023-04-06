@@ -21,18 +21,27 @@ import java.util.UUID;
 class DisplayNameEditor {
 
     private final BeanValidator validator;
-    private final ProblemComposer problemComposer;
-    private final UserRepository userRepository;
-    private final UserService userService;
+    private final ValidatedDisplayNameEditor validatedDisplayNameEditor;
 
     public Either<Problem, UserResource> edit(UUID userId, UserDisplayNameEditRequest request) {
 
         log.info("Editing display name for user {}: {}", userId, request);
         var trimmedRequest = request.trimmed();
-        return validator.validateAndGet(trimmedRequest, () -> editValidated(userId, trimmedRequest));
+        return validator.validateAndGet(trimmedRequest, () -> validatedDisplayNameEditor.edit(userId, trimmedRequest));
     }
 
-    private Either<Problem, UserResource> editValidated(UUID userId, UserDisplayNameEditRequest request) {
+}
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+class ValidatedDisplayNameEditor {
+
+    private final ProblemComposer problemComposer;
+    private final UserRepository userRepository;
+    private final UserService userService;
+
+    public Either<Problem, UserResource> edit(UUID userId, UserDisplayNameEditRequest request) {
 
         return userRepository.findById(userId)
                 .map(user -> edit(user, request))
