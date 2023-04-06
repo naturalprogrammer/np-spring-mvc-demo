@@ -17,7 +17,7 @@ public class ContextGetter {
     public ContextResource get() {
         var context = new ContextResource(List.of(new ContextResource.KeyResource(
                 properties.jws().id(),
-                properties.jws().publicKey()
+                properties.jws().publicKeyString()
         )));
         log.info("Got {}", context);
         return context;

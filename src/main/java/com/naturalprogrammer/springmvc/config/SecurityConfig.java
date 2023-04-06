@@ -67,6 +67,7 @@ public class SecurityConfig {
                                 .requestMatchers(GET, USERS + "/*").hasAuthority(NORMAL.scope())
                                 .requestMatchers(GET,
                                         "/",
+                                        "/context",
                                         "/index.html",
                                         "/oauth2/authorization/google",
                                         "/login/oauth2/code/google",
