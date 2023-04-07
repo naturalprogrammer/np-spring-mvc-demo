@@ -70,11 +70,11 @@ public class AuthTokenController {
             )
     })
     @GetMapping(value = USERS + "/{id}/auth-tokens", produces = AuthTokensResource.CONTENT_TYPE)
-    public ResponseEntity<?> createResourceToken(
+    public ResponseEntity<?> createAuthTokens(
             @PathVariable UUID id,
-            @RequestParam(required = false) Long refreshTokenValidForMillis
+            @RequestParam(required = false) Long resourceTokenValidForMillis
     ) {
-        return toResponse(authTokenCreator.create(id, refreshTokenValidForMillis), ResponseEntity::ok);
+        return toResponse(authTokenCreator.create(id, resourceTokenValidForMillis), ResponseEntity::ok);
     }
 
     @Operation(summary = "Create tokens using client specific resource token")
