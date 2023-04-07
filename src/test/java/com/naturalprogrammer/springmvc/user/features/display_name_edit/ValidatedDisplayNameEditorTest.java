@@ -48,6 +48,7 @@ class ValidatedDisplayNameEditorTest {
     void should_preventEditingDisplayName_when_userNotFound() {
 
         // given
+        given(userService.isSelfOrAdmin(user.getId())).willReturn(true);
         given(userRepository.findById(user.getId())).willReturn(Optional.empty());
 
         // when
@@ -61,7 +62,6 @@ class ValidatedDisplayNameEditorTest {
     void should_preventVerification_when_userIsNotSelfOrAdmin() {
 
         // given
-        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
         given(userService.isSelfOrAdmin(user.getId())).willReturn(false);
 
         // when

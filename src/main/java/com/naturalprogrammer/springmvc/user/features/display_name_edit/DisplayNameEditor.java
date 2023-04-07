@@ -43,6 +43,9 @@ class ValidatedDisplayNameEditor {
 
     public Either<Problem, UserResource> edit(UUID userId, UserDisplayNameEditRequest request) {
 
+        if (!userService.isSelfOrAdmin(userId))
+            return notFound(userId, request);
+
         return userRepository.findById(userId)
                 .map(user -> edit(user, request))
                 .orElseGet(() -> notFound(userId, request));
@@ -50,16 +53,12 @@ class ValidatedDisplayNameEditor {
 
     private Either<Problem, UserResource> edit(User user, UserDisplayNameEditRequest request) {
 
-        if (userService.isSelfOrAdmin(user.getId())) {
+        user.setDisplayName(request.displayName());
+        userRepository.save(user);
+        var resource = userService.toResponse(user);
 
-            user.setDisplayName(request.displayName());
-            userRepository.save(user);
-            var resource = userService.toResponse(user);
-
-            log.info("Edited name for {}. Returning {}", user, resource);
-            return Either.right(resource);
-        }
-        return notFound(user.getId(), request);
+        log.info("Edited name for {}. Returning {}", user, resource);
+        return Either.right(resource);
     }
 
     private Either<Problem, UserResource> notFound(UUID userId, UserDisplayNameEditRequest request) {

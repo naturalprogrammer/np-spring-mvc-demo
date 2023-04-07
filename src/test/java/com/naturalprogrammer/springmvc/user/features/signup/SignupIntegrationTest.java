@@ -37,7 +37,7 @@ import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-class SignupIntegrationTest extends AbstractIntegrationTest {
+public class SignupIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
@@ -71,7 +71,7 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
                                         "password" : "%s",
                                         "displayName" : "%s",
                                         "resourceTokenValidForMillis" : %d
-                                   }     
+                                   }
                                 """.formatted(email, password, displayName, resourceTokenValidForMillis)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(UserResource.CONTENT_TYPE))
@@ -102,16 +102,16 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
         assertThat(user.getTokensValidFrom()).isAfterOrEqualTo(beginTime);
         assertThat(user.getTokensValidFrom()).isBeforeOrEqualTo(endTime);
 
-        var authToken = userResource.authTokens();
-        assertThat(authToken.resourceToken()).isNotNull();
-        assertThat(authToken.accessToken()).isNotNull();
-        assertThat(authToken.resourceTokenValidUntil()).isAfterOrEqualTo(
+        var authTokens = userResource.authTokens();
+        assertThat(authTokens.resourceToken()).isNotNull();
+        assertThat(authTokens.accessToken()).isNotNull();
+        assertThat(authTokens.resourceTokenValidUntil()).isAfterOrEqualTo(
                 beginTime.plusMillis(resourceTokenValidForMillis));
-        assertThat(authToken.resourceTokenValidUntil()).isBeforeOrEqualTo(
+        assertThat(authTokens.resourceTokenValidUntil()).isBeforeOrEqualTo(
                 endTime.plusMillis(resourceTokenValidForMillis));
-        assertThat(authToken.accessTokenValidUntil()).isAfterOrEqualTo(
+        assertThat(authTokens.accessTokenValidUntil()).isAfterOrEqualTo(
                 beginTime.plusMillis(ACCESS_TOKEN_VALID_MILLIS));
-        assertThat(authToken.accessTokenValidUntil()).isBeforeOrEqualTo(
+        assertThat(authTokens.accessTokenValidUntil()).isBeforeOrEqualTo(
                 endTime.plusMillis(ACCESS_TOKEN_VALID_MILLIS));
         assertThat(response.getHeader(LOCATION)).isEqualTo(USERS + "/" + userResource.id());
 
@@ -139,7 +139,7 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
         assertThat(mailData.subject()).isEqualTo("Please verify your email");
     }
 
-    private void assertClaims(
+    public static void assertClaims(
             Instant beginTime,
             Instant endTime,
             UUID userId,
@@ -171,7 +171,7 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
                                         "email" : "user23Alpha@example.com",
                                         "password" : "Password9!",
                                         "displayName" : "  "
-                                   }     
+                                   }
                                 """))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().contentType(Problem.CONTENT_TYPE))
@@ -208,7 +208,7 @@ class SignupIntegrationTest extends AbstractIntegrationTest {
                                         "email" : "%s",
                                         "password" : "Password9!",
                                         "displayName" : "Sanjay457 Patel983"
-                                   }     
+                                   }
                                 """.formatted(user.getEmail())))
                 .andExpect(status().isConflict())
                 .andExpect(content().contentType(Problem.CONTENT_TYPE))

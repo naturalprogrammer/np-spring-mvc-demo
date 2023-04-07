@@ -24,16 +24,13 @@ class UserGetter {
     private final UserService userService;
 
     public Either<Problem, UserResource> get(UUID userId) {
+
+        if (!userService.isSelfOrAdmin(userId))
+            return notFound(userId);
+
         return userRepository.findById(userId)
-                .map(this::get)
+                .map(this::getUserResponse)
                 .orElseGet(() -> notFound(userId));
-    }
-
-    private Either<Problem, UserResource> get(User user) {
-
-        return userService.isSelfOrAdmin(user.getId())
-                ? getUserResponse(user)
-                : notFound(user.getId());
     }
 
     private Either<Problem, UserResource> getUserResponse(User user) {
