@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,12 +48,12 @@ class SignupController {
             ),
             @ApiResponse(responseCode = "422", description = "Invalid input",
                     content = @Content(
-                            mediaType = Problem.CONTENT_TYPE,
+                            mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
                             schema = @Schema(implementation = Problem.class))
             ),
             @ApiResponse(responseCode = "409", description = "Email already used",
                     content = @Content(
-                            mediaType = Problem.CONTENT_TYPE,
+                            mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
                             schema = @Schema(implementation = Problem.class))
             )
     })

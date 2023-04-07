@@ -1,6 +1,5 @@
 package com.naturalprogrammer.springmvc.user.features.verification;
 
-import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.common.jwt.JweService;
 import com.naturalprogrammer.springmvc.config.MyProperties;
 import com.naturalprogrammer.springmvc.helpers.AbstractIntegrationTest;
@@ -10,6 +9,7 @@ import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import com.naturalprogrammer.springmvc.user.services.UserResource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 
 import java.time.Clock;
 import java.util.Date;
@@ -67,7 +67,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
                         .content("""
                                    {
                                         "emailVerificationToken" : "%s"
-                                  }     
+                                  }
                                 """.formatted(verificationToken)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(UserResource.CONTENT_TYPE))
@@ -91,7 +91,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
                         .content("""
                                    {
                                         "emailVerificationToken" : "foo"
-                                  }     
+                                  }
                                 """))
                 .andExpect(status().isUnauthorized())
                 .andExpect(header().string("WWW-Authenticate", "Bearer"));
@@ -111,7 +111,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
                         .content("""
                                    {
                                         "emailVerificationToken" : "foo"
-                                  }     
+                                  }
                                 """))
                 .andExpect(status().isUnauthorized())
                 .andExpect(header().string("WWW-Authenticate", startsWith("Bearer error=\"invalid_token\"")));
@@ -134,10 +134,10 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
                         .content("""
                                    {
                                         "emailVerificationToken" : ""
-                                  }     
+                                  }
                                 """))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().contentType(Problem.CONTENT_TYPE))
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("id").isString())
                 .andExpect(jsonPath("type").value(INVALID_DATA.getType()))
                 .andExpect(jsonPath("title").value("Invalid data given. See \"errors\" for details"))
@@ -179,10 +179,10 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
                         .content("""
                                    {
                                         "emailVerificationToken" : "%s"
-                                  }     
+                                  }
                                 """.formatted(verificationToken)))
                 .andExpect(status().isForbidden())
-                .andExpect(content().contentType(Problem.CONTENT_TYPE))
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("id").isString())
                 .andExpect(jsonPath("type").value(TOKEN_VERIFICATION_FAILED.getType()))
                 .andExpect(jsonPath("status").value("403"))

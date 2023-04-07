@@ -1,13 +1,13 @@
 package com.naturalprogrammer.springmvc.user.features.login;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.common.jwt.JwsService;
 import com.naturalprogrammer.springmvc.helpers.AbstractIntegrationTest;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 
 import java.time.Instant;
 import java.util.Set;
@@ -130,7 +130,7 @@ class LoginIntegrationTest extends AbstractIntegrationTest {
                                 }
                                 """))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(Problem.CONTENT_TYPE))
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("id").isString())
                 .andExpect(jsonPath("type").value(WRONG_CREDENTIALS.getType()))
                 .andExpect(jsonPath("title").value("Either the email or password is wrong"))
@@ -152,7 +152,7 @@ class LoginIntegrationTest extends AbstractIntegrationTest {
                                 }
                                 """))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().contentType(Problem.CONTENT_TYPE))
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("type").value(INVALID_DATA.getType()));
     }
 

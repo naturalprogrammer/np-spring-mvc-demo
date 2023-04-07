@@ -2,6 +2,7 @@ package com.naturalprogrammer.springmvc.common.error;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -36,12 +37,10 @@ public record Problem(
 
         List<Error> errors
 ) {
-    public static final String CONTENT_TYPE = "application/problem+json";
-
     public static ResponseEntity<Problem> toResponse(Problem problem) {
         return ResponseEntity
                 .status(problem.status())
-                .header(HttpHeaders.CONTENT_TYPE, Problem.CONTENT_TYPE)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PROBLEM_JSON_VALUE)
                 .body(problem);
     }
 }

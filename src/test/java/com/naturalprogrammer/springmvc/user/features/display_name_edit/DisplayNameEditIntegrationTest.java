@@ -1,6 +1,5 @@
 package com.naturalprogrammer.springmvc.user.features.display_name_edit;
 
-import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.helpers.AbstractIntegrationTest;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.features.login.AuthTokenCreator;
@@ -8,6 +7,7 @@ import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import com.naturalprogrammer.springmvc.user.services.UserResource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 
 import java.util.Date;
 import java.util.Set;
@@ -51,7 +51,7 @@ class DisplayNameEditIntegrationTest extends AbstractIntegrationTest {
                         .content("""
                                    {
                                         "displayName" : "%s"
-                                   }    
+                                   }
                                 """.formatted(newName)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(UserResource.CONTENT_TYPE))
@@ -84,10 +84,10 @@ class DisplayNameEditIntegrationTest extends AbstractIntegrationTest {
                         .content("""
                                    {
                                         "displayName" : ""
-                                   }    
+                                   }
                                 """))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().contentType(Problem.CONTENT_TYPE))
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("id").isString())
                 .andExpect(jsonPath("type").value(INVALID_DATA.getType()))
                 .andExpect(jsonPath("title").value("Invalid data given. See \"errors\" for details"))

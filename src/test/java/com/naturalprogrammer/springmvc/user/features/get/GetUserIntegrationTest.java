@@ -1,6 +1,5 @@
 package com.naturalprogrammer.springmvc.user.features.get;
 
-import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.helpers.AbstractIntegrationTest;
 import com.naturalprogrammer.springmvc.user.domain.Role;
@@ -9,6 +8,7 @@ import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import com.naturalprogrammer.springmvc.user.services.UserResource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 
 import java.util.Date;
 import java.util.Set;
@@ -97,7 +97,7 @@ class GetUserIntegrationTest extends AbstractIntegrationTest {
         mvc.perform(get(USERS + "/{id}", userIdStr)
                         .header(AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(Problem.CONTENT_TYPE))
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("id").exists())
                 .andExpect(jsonPath("type").value(ProblemType.NOT_FOUND.getType()))
                 .andExpect(jsonPath("title").value("Entity not found"))

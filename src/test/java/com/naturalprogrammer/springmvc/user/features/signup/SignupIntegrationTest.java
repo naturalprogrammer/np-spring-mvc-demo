@@ -1,7 +1,6 @@
 package com.naturalprogrammer.springmvc.user.features.signup;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.common.jwt.JwsService;
 import com.naturalprogrammer.springmvc.helpers.AbstractIntegrationTest;
@@ -14,6 +13,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import io.jbock.util.Either;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.text.ParseException;
@@ -174,7 +174,7 @@ public class SignupIntegrationTest extends AbstractIntegrationTest {
                                    }
                                 """))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().contentType(Problem.CONTENT_TYPE))
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("id").isString())
                 .andExpect(jsonPath("type").value(INVALID_DATA.getType()))
                 .andExpect(jsonPath("title").value("Invalid data given. See \"errors\" for details"))
@@ -211,7 +211,7 @@ public class SignupIntegrationTest extends AbstractIntegrationTest {
                                    }
                                 """.formatted(user.getEmail())))
                 .andExpect(status().isConflict())
-                .andExpect(content().contentType(Problem.CONTENT_TYPE))
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("id").isString())
                 .andExpect(jsonPath("type").value(USED_EMAIL.getType()))
                 .andExpect(jsonPath("title").value("Email already used"))

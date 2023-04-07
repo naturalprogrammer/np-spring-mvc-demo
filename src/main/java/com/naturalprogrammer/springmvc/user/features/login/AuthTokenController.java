@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,12 +42,12 @@ public class AuthTokenController {
             ),
             @ApiResponse(responseCode = "422", description = "Invalid input",
                     content = @Content(
-                            mediaType = Problem.CONTENT_TYPE,
+                            mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
                             schema = @Schema(implementation = Problem.class))
             ),
             @ApiResponse(responseCode = "401", description = "User not found or password doesn't match",
                     content = @Content(
-                            mediaType = Problem.CONTENT_TYPE,
+                            mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
                             schema = @Schema(implementation = Problem.class))
             )
     })
@@ -64,7 +65,7 @@ public class AuthTokenController {
             ),
             @ApiResponse(responseCode = "404", description = "User not found or insufficient rights",
                     content = @Content(
-                            mediaType = Problem.CONTENT_TYPE,
+                            mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
                             schema = @Schema(implementation = Problem.class))
             )
     })
@@ -85,12 +86,12 @@ public class AuthTokenController {
             ),
             @ApiResponse(responseCode = "422", description = "Invalid input",
                     content = @Content(
-                            mediaType = Problem.CONTENT_TYPE,
+                            mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
                             schema = @Schema(implementation = Problem.class))
             ),
             @ApiResponse(responseCode = "404", description = "User not found or invalid client or insufficient rights",
                     content = @Content(
-                            mediaType = Problem.CONTENT_TYPE,
+                            mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
                             schema = @Schema(implementation = Problem.class))
             )
     })
@@ -117,7 +118,7 @@ public class AuthTokenController {
             ),
             @ApiResponse(responseCode = "404", description = "User not found or insufficient rights",
                     content = @Content(
-                            mediaType = Problem.CONTENT_TYPE,
+                            mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
                             schema = @Schema(implementation = Problem.class))
             )
     })

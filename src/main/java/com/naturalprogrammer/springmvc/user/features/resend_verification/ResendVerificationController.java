@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,12 +31,12 @@ class ResendVerificationController {
             @ApiResponse(responseCode = "204", description = "Verification mail resent"),
             @ApiResponse(responseCode = "404", description = "User not found or insufficient rights (must be self or admin)",
                     content = @Content(
-                            mediaType = Problem.CONTENT_TYPE,
+                            mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
                             schema = @Schema(implementation = Problem.class))
             ),
             @ApiResponse(responseCode = "409", description = "User already verified",
                     content = @Content(
-                            mediaType = Problem.CONTENT_TYPE,
+                            mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
                             schema = @Schema(implementation = Problem.class))
             )
     })
