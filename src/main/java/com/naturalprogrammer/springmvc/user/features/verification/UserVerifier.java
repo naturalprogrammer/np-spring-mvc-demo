@@ -53,7 +53,7 @@ class ExistingUserVerifier {
 
     public Either<Problem, UserResource> verify(User user, UserVerificationRequest request) {
 
-        if (userService.isSelfOrAdmin(user)) {
+        if (userService.isSelfOrAdmin(user.getId())) {
             return jweService
                     .parseToken(request.emailVerificationToken())
                     .mapLeft(problemType -> problemComposer.compose(

@@ -4,5 +4,9 @@ public enum Role {
     CUSTOMER, // Business user
     ADMIN, // Admin
     UNVERIFIED, // Email unverified
-    VERIFIED // Verified
+    VERIFIED; // Verified
+
+    public String authority() {
+        return "ROLE_" + name();
+    }
 }

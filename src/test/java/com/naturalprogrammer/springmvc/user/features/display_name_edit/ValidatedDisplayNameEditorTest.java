@@ -62,7 +62,7 @@ class ValidatedDisplayNameEditorTest {
 
         // given
         given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-        given(userService.isSelfOrAdmin(user)).willReturn(false);
+        given(userService.isSelfOrAdmin(user.getId())).willReturn(false);
 
         // when
         var either = subject.edit(user.getId(), request);

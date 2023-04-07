@@ -50,7 +50,7 @@ class ValidatedDisplayNameEditor {
 
     private Either<Problem, UserResource> edit(User user, UserDisplayNameEditRequest request) {
 
-        if (userService.isSelfOrAdmin(user)) {
+        if (userService.isSelfOrAdmin(user.getId())) {
 
             user.setDisplayName(request.displayName());
             userRepository.save(user);

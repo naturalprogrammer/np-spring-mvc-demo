@@ -1,4 +1,4 @@
-package com.naturalprogrammer.springmvc.config;
+package com.naturalprogrammer.springmvc.config.security;
 
 
 import com.naturalprogrammer.springmvc.user.domain.User;

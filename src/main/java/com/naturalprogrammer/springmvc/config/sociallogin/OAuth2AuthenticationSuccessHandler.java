@@ -23,6 +23,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -42,7 +44,6 @@ import static com.naturalprogrammer.springmvc.config.sociallogin.HttpCookieOAuth
 public class OAuth2AuthenticationSuccessHandler
         extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final CommonUtils commonUtils;
     private final AuthTokenCreator authTokenCreator;
     private final MyProperties properties;
 
@@ -50,8 +51,8 @@ public class OAuth2AuthenticationSuccessHandler
     protected String determineTargetUrl(HttpServletRequest request,
                                         HttpServletResponse response) {
 
-        var userId = commonUtils.getUserId().orElseThrow();
-        String refreshingResourceToken = authTokenCreator.createClientSpecificResourceToken(userId.toString());
+        var userId = getCurrentUserId();
+        String refreshingResourceToken = authTokenCreator.createClientSpecificResourceToken(userId);
 
         String targetUrl = CommonUtils
                 .fetchCookie(request, REDIRECT_URI_COOKIE_PARAM_NAME)
@@ -63,5 +64,11 @@ public class OAuth2AuthenticationSuccessHandler
                 REDIRECT_URI_COOKIE_PARAM_NAME);
 
         return targetUrl.formatted(userId, refreshingResourceToken);
+    }
+
+    private String getCurrentUserId() {
+        var auth = (OAuth2AuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        var socialUser = (SocialUser) auth.getPrincipal();
+        return socialUser.getUserId().toString();
     }
 }

@@ -9,6 +9,8 @@ import com.naturalprogrammer.springmvc.user.features.verification.VerificationMa
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
 
@@ -49,41 +52,33 @@ public class UserService {
 
     public boolean isSelfOrAdmin(UUID userId) {
 
-        return commonUtils.getUserId()
-                .map(currentUserId -> isSelf(currentUserId, userId) || isAdmin(userId))
+        return commonUtils.getAuthentication()
+                .map(authentication -> isSelf(authentication.getName(), userId) || isAdmin(authentication))
                 .orElse(false);
     }
 
-    public boolean isSelfOrAdmin(User user) {
-
-        return commonUtils.getUserId()
-                .map(currentUserId -> isSelf(currentUserId, user.getId()) || isAdmin(user))
-                .orElse(false);
-    }
-
-    private boolean isSelf(UUID currentUserId, UUID userId) {
-        if (notEqual(currentUserId, userId)) {
+    private boolean isSelf(String currentUserId, UUID userId) {
+        if (notEqual(currentUserId, userId.toString())) {
             log.info("Current user {} is not same as user {}", currentUserId, userId);
             return false;
         }
         return true;
     }
 
-    private boolean isAdmin(UUID userId) {
+    private boolean isAdmin(Authentication authentication) {
 
-        return userRepository
-                .findById(userId)
-                .map(this::isAdmin)
-                .orElse(false);
-    }
+        var admin = authentication
+                .getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet())
+                .containsAll(Set.of(Role.VERIFIED.authority(), Role.ADMIN.authority()));
 
-    private boolean isAdmin(User currentUser) {
+        if (!admin)
+            log.warn("Current user {} is not an admin. Available authorities: {}",
+                    authentication.getName(), authentication.getAuthorities());
 
-        if (currentUser.isAdmin())
-            return true;
-
-        log.warn("Current user {} is not an admin", currentUser);
-        return false;
+        return admin;
     }
 
     public Optional<User> findByEmail(String email) {

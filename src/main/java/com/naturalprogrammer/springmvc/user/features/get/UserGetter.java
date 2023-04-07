@@ -31,7 +31,7 @@ class UserGetter {
 
     private Either<Problem, UserResource> get(User user) {
 
-        return userService.isSelfOrAdmin(user)
+        return userService.isSelfOrAdmin(user.getId())
                 ? getUserResponse(user)
                 : notFound(user.getId());
     }

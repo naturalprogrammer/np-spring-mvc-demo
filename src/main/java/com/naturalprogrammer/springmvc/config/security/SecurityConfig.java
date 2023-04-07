@@ -1,5 +1,6 @@
-package com.naturalprogrammer.springmvc.config;
+package com.naturalprogrammer.springmvc.config.security;
 
+import com.naturalprogrammer.springmvc.config.MyProperties;
 import com.naturalprogrammer.springmvc.config.sociallogin.*;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
