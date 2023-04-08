@@ -148,4 +148,20 @@ class AuthTokenCreationIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    void should_notCreateAuthTokens_when_authorizedWithExchangeResourceToken() throws Exception {
+
+        // given
+        var user = randomUser();
+        user.setRoles(Set.of(Role.VERIFIED));
+        user = userRepository.save(user);
+        var userIdStr = user.getIdStr();
+        var accessToken = authTokenCreator.createClientSpecificResourceToken(userIdStr);
+
+        // when, then
+        mvc.perform(get(USERS + "/{id}/auth-tokens", user.getId())
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isForbidden());
+    }
+
 }

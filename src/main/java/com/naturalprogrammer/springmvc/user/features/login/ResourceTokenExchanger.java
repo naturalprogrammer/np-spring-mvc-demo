@@ -5,6 +5,7 @@ import com.naturalprogrammer.springmvc.common.error.BeanValidator;
 import com.naturalprogrammer.springmvc.common.error.Problem;
 import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
+import com.naturalprogrammer.springmvc.user.services.UserService;
 import io.jbock.util.Either;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,6 +25,7 @@ import static com.naturalprogrammer.springmvc.config.sociallogin.HttpCookieOAuth
 class ResourceTokenExchanger {
 
     private final BeanValidator validator;
+    private final UserService userService;
     private final ProblemComposer problemComposer;
     private final AuthTokenCreator authTokenCreator;
 
@@ -44,6 +46,9 @@ class ResourceTokenExchanger {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
+        if (!userService.isSelfOrAdmin(userId))
+            return Either.left(notFound(userId));
+
         return CommonUtils
                 .fetchCookie(request, CLIENT_ID_COOKIE_PARAM_NAME)
                 .map(cookie -> Either.<Problem, String>right(cookie.getValue()))

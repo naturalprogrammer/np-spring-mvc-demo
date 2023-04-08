@@ -55,7 +55,10 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
 										 HttpServletResponse response) {
 
 		if (authorizationRequest == null) {
-			deleteCookies(request, response, AUTHORIZATION_REQUEST_COOKIE_NAME, REDIRECT_URI_COOKIE_PARAM_NAME);
+			deleteCookies(request, response,
+					AUTHORIZATION_REQUEST_COOKIE_NAME,
+					REDIRECT_URI_COOKIE_PARAM_NAME,
+					CLIENT_ID_COOKIE_PARAM_NAME);
 			return;
 		}
 
@@ -71,11 +74,17 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
 	}
 
 	private void addCookie(HttpServletResponse response, String name, String value) {
-		Cookie cookie = new Cookie(name, value);
+		var cookie = newCookie(name, value);
+		response.addCookie(cookie);
+	}
+
+	public static Cookie newCookie(String name, String value) {
+
+		var cookie = new Cookie(name, value);
 		cookie.setPath("/");
 		cookie.setHttpOnly(true);
 		cookie.setMaxAge(COOKIE_EXPIRY_SECONDS);
-		response.addCookie(cookie);
+		return cookie;
 	}
 
 	@Override
