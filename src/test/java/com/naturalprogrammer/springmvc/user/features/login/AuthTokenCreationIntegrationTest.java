@@ -24,6 +24,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.concurrent.TimeUnit.DAYS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.startsWith;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.WWW_AUTHENTICATE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -58,7 +59,7 @@ class AuthTokenCreationIntegrationTest extends AbstractIntegrationTest {
 
         // when, then
         var response = mvc.perform(get(USERS + "/{id}/auth-tokens", user.getId())
-                        .header("Authorization", "Bearer " + resourceToken)
+                        .header(AUTHORIZATION, "Bearer " + resourceToken)
                         .param("resourceTokenValidForMillis", Long.toString(resourceTokenValidForMillis)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(AuthTokensResource.CONTENT_TYPE))
@@ -111,7 +112,7 @@ class AuthTokenCreationIntegrationTest extends AbstractIntegrationTest {
 
         // when, then
         mvc.perform(get(USERS + "/{id}/auth-tokens", UUID.randomUUID())
-                        .header("Authorization", "Bearer " + resourceToken))
+                        .header(AUTHORIZATION, "Bearer " + resourceToken))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(AuthTokensResource.CONTENT_TYPE))
                 .andExpect(jsonPath("resourceToken").isString())
@@ -131,7 +132,7 @@ class AuthTokenCreationIntegrationTest extends AbstractIntegrationTest {
 
         // when, then
         mvc.perform(get(USERS + "/{id}/auth-tokens", UUID.randomUUID())
-                        .header("Authorization", "Bearer " + resourceToken))
+                        .header(AUTHORIZATION, "Bearer " + resourceToken))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("type").value(ProblemType.NOT_FOUND.getType()));
@@ -149,7 +150,7 @@ class AuthTokenCreationIntegrationTest extends AbstractIntegrationTest {
 
         // when, then
         mvc.perform(get(USERS + "/{id}/auth-tokens", user.getId())
-                        .header("Authorization", "Bearer " + accessToken))
+                        .header(AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isForbidden())
                 .andExpect(header().string(WWW_AUTHENTICATE, startsWith("Bearer error=\"insufficient_scope\"")));
     }
@@ -166,7 +167,7 @@ class AuthTokenCreationIntegrationTest extends AbstractIntegrationTest {
 
         // when, then
         mvc.perform(get(USERS + "/{id}/auth-tokens", user.getId())
-                        .header("Authorization", "Bearer " + accessToken))
+                        .header(AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isForbidden())
                 .andExpect(header().string(WWW_AUTHENTICATE, startsWith("Bearer error=\"insufficient_scope\"")));
     }
