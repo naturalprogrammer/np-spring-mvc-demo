@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserTestUtils {
 
-    private static final Faker FAKER = new Faker();
+    public static final Faker FAKER = new Faker();
 
     public static User randomUser() {
         var user = new User();

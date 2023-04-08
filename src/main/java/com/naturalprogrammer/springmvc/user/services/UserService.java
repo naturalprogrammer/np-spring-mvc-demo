@@ -1,6 +1,9 @@
 package com.naturalprogrammer.springmvc.user.services;
 
 import com.naturalprogrammer.springmvc.common.CommonUtils;
+import com.naturalprogrammer.springmvc.common.error.Problem;
+import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
+import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.domain.User;
 import com.naturalprogrammer.springmvc.user.features.login.AuthTokensResource;
@@ -34,6 +37,8 @@ public class UserService {
     private final Clock clock;
     private final UserRepository userRepository;
     private final VerificationMailSender verificationMailSender;
+    private final ProblemComposer problemComposer;
+
 
     public UserResource toResponse(User user) {
         return toResponse(user, null);
@@ -101,4 +106,7 @@ public class UserService {
         return savedUser;
     }
 
+    public Problem userNotFound(UUID userId) {
+        return problemComposer.composeMessage(ProblemType.NOT_FOUND, "user-not-found", userId);
+    }
 }

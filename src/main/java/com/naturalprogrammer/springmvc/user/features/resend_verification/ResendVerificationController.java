@@ -26,6 +26,8 @@ import static com.naturalprogrammer.springmvc.common.Path.USERS;
 @Tag(name = "User", description = "User API")
 class ResendVerificationController {
 
+    private final VerificationMailReSender verificationMailReSender;
+
     @Operation(summary = "Resend verification mail")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Verification mail resent"),
@@ -43,7 +45,9 @@ class ResendVerificationController {
     @PostMapping(value = "/{id}/verifications")
     public ResponseEntity<?> resendVerification(@PathVariable UUID id) {
 
-        //TODO: fill it
-        return null;
+        return verificationMailReSender
+                .resend(id)
+                .map(Problem::toResponse)
+                .orElseGet(() -> ResponseEntity.noContent().build());
     }
 }

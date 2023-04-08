@@ -1,8 +1,6 @@
 package com.naturalprogrammer.springmvc.user.features.display_name_edit;
 
 import com.naturalprogrammer.springmvc.common.error.Problem;
-import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
-import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.user.domain.User;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import com.naturalprogrammer.springmvc.user.services.UserService;
@@ -24,9 +22,6 @@ import static org.mockito.BDDMockito.given;
 class ValidatedDisplayNameEditorTest {
 
     @Mock
-    private ProblemComposer problemComposer;
-
-    @Mock
     private UserRepository userRepository;
 
     @Mock
@@ -41,7 +36,7 @@ class ValidatedDisplayNameEditorTest {
 
     @BeforeEach
     void setUp() {
-        given(problemComposer.composeMessage(ProblemType.NOT_FOUND, "user-not-found", user.getId())).willReturn(problem);
+        given(userService.userNotFound(user.getId())).willReturn(problem);
     }
 
     @Test

@@ -2,8 +2,6 @@ package com.naturalprogrammer.springmvc.user.features.display_name_edit;
 
 import com.naturalprogrammer.springmvc.common.error.BeanValidator;
 import com.naturalprogrammer.springmvc.common.error.Problem;
-import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
-import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.user.domain.User;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import com.naturalprogrammer.springmvc.user.services.UserResource;
@@ -37,18 +35,22 @@ class DisplayNameEditor {
 @RequiredArgsConstructor
 class ValidatedDisplayNameEditor {
 
-    private final ProblemComposer problemComposer;
     private final UserRepository userRepository;
     private final UserService userService;
 
     public Either<Problem, UserResource> edit(UUID userId, UserDisplayNameEditRequest request) {
 
-        if (!userService.isSelfOrAdmin(userId))
-            return notFound(userId, request);
+        if (!userService.isSelfOrAdmin(userId)) {
+            log.warn("User {} is not self or admin when trying edit its display name to {}", userId, request);
+            return Either.left(userService.userNotFound(userId));
+        }
 
         return userRepository.findById(userId)
                 .map(user -> edit(user, request))
-                .orElseGet(() -> notFound(userId, request));
+                .orElseGet(() -> {
+                    log.warn("User {} not found when trying to edit displayName to {}", userId, request);
+                    return Either.left(userService.userNotFound(userId));
+                });
     }
 
     private Either<Problem, UserResource> edit(User user, UserDisplayNameEditRequest request) {
@@ -59,11 +61,5 @@ class ValidatedDisplayNameEditor {
 
         log.info("Edited name for {}. Returning {}", user, resource);
         return Either.right(resource);
-    }
-
-    private Either<Problem, UserResource> notFound(UUID userId, UserDisplayNameEditRequest request) {
-        log.warn("User {} not found when trying to edit displayName to {}", userId, request);
-        var problem = problemComposer.composeMessage(ProblemType.NOT_FOUND, "user-not-found", userId);
-        return Either.left(problem);
     }
 }

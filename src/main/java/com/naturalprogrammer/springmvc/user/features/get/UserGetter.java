@@ -1,8 +1,6 @@
 package com.naturalprogrammer.springmvc.user.features.get;
 
 import com.naturalprogrammer.springmvc.common.error.Problem;
-import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
-import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.user.domain.User;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import com.naturalprogrammer.springmvc.user.services.UserResource;
@@ -19,29 +17,27 @@ import java.util.UUID;
 @RequiredArgsConstructor
 class UserGetter {
 
-    private final ProblemComposer problemComposer;
     private final UserRepository userRepository;
     private final UserService userService;
 
     public Either<Problem, UserResource> get(UUID userId) {
 
-        if (!userService.isSelfOrAdmin(userId))
-            return notFound(userId);
+        if (!userService.isSelfOrAdmin(userId)) {
+            log.warn("User {} is not self or admin when trying get user", userId);
+            return Either.left(userService.userNotFound(userId));
+        }
 
         return userRepository.findById(userId)
                 .map(this::getUserResponse)
-                .orElseGet(() -> notFound(userId));
+                .orElseGet(() -> {
+                    log.warn("User {} not found when trying get user", userId);
+                    return Either.left(userService.userNotFound(userId));
+                });
     }
 
     private Either<Problem, UserResource> getUserResponse(User user) {
         var response = userService.toResponse(user);
         log.info("Got {}", response);
         return Either.right(response);
-    }
-
-    private Either<Problem, UserResource> notFound(UUID userId) {
-        log.warn("User {} not found when trying get user", userId);
-        var problem = problemComposer.composeMessage(ProblemType.NOT_FOUND, "user-not-found", userId);
-        return Either.left(problem);
     }
 }

@@ -20,7 +20,8 @@ public enum ProblemType {
     WRONG_JWT_AUDIENCE("/problems/wrong-jwt-audience", "wrong-jwt-audience", FORBIDDEN),
     EXPIRED_JWT("/problems/expired-jwt", "expired-jwt", FORBIDDEN),
     WRONG_CREDENTIALS("/problems/wrong-credentials", "wrong-credentials", UNAUTHORIZED),
-    NOT_FOUND("/problems/not-found", "not-found", HttpStatus.NOT_FOUND);
+    NOT_FOUND("/problems/not-found", "not-found", HttpStatus.NOT_FOUND),
+    USER_ALREADY_VERIFIED("/problems/user-already-verified", "user-already-verified", CONFLICT);
 
     private final String type;
     private final String title;

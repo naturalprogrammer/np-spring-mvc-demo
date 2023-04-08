@@ -43,12 +43,17 @@ class ValidatedUserVerifier {
 
     public Either<Problem, UserResource> verify(UUID userId, UserVerificationRequest request) {
 
-        if (!userService.isSelfOrAdmin(userId))
-            return notFound(userId, request);
+        if (!userService.isSelfOrAdmin(userId)) {
+            log.warn("User {} is not self or admin when trying to verify email with {}", userId, request);
+            return Either.left(userService.userNotFound(userId));
+        }
 
         return userRepository.findById(userId)
                 .map(user -> verify(user, request))
-                .orElseGet(() -> notFound(userId, request));
+                .orElseGet(() -> {
+                    log.warn("User {} not found when trying to verify email with {}", userId, request);
+                    return Either.left(userService.userNotFound(userId));
+                });
     }
 
     private Either<Problem, UserResource> verify(User user, UserVerificationRequest request) {
@@ -73,12 +78,6 @@ class ValidatedUserVerifier {
         user.getRoles().add(Role.VERIFIED);
         userRepository.save(user);
         return Either.right(userService.toResponse(user));
-    }
-
-    private Either<Problem, UserResource> notFound(UUID userId, UserVerificationRequest request) {
-        log.warn("User {} not found when trying to verify email with {}", userId, request);
-        var problem = problemComposer.composeMessage(ProblemType.NOT_FOUND, "user-not-found", userId);
-        return Either.left(problem);
     }
 
 }
