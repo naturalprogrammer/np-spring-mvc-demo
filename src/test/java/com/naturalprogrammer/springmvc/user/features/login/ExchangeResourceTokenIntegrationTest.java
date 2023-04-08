@@ -7,6 +7,7 @@ import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 
 import java.time.Instant;
 import java.util.Set;
@@ -22,11 +23,10 @@ import static com.naturalprogrammer.springmvc.user.features.signup.SignupIntegra
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.concurrent.TimeUnit.DAYS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.hamcrest.Matchers.startsWith;
+import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class ExchangeResourceTokenIntegrationTest extends AbstractIntegrationTest {
 
@@ -68,6 +68,7 @@ class ExchangeResourceTokenIntegrationTest extends AbstractIntegrationTest {
                                 }
                                 """.formatted(CLIENT_ID_COOKIE_PARAM_NAME, clientId, resourceTokenValidForMillis)))
                 .andExpect(status().isOk())
+                .andExpect(content().contentType(AuthTokensResource.CONTENT_TYPE))
                 .andExpect(jsonPath("resourceToken").isString())
                 .andExpect(jsonPath("accessToken").isString())
                 .andExpect(jsonPath("resourceTokenValidUntil").isString())
@@ -133,7 +134,8 @@ class ExchangeResourceTokenIntegrationTest extends AbstractIntegrationTest {
                                     "resourceTokenValidForMillis" : 234356
                                 }
                                 """.formatted(CLIENT_ID_COOKIE_PARAM_NAME, clientId)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isForbidden())
+                .andExpect(header().string(WWW_AUTHENTICATE, startsWith("Bearer error=\"insufficient_scope\"")));
     }
 
     @Test
@@ -159,7 +161,8 @@ class ExchangeResourceTokenIntegrationTest extends AbstractIntegrationTest {
                                     "resourceTokenValidForMillis" : 234356
                                 }
                                 """.formatted(CLIENT_ID_COOKIE_PARAM_NAME, clientId)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
     }
 
     @Test
@@ -184,7 +187,8 @@ class ExchangeResourceTokenIntegrationTest extends AbstractIntegrationTest {
                                     "resourceTokenValidForMillis" : 234356
                                 }
                                 """.formatted(CLIENT_ID_COOKIE_PARAM_NAME, UUID.randomUUID().toString())))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
     }
 
     @Test
@@ -208,7 +212,8 @@ class ExchangeResourceTokenIntegrationTest extends AbstractIntegrationTest {
                                     "resourceTokenValidForMillis" : 234356
                                 }
                                 """.formatted(CLIENT_ID_COOKIE_PARAM_NAME, UUID.randomUUID().toString())))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
     }
 
     @Test
@@ -233,10 +238,10 @@ class ExchangeResourceTokenIntegrationTest extends AbstractIntegrationTest {
                                 }
                                 """.formatted(CLIENT_ID_COOKIE_PARAM_NAME, clientId)))
                 .andExpect(status().isOk())
+                .andExpect(content().contentType(AuthTokensResource.CONTENT_TYPE))
                 .andExpect(jsonPath("resourceToken").isString())
                 .andExpect(jsonPath("accessToken").isString())
                 .andExpect(jsonPath("resourceTokenValidUntil").isString())
                 .andExpect(jsonPath("accessTokenValidUntil").isString());
     }
-
 }

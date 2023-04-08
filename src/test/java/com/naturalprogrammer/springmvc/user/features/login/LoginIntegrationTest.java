@@ -57,6 +57,7 @@ class LoginIntegrationTest extends AbstractIntegrationTest {
                                 }
                                 """.formatted(user.getEmail(), resourceTokenValidForMillis)))
                 .andExpect(status().isOk())
+                .andExpect(content().contentType(AuthTokensResource.CONTENT_TYPE))
                 .andExpect(jsonPath("resourceToken").isString())
                 .andExpect(jsonPath("accessToken").isString())
                 .andExpect(jsonPath("resourceTokenValidUntil").isString())
@@ -114,6 +115,7 @@ class LoginIntegrationTest extends AbstractIntegrationTest {
                                 }
                                 """.formatted(user.getEmail())))
                 .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("type").value(WRONG_CREDENTIALS.getType()));
     }
 

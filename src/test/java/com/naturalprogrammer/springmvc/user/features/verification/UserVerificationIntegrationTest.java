@@ -29,6 +29,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpHeaders.WWW_AUTHENTICATE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -94,7 +95,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
                                   }
                                 """))
                 .andExpect(status().isUnauthorized())
-                .andExpect(header().string("WWW-Authenticate", "Bearer"));
+                .andExpect(header().string(WWW_AUTHENTICATE, "Bearer"));
     }
 
     @Test
@@ -114,7 +115,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
                                   }
                                 """))
                 .andExpect(status().isUnauthorized())
-                .andExpect(header().string("WWW-Authenticate", startsWith("Bearer error=\"invalid_token\"")));
+                .andExpect(header().string(WWW_AUTHENTICATE, startsWith("Bearer error=\"invalid_token\"")));
     }
 
     @Test
@@ -170,7 +171,6 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
                 future,
                 Map.of("email", user.getEmail())
         );
-
 
         // when, then
         mvc.perform(put(USERS + "/{id}/verifications", userIdStr)

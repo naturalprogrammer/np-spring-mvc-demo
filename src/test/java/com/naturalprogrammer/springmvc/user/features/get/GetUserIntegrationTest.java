@@ -20,6 +20,7 @@ import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpHeaders.WWW_AUTHENTICATE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -111,7 +112,8 @@ class GetUserIntegrationTest extends AbstractIntegrationTest {
 
         // when, then
         mvc.perform(get(USERS + "/{id}", UUID.randomUUID().toString()))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(header().string(WWW_AUTHENTICATE, "Bearer"));
     }
 
 }
