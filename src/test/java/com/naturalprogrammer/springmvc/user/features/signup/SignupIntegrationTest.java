@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.http.HttpHeaders.LOCATION;
+import static org.springframework.security.oauth2.core.OAuth2TokenIntrospectionClaimNames.SCOPE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -156,7 +157,7 @@ public class SignupIntegrationTest extends AbstractIntegrationTest {
         assertThat(claims.getAudience()).isEqualTo(List.of("http://www.example.com"));
         assertThat(claims.getExpirationTime()).isAfterOrEqualTo(beginTime.plusMillis(tokenValidForMillis));
         assertThat(claims.getExpirationTime()).isBeforeOrEqualTo(endTime.plusMillis(tokenValidForMillis));
-        assertThat(claims.getStringClaim("scope")).isEqualTo(scope);
+        assertThat(claims.getStringClaim(SCOPE)).isEqualTo(scope);
     }
 
     @Test

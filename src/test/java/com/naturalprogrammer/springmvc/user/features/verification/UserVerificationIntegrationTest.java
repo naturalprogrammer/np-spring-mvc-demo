@@ -20,6 +20,8 @@ import java.util.UUID;
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_DATA;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.TOKEN_VERIFICATION_FAILED;
+import static com.naturalprogrammer.springmvc.common.jwt.JwtPurpose.EMAIL_VERIFICATION;
+import static com.naturalprogrammer.springmvc.common.jwt.JwtPurpose.PURPOSE;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.futureTime;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.pastTime;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
@@ -30,6 +32,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.WWW_AUTHENTICATE;
+import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.EMAIL;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -58,7 +61,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
         var verificationToken = jweService.createToken(
                 userIdStr,
                 future,
-                Map.of("email", user.getEmail())
+                Map.of(PURPOSE, EMAIL_VERIFICATION, EMAIL, user.getEmail())
         );
 
         // when, then

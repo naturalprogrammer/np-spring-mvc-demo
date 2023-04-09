@@ -14,8 +14,7 @@ import static com.naturalprogrammer.springmvc.user.validators.PasswordValidator.
 import static org.apache.commons.lang3.StringUtils.trim;
 
 @Slf4j
-public
-record SignupRequest(
+public record SignupRequest(
 
         @Email
         @NotBlank
@@ -40,7 +39,7 @@ record SignupRequest(
         var trimmed = new SignupRequest(
                 trim(email), trim(password), trim(displayName), resourceTokenValidForMillis
         );
-        log.info("Trimmed {} to  {}", this, trimmed);
+        log.info("Trimmed {} to {}", this, trimmed);
         return trimmed;
     }
 

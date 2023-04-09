@@ -16,25 +16,28 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.naturalprogrammer.springmvc.common.jwt.JwtPurpose.AUTH;
+import static com.naturalprogrammer.springmvc.common.jwt.JwtPurpose.PURPOSE;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.MINUTES;
+import static org.springframework.security.oauth2.core.OAuth2TokenIntrospectionClaimNames.SCOPE;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthTokenCreator {
 
-    private final UserService userService;
-    private final ProblemComposer problemComposer;
-    private final JwsService jwsService;
-    private final Clock clock;
-
     public static final long DEFAULT_RESOURCE_TOKEN_VALID_MILLIS = DAYS.toMillis(30);
     public static final String RESOURCE_TOKEN_VALID_MILLIS_DESCR = "For the milliseconds the returned resource-token is valid. E.g. 1209600000 for 15 days. If not provided, default is 30 days";
 
     public static final long CLIENT_SPECIFIC_RESOURCE_TOKEN_VALID_MILLIS = MINUTES.toMillis(1);
     public static final long ACCESS_TOKEN_VALID_MILLIS = MINUTES.toMillis(30);
+
+    private final UserService userService;
+    private final ProblemComposer problemComposer;
+    private final JwsService jwsService;
+    private final Clock clock;
 
     public Either<Problem, AuthTokensResource> create(
             UUID userId,
@@ -72,7 +75,7 @@ public class AuthTokenCreator {
         return jwsService.createToken(
                 userIdStr,
                 Date.from(validUntil),
-                Map.of("scope", scope.getValue())
+                Map.of(PURPOSE, AUTH, SCOPE, scope.getValue())
         );
     }
 

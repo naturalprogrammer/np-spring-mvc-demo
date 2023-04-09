@@ -18,7 +18,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class VerificationMailReSender {
+class VerificationMailReSender {
 
     private final UserService userService;
     private final UserRepository userRepository;

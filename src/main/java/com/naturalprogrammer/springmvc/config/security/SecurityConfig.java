@@ -17,8 +17,7 @@ import org.springframework.security.web.context.NullSecurityContextRepository;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import static com.naturalprogrammer.springmvc.common.Path.LOGIN;
-import static com.naturalprogrammer.springmvc.common.Path.USERS;
+import static com.naturalprogrammer.springmvc.common.Path.*;
 import static com.naturalprogrammer.springmvc.user.features.login.AuthScope.*;
 import static jakarta.servlet.DispatcherType.ERROR;
 import static org.springframework.http.HttpMethod.*;
@@ -60,6 +59,7 @@ public class SecurityConfig {
                         config
                                 .requestMatchers(POST, USERS).permitAll()
                                 .requestMatchers(POST, LOGIN).permitAll()
+                                .requestMatchers(POST, FORGOT_PASSWORD).permitAll()
                                 .requestMatchers(PATCH, USERS + "/*/display-name").hasAuthority(NORMAL.scope())
                                 .requestMatchers(POST, USERS + "/*/verifications").hasAuthority(NORMAL.scope())
                                 .requestMatchers(PUT, USERS + "/*/verifications").hasAuthority(NORMAL.scope())

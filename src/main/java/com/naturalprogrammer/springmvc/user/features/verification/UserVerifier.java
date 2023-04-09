@@ -15,7 +15,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+import static com.naturalprogrammer.springmvc.common.jwt.JwtPurpose.EMAIL_VERIFICATION;
+import static com.naturalprogrammer.springmvc.common.jwt.JwtPurpose.PURPOSE;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
+import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.EMAIL;
 
 @Slf4j
 @Service
@@ -71,7 +74,8 @@ class ValidatedUserVerifier {
     private Either<Problem, UserResource> verify(User user, JWTClaimsSet claims) {
 
         if (notEqual(claims.getSubject(), user.getIdStr()) ||
-                notEqual(claims.getClaim("email"), user.getEmail()))
+                notEqual(claims.getClaim(PURPOSE), EMAIL_VERIFICATION.name()) ||
+                notEqual(claims.getClaim(EMAIL), user.getEmail()))
             return Either.left(problemComposer.compose(ProblemType.TOKEN_VERIFICATION_FAILED, claims.toString()));
 
         user.getRoles().remove(Role.UNVERIFIED);

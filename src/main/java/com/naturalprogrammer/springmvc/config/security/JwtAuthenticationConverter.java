@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -19,7 +20,12 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.naturalprogrammer.springmvc.common.jwt.JwtPurpose.AUTH;
+import static com.naturalprogrammer.springmvc.common.jwt.JwtPurpose.PURPOSE;
 import static java.util.Objects.requireNonNull;
+import static org.apache.commons.lang3.ObjectUtils.notEqual;
+import static org.springframework.security.oauth2.core.OAuth2TokenIntrospectionClaimNames.SCOPE;
+import static org.springframework.security.oauth2.jwt.JwtClaimNames.SUB;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,7 +36,15 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
 
-        var userIdStr = jwt.getClaimAsString("sub");
+        var purpose = jwt.getClaim(PURPOSE);
+        if (notEqual(purpose, AUTH.name())) {
+            throw new BadCredentialsException(
+                    "Authentication failed because the purpose of Jwt is not %s but %s: %s".formatted(
+                            AUTH, purpose, jwt
+                    ));
+        }
+
+        var userIdStr = jwt.getClaimAsString(SUB);
         var userId = UUID.fromString(userIdStr);
 
         var user = userRepository.findById(userId).orElseThrow(() -> {
@@ -46,7 +60,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
 
         var authorities = getAuthorities(user);
 
-        var scope = jwt.getClaimAsString("scope"); // e.g. "openid email profile"
+        var scope = jwt.getClaimAsString(SCOPE); // e.g. "openid email profile"
         if (scope != null)
             authorities.addAll(getScopes(scope));
 
