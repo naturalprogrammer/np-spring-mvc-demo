@@ -1,6 +1,9 @@
 package com.naturalprogrammer.springmvc.user.features.reset_password;
 
-import com.naturalprogrammer.springmvc.common.error.*;
+import com.naturalprogrammer.springmvc.common.error.BeanValidator;
+import com.naturalprogrammer.springmvc.common.error.Problem;
+import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
+import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.common.jwt.JweService;
 import com.naturalprogrammer.springmvc.user.domain.User;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.naturalprogrammer.springmvc.common.jwt.JwtPurpose.FORGOT_PASSWORD;
 import static com.naturalprogrammer.springmvc.common.jwt.JwtPurpose.PURPOSE;
@@ -49,9 +53,7 @@ class PasswordResetter {
                 .fold(problemType -> {
                     var problem = problemComposer.compose(
                             problemType,
-                            request.toString(),
-                            ErrorCode.TOKEN_VERIFICATION_FAILED,
-                            "token");
+                            request.toString());
                     return Optional.of(problem);
                 }, claims -> resetPassword(request, claims));
     }
@@ -64,20 +66,24 @@ class PasswordResetter {
             return Optional.of(problemComposer.compose(ProblemType.TOKEN_VERIFICATION_FAILED, request.toString()));
         }
 
+        var userId = UUID.fromString(claims.getSubject());
         var email = claims.getStringClaim(EMAIL);
 
-        return userRepository
-                .findByEmail(email)
-                .flatMap(user -> {
-                    resetPassword(user, request.newPassword());
-                    return Optional.<Problem>empty();
-                })
-                .or(() -> Optional.of(userService.userNotFound(email)));
+        var possibleUser = userRepository.findById(userId);
+        if (possibleUser.isEmpty())
+            return Optional.of(userService.userNotFound(userId));
+        return possibleUser.flatMap(user -> resetPassword(user, email, request.newPassword()));
     }
 
-    private void resetPassword(User user, String newPassword) {
+    private Optional<Problem> resetPassword(User user, String expectedEmail, String newPassword) {
+
+        if (notEqual(user.getEmail(), expectedEmail)) {
+            log.warn("While resetting password, email already changed from {} to {}", expectedEmail, user);
+            return Optional.of(userService.userNotFound(expectedEmail));
+        }
         user.setPassword(passwordEncoder.encode(newPassword));
         user.resetTokensValidFrom(clock);
         userRepository.save(user);
+        return Optional.empty();
     }
 }

@@ -60,6 +60,7 @@ public class SecurityConfig {
                                 .requestMatchers(POST, USERS).permitAll()
                                 .requestMatchers(POST, LOGIN).permitAll()
                                 .requestMatchers(POST, FORGOT_PASSWORD).permitAll()
+                                .requestMatchers(POST, RESET_PASSWORD).permitAll()
                                 .requestMatchers(PATCH, USERS + "/*/display-name").hasAuthority(NORMAL.scope())
                                 .requestMatchers(POST, USERS + "/*/verifications").hasAuthority(NORMAL.scope())
                                 .requestMatchers(PUT, USERS + "/*/verifications").hasAuthority(NORMAL.scope())
