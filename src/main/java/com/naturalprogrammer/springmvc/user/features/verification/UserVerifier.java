@@ -76,7 +76,7 @@ class ValidatedUserVerifier {
         if (notEqual(claims.getSubject(), user.getIdStr()) ||
                 notEqual(claims.getClaim(PURPOSE), EMAIL_VERIFICATION.name()) ||
                 notEqual(claims.getClaim(EMAIL), user.getEmail()))
-            return Either.left(problemComposer.compose(ProblemType.TOKEN_VERIFICATION_FAILED, claims.toString()));
+            return Either.left(problemComposer.compose(ProblemType.TOKEN_VERIFICATION_FAILED, user.toString()));
 
         user.getRoles().remove(Role.UNVERIFIED);
         user.getRoles().add(Role.VERIFIED);

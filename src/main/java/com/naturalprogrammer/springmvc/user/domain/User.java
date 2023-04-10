@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.Clock;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -53,5 +55,9 @@ public class User extends AbstractEntity {
 
     public boolean isAdmin() {
         return hasRoles(Role.ADMIN, Role.VERIFIED);
+    }
+
+    public void resetTokensValidFrom(Clock clock) {
+        tokensValidFrom = clock.instant().truncatedTo(ChronoUnit.SECONDS);
     }
 }

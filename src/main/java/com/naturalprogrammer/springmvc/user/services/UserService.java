@@ -18,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
-import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
@@ -99,7 +98,7 @@ public class UserService {
         user.setDisplayName(request.displayName());
         user.setRoles(Set.of(roles));
         user.setLocale(locale);
-        user.setTokensValidFrom(clock.instant().truncatedTo(ChronoUnit.SECONDS));
+        user.resetTokensValidFrom(clock);
         var savedUser = userRepository.save(user);
         if (user.hasRoles(Role.UNVERIFIED))
             verificationMailSender.send(savedUser);
@@ -109,4 +108,9 @@ public class UserService {
     public Problem userNotFound(UUID userId) {
         return problemComposer.composeMessage(ProblemType.NOT_FOUND, "user-not-found", userId);
     }
+
+    public Problem userNotFound(String email) {
+        return problemComposer.composeMessage(ProblemType.NOT_FOUND, "user-not-found", email);
+    }
+
 }
