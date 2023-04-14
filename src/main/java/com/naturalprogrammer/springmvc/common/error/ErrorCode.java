@@ -9,7 +9,8 @@ import lombok.RequiredArgsConstructor;
 public enum ErrorCode {
 
     USED_EMAIL("UsedEmail", ProblemType.USED_EMAIL.getTitle()),
-    TOKEN_VERIFICATION_FAILED("TokenVerificationFailed", ProblemType.TOKEN_VERIFICATION_FAILED.getTitle());
+    TOKEN_VERIFICATION_FAILED("TokenVerificationFailed", ProblemType.TOKEN_VERIFICATION_FAILED.getTitle()),
+    PASSWORD_MISMATCH("PasswordMismatch", ProblemType.PASSWORD_MISMATCH.getTitle());
 
     private final String code;
     private final String message;

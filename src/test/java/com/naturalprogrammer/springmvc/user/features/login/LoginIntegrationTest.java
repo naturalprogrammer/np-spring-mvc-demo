@@ -15,6 +15,7 @@ import java.util.Set;
 import static com.naturalprogrammer.springmvc.common.Path.LOGIN;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_DATA;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.WRONG_CREDENTIALS;
+import static com.naturalprogrammer.springmvc.user.UserTestUtils.RANDOM_USER_PASSWORD;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
 import static com.naturalprogrammer.springmvc.user.features.login.AuthTokenCreator.ACCESS_TOKEN_VALID_MILLIS;
 import static com.naturalprogrammer.springmvc.user.features.signup.SignupIntegrationTest.assertClaims;
@@ -52,10 +53,10 @@ class LoginIntegrationTest extends AbstractIntegrationTest {
                         .content("""
                                 {
                                     "email" : "%s",
-                                    "password" : "Password9!",
+                                    "password" : "%s",
                                     "resourceTokenValidForMillis" : %d
                                 }
-                                """.formatted(user.getEmail(), resourceTokenValidForMillis)))
+                                """.formatted(user.getEmail(), RANDOM_USER_PASSWORD, resourceTokenValidForMillis)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(AuthTokensResource.CONTENT_TYPE))
                 .andExpect(jsonPath("resourceToken").isString())
@@ -127,10 +128,10 @@ class LoginIntegrationTest extends AbstractIntegrationTest {
                         .content("""
                                 {
                                     "email" : "imaginary.user@example.com",
-                                    "password" : "Password9!",
+                                    "password" : "%s",
                                     "resourceTokenValidForMillis" : 345267
                                 }
-                                """))
+                                """.formatted(RANDOM_USER_PASSWORD)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("id").isString())
@@ -149,10 +150,10 @@ class LoginIntegrationTest extends AbstractIntegrationTest {
                         .content("""
                                 {
                                     "email" : "",
-                                    "password" : "Password9!",
+                                    "password" : "%s",
                                     "resourceTokenValidForMillis" : 345267
                                 }
-                                """))
+                                """.formatted(RANDOM_USER_PASSWORD)))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("type").value(INVALID_DATA.getType()));

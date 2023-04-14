@@ -25,7 +25,6 @@ import static com.naturalprogrammer.springmvc.common.jwt.JwtPurpose.PURPOSE;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.springframework.security.oauth2.core.OAuth2TokenIntrospectionClaimNames.SCOPE;
-import static org.springframework.security.oauth2.jwt.JwtClaimNames.SUB;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -44,7 +43,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
                     ));
         }
 
-        var userIdStr = jwt.getClaimAsString(SUB);
+        var userIdStr = jwt.getSubject();
         var userId = UUID.fromString(userIdStr);
 
         var user = userRepository.findById(userId).orElseThrow(() -> {

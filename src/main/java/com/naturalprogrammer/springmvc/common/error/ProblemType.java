@@ -21,7 +21,8 @@ public enum ProblemType {
     EXPIRED_JWT("/problems/expired-jwt", "expired-jwt", FORBIDDEN),
     WRONG_CREDENTIALS("/problems/wrong-credentials", "wrong-credentials", UNAUTHORIZED),
     NOT_FOUND("/problems/not-found", "not-found", HttpStatus.NOT_FOUND),
-    USER_ALREADY_VERIFIED("/problems/user-already-verified", "user-already-verified", CONFLICT);
+    USER_ALREADY_VERIFIED("/problems/user-already-verified", "user-already-verified", CONFLICT),
+    PASSWORD_MISMATCH("/problems/password-mismatch", "password-mismatch", FORBIDDEN);
 
     private final String type;
     private final String title;

@@ -11,7 +11,7 @@ class PasswordValidatorTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "Password9!",
+            "Password10!",
             "0assworD@"
     })
     void testValid(String password) {
@@ -20,8 +20,8 @@ class PasswordValidatorTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "password9!",
-            "PASSWORD9@",
+            "password10!",
+            "PASSWORD10@",
             "Pas99!@"
     })
     void testInvalid(String password) {

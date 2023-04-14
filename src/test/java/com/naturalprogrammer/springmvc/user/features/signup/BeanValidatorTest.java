@@ -22,6 +22,7 @@ import java.util.Set;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_DATA;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.mockValidator;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.randomProblem;
+import static com.naturalprogrammer.springmvc.user.UserTestUtils.RANDOM_USER_PASSWORD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -84,7 +85,7 @@ class BeanValidatorTest {
     void should_beNoProblem_when_valid() {
 
         // given
-        var request = new SignupRequest("email@example.com", "Password9!", "Some name", null);
+        var request = new SignupRequest("email@example.com", RANDOM_USER_PASSWORD, "Some name", null);
 
         // when
         var possibleProblem = subject.validate(request, INVALID_DATA);

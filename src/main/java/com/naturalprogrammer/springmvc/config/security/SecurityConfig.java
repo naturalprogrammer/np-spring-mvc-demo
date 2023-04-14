@@ -68,6 +68,7 @@ public class SecurityConfig {
                                 .requestMatchers(GET, USERS + "/*/auth-tokens").hasAuthority(AUTH_TOKENS.scope())
                                 .requestMatchers(POST, USERS + "/*/exchange-resource-token").hasAuthority(EXCHANGE_RESOURCE_TOKEN.scope())
                                 .requestMatchers(GET, USERS + "/*").hasAuthority(NORMAL.scope())
+                                .requestMatchers(PATCH, USER + "/password").hasAuthority(NORMAL.scope())
                                 .requestMatchers(GET,
                                         "/",
                                         "/context",

@@ -26,6 +26,7 @@ import static com.naturalprogrammer.springmvc.common.Path.USERS;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_DATA;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.USED_EMAIL;
 import static com.naturalprogrammer.springmvc.common.mail.LoggingMailSender.sentMails;
+import static com.naturalprogrammer.springmvc.user.UserTestUtils.RANDOM_USER_PASSWORD;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
 import static com.naturalprogrammer.springmvc.user.features.login.AuthTokenCreator.ACCESS_TOKEN_VALID_MILLIS;
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -57,7 +58,6 @@ public class SignupIntegrationTest extends AbstractIntegrationTest {
 
         // given
         var email = "user12styz@example.com";
-        var password = "Password9!";
         var displayName = "Sanjay567 Patel336";
         var resourceTokenValidForMillis = DAYS.toMillis(10);
         var beginTime = Instant.now().truncatedTo(SECONDS);
@@ -73,7 +73,7 @@ public class SignupIntegrationTest extends AbstractIntegrationTest {
                                         "displayName" : "%s",
                                         "resourceTokenValidForMillis" : %d
                                    }
-                                """.formatted(email, password, displayName, resourceTokenValidForMillis)))
+                                """.formatted(email, RANDOM_USER_PASSWORD, displayName, resourceTokenValidForMillis)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(UserResource.CONTENT_TYPE))
                 .andExpect(jsonPath("id").isString())
@@ -94,7 +94,7 @@ public class SignupIntegrationTest extends AbstractIntegrationTest {
 
         User user = userRepository.findById(userResource.id()).orElseThrow();
         assertThat(user.getEmail()).isEqualTo(email);
-        assertThat(passwordEncoder.matches(password, user.getPassword())).isTrue();
+        assertThat(passwordEncoder.matches(RANDOM_USER_PASSWORD, user.getPassword())).isTrue();
         assertThat(user.getDisplayName()).isEqualTo(displayName);
         assertThat(user.getLocale().toLanguageTag()).isEqualTo("en-IN");
         assertThat(user.getRoles()).hasSize(1);
@@ -170,10 +170,10 @@ public class SignupIntegrationTest extends AbstractIntegrationTest {
                         .content("""
                                    {
                                         "email" : "user23Alpha@example.com",
-                                        "password" : "Password9!",
+                                        "password" : "%s",
                                         "displayName" : "  "
                                    }
-                                """))
+                                """.formatted(RANDOM_USER_PASSWORD)))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("id").isString())
@@ -207,10 +207,10 @@ public class SignupIntegrationTest extends AbstractIntegrationTest {
                         .content("""
                                    {
                                         "email" : "%s",
-                                        "password" : "Password9!",
+                                        "password" : "%s",
                                         "displayName" : "Sanjay457 Patel983"
                                    }
-                                """.formatted(user.getEmail())))
+                                """.formatted(user.getEmail(), RANDOM_USER_PASSWORD)))
                 .andExpect(status().isConflict())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("id").isString())

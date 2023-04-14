@@ -66,11 +66,14 @@ class SignupController {
         Locale locale = language == null ? Locale.forLanguageTag("en-IN") : Locale.forLanguageTag(language);
         return toResponse(
                 signupService.signup(request, locale),
-                userResource ->
-                        ResponseEntity
-                                .status(HttpStatus.CREATED)
-                                .header(LOCATION, USERS + "/" + userResource.id())
-                                .body(userResource)
+                this::toUserResponse
         );
+    }
+
+    private ResponseEntity<UserResource> toUserResponse(UserResource userResource) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .header(LOCATION, USERS + "/" + userResource.id())
+                .body(userResource);
     }
 }

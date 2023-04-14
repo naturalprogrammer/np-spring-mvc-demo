@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.*;
+import static com.naturalprogrammer.springmvc.user.UserTestUtils.RANDOM_USER_PASSWORD;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -69,10 +70,10 @@ class MyControllerAdviceIntegrationTest extends AbstractIntegrationTest {
                         .content("""
                                    {
                                         "email" : "email245585@example.com",
-                                        "password" : "Password9!",
+                                        "password" : "%s",
                                         "displayName" : "Sanjay457 Patel983"
                                    }
-                                """))
+                                """.formatted(RANDOM_USER_PASSWORD)))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("id").isString())

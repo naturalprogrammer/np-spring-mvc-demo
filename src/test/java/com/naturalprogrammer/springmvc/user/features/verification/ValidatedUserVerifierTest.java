@@ -90,7 +90,8 @@ class ValidatedUserVerifierTest {
         given(userService.isSelfOrAdmin(user.getId())).willReturn(true);
         given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
         given(jweService.parseToken(request.emailVerificationToken())).willReturn(Either.right(claims));
-        given(problemComposer.compose(ProblemType.TOKEN_VERIFICATION_FAILED, claims.toString())).willReturn(problem);
+        given(problemComposer.compose(ProblemType.TOKEN_VERIFICATION_FAILED, user.toString())
+        ).willReturn(problem);
 
         // when
         var either = subject.verify(user.getId(), request);
