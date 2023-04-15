@@ -46,7 +46,7 @@ class SignupService {
                 user.getIdStr(),
                 request.resourceTokenValidForMillis()
         );
-        UserResource resource = userService.toResponse(user, token);
+        UserResource resource = userService.toResource(user, token);
         log.info("Signed up {}. Returning {}", user, resource);
         return Either.right(resource);
     }

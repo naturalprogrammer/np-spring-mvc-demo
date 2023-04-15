@@ -57,7 +57,7 @@ class ValidatedDisplayNameEditor {
 
         user.setDisplayName(request.displayName());
         userRepository.save(user);
-        var resource = userService.toResponse(user);
+        var resource = userService.toResource(user);
 
         log.info("Edited name for {}. Returning {}", user, resource);
         return Either.right(resource);

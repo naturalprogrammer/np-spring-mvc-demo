@@ -30,4 +30,5 @@ public record UserResource(
         AuthTokensResource authTokens
 ) {
     public static final String CONTENT_TYPE = CONTENT_TYPE_PREFIX + "user.v1+json";
+        public static final String LIST_TYPE = CONTENT_TYPE_PREFIX + "users.v1+json";
 }

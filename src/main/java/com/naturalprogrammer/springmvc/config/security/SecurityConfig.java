@@ -2,17 +2,20 @@ package com.naturalprogrammer.springmvc.config.security;
 
 import com.naturalprogrammer.springmvc.config.MyProperties;
 import com.naturalprogrammer.springmvc.config.sociallogin.*;
+import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
+import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.context.NullSecurityContextRepository;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -21,6 +24,8 @@ import static com.naturalprogrammer.springmvc.common.Path.*;
 import static com.naturalprogrammer.springmvc.user.features.login.AuthScope.*;
 import static jakarta.servlet.DispatcherType.ERROR;
 import static org.springframework.http.HttpMethod.*;
+import static org.springframework.security.authorization.AuthorityAuthorizationManager.hasAuthority;
+import static org.springframework.security.authorization.AuthorizationManagers.allOf;
 
 @Configuration
 @RequiredArgsConstructor
@@ -58,6 +63,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(config ->
                         config
                                 .requestMatchers(POST, USERS).permitAll()
+                                .requestMatchers(GET, USERS).access(isAdmin())
                                 .requestMatchers(POST, LOGIN).permitAll()
                                 .requestMatchers(POST, FORGOT_PASSWORD).permitAll()
                                 .requestMatchers(POST, RESET_PASSWORD).permitAll()
@@ -98,5 +104,12 @@ public class SecurityConfig {
                 registry.addMapping("/**").allowedOrigins(properties.homepage());
             }
         };
+    }
+
+    private static AuthorizationManager<RequestAuthorizationContext> isAdmin() {
+        return allOf(
+                hasAuthority(NORMAL.scope()),
+                hasAuthority((Role.ADMIN.authority())),
+                hasAuthority(Role.VERIFIED.authority()));
     }
 }

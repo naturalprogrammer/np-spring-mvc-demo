@@ -36,7 +36,7 @@ class UserGetter {
     }
 
     private Either<Problem, UserResource> getUserResponse(User user) {
-        var response = userService.toResponse(user);
+        var response = userService.toResource(user);
         log.info("Got {}", response);
         return Either.right(response);
     }

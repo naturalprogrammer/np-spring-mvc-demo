@@ -81,7 +81,7 @@ class ValidatedUserVerifier {
         user.getRoles().remove(Role.UNVERIFIED);
         user.getRoles().add(Role.VERIFIED);
         userRepository.save(user);
-        return Either.right(userService.toResponse(user));
+        return Either.right(userService.toResource(user));
     }
 
 }

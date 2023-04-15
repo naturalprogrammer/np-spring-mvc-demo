@@ -39,11 +39,11 @@ public class UserService {
     private final ProblemComposer problemComposer;
 
 
-    public UserResource toResponse(User user) {
-        return toResponse(user, null);
+    public UserResource toResource(User user) {
+        return toResource(user, null);
     }
 
-    public UserResource toResponse(User user, AuthTokensResource token) {
+    public UserResource toResource(User user, AuthTokensResource token) {
         return new UserResource(
                 user.getId(),
                 user.getEmail(),
