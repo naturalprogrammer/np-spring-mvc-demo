@@ -28,13 +28,13 @@ public class PasswordChanger {
 
     public Optional<Problem> changePassword(ChangePasswordRequest request) {
 
-        var userIdStr = commonUtils.getAuthentication().orElseThrow().getName();
+        var userId = commonUtils.getUserId().orElseThrow();
 
-        log.info("Changing password for user {}", userIdStr);
+        log.info("Changing password for user {}", userId);
         var trimmedRequest = request.trimmed();
         return validator
                 .validate(trimmedRequest, ProblemType.INVALID_DATA)
-                .or(() -> changeValidatedPassword(UUID.fromString(userIdStr), trimmedRequest));
+                .or(() -> changeValidatedPassword(userId, trimmedRequest));
     }
 
     private Optional<Problem> changeValidatedPassword(UUID userId, ChangePasswordRequest request) {

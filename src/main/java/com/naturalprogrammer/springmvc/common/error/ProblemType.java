@@ -22,7 +22,8 @@ public enum ProblemType {
     WRONG_CREDENTIALS("/problems/wrong-credentials", "wrong-credentials", UNAUTHORIZED),
     NOT_FOUND("/problems/not-found", "not-found", HttpStatus.NOT_FOUND),
     USER_ALREADY_VERIFIED("/problems/user-already-verified", "user-already-verified", CONFLICT),
-    PASSWORD_MISMATCH("/problems/password-mismatch", "password-mismatch", FORBIDDEN);
+    PASSWORD_MISMATCH("/problems/password-mismatch", "password-mismatch", FORBIDDEN),
+    EMAIL_MISMATCH("/problems/email-mismatch", "email-mismatch", FORBIDDEN);
 
     private final String type;
     private final String title;

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Component
@@ -25,6 +26,12 @@ public class CommonUtils {
 
     public Optional<Authentication> getAuthentication() {
         return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    public Optional<UUID> getUserId() {
+        return getAuthentication()
+                .map(Authentication::getName)
+                .map(UUID::fromString);
     }
 
     public static <T> ResponseEntity<?> toResponse(Either<Problem, T> either, Function<T, ResponseEntity<T>> success) {

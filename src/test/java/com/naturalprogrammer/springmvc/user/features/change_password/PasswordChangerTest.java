@@ -10,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
@@ -19,7 +18,6 @@ import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.randomProblem;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class PasswordChangerTest {
@@ -50,9 +48,7 @@ class PasswordChangerTest {
     private final Problem problem = randomProblem();
 
     private void mockGetAuthentication() {
-        var authentication = mock(Authentication.class);
-        given(authentication.getName()).willReturn(user.getIdStr());
-        given(commonUtils.getAuthentication()).willReturn(Optional.of(authentication));
+        given(commonUtils.getUserId()).willReturn(Optional.of(user.getId()));
     }
 
     @Test
