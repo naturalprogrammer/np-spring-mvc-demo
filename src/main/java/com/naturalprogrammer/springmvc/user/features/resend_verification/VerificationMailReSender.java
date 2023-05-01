@@ -1,7 +1,7 @@
 package com.naturalprogrammer.springmvc.user.features.resend_verification;
 
 import com.naturalprogrammer.springmvc.common.error.Problem;
-import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
+import com.naturalprogrammer.springmvc.common.error.ProblemBuilder;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.domain.User;
@@ -10,6 +10,7 @@ import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import com.naturalprogrammer.springmvc.user.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -23,7 +24,7 @@ class VerificationMailReSender {
     private final UserService userService;
     private final UserRepository userRepository;
     private final VerificationMailSender verificationMailSender;
-    private final ProblemComposer problemComposer;
+    private final ObjectFactory<ProblemBuilder> problemComposer;
 
     public Optional<Problem> resend(UUID userId) {
 
@@ -44,10 +45,10 @@ class VerificationMailReSender {
 
         if (user.hasRoles(Role.VERIFIED)) {
             log.warn("User {} already verified trying to create verification token", user);
-            var problem = problemComposer.composeMessage(
-                    ProblemType.USER_ALREADY_VERIFIED,
-                    "given-user-already-verified",
-                    user.getId());
+            var problem = problemComposer.getObject()
+                    .type(ProblemType.USER_ALREADY_VERIFIED)
+                    .detailMessage("given-user-already-verified", user.getId())
+                    .build();
             return Optional.of(problem);
         }
         verificationMailSender.send(user);

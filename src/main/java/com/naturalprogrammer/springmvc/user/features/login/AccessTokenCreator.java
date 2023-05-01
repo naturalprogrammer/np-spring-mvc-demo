@@ -1,11 +1,12 @@
 package com.naturalprogrammer.springmvc.user.features.login;
 
 import com.naturalprogrammer.springmvc.common.error.Problem;
-import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
+import com.naturalprogrammer.springmvc.common.error.ProblemBuilder;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.user.services.UserService;
 import io.jbock.util.Either;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -19,7 +20,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 class AccessTokenCreator {
 
     private final UserService userService;
-    private final ProblemComposer problemComposer;
+    private final ObjectFactory<ProblemBuilder> problemBuilder;
     private final AuthTokenCreator authTokenCreator;
     private final Clock clock;
 
@@ -29,6 +30,6 @@ class AccessTokenCreator {
             var accessToken = authTokenCreator.createAccessToken(userId.toString(), accessTokenValidUntil);
             return Either.right(new AccessTokenResource(accessToken, accessTokenValidUntil));
         }
-        return Either.left(problemComposer.compose(ProblemType.NOT_FOUND, "User %s not found".formatted(userId)));
+        return Either.left(problemBuilder.getObject().build(ProblemType.NOT_FOUND, "User %s not found".formatted(userId)));
     }
 }

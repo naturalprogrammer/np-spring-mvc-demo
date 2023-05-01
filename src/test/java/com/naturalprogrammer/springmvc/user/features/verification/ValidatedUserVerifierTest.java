@@ -1,7 +1,7 @@
 package com.naturalprogrammer.springmvc.user.features.verification;
 
 import com.naturalprogrammer.springmvc.common.error.Problem;
-import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
+import com.naturalprogrammer.springmvc.common.error.ProblemBuilder;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.common.jwt.JweService;
 import com.naturalprogrammer.springmvc.user.domain.User;
@@ -16,10 +16,12 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectFactory;
 
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.mockProblemBuilder;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.randomProblem;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,7 +31,7 @@ import static org.mockito.BDDMockito.given;
 class ValidatedUserVerifierTest {
 
     @Mock
-    private ProblemComposer problemComposer;
+    private ObjectFactory<ProblemBuilder> problemComposer;
 
     @Mock
     private UserRepository userRepository;
@@ -90,14 +92,21 @@ class ValidatedUserVerifierTest {
         given(userService.isSelfOrAdmin(user.getId())).willReturn(true);
         given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
         given(jweService.parseToken(request.emailVerificationToken())).willReturn(Either.right(claims));
-        given(problemComposer.compose(ProblemType.TOKEN_VERIFICATION_FAILED, user.toString())
-        ).willReturn(problem);
+        mockProblemBuilder(problemComposer);
 
         // when
         var either = subject.verify(user.getId(), request);
 
         // then
-        assertThat(either.getLeft()).hasValue(problem);
+        assertThat(either.isLeft()).isTrue();
+        var problem = either.getLeft().orElseThrow();
+        assertThat(problem.id()).isNotBlank();
+        assertThat(problem.type()).isEqualTo(ProblemType.TOKEN_VERIFICATION_FAILED.getType());
+        assertThat(problem.title()).isEqualTo(ProblemType.TOKEN_VERIFICATION_FAILED.getTitle());
+        assertThat(problem.status()).isEqualTo(ProblemType.TOKEN_VERIFICATION_FAILED.getStatus().value());
+        assertThat(problem.detail()).isEqualTo(user.toString());
+        assertThat(problem.instance()).isNull();
+        assertThat(problem.errors()).isEmpty();
     }
 
 }

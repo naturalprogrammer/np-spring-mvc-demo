@@ -11,6 +11,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import io.jbock.util.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -39,7 +40,7 @@ public class UserVerifier {
 @RequiredArgsConstructor
 class ValidatedUserVerifier {
 
-    private final ProblemComposer problemComposer;
+    private final ObjectFactory<ProblemBuilder> problemComposer;
     private final UserRepository userRepository;
     private final UserService userService;
     private final JweService jweService;
@@ -63,11 +64,11 @@ class ValidatedUserVerifier {
 
         return jweService
                 .parseToken(request.emailVerificationToken())
-                .mapLeft(problemType -> problemComposer.compose(
-                        problemType,
-                        request.emailVerificationToken(),
-                        ErrorCode.TOKEN_VERIFICATION_FAILED,
-                        "emailVerificationToken"))
+                .mapLeft(problemType -> problemComposer.getObject()
+                        .type(problemType)
+                        .detail(request.emailVerificationToken())
+                        .error("emailVerificationToken", ErrorCode.TOKEN_VERIFICATION_FAILED)
+                        .build())
                 .flatMap(claims -> verify(user, claims));
     }
 
@@ -76,7 +77,7 @@ class ValidatedUserVerifier {
         if (notEqual(claims.getSubject(), user.getIdStr()) ||
                 notEqual(claims.getClaim(PURPOSE), EMAIL_VERIFICATION.name()) ||
                 notEqual(claims.getClaim(EMAIL), user.getEmail()))
-            return Either.left(problemComposer.compose(ProblemType.TOKEN_VERIFICATION_FAILED, user.toString()));
+            return Either.left(problemComposer.getObject().build(ProblemType.TOKEN_VERIFICATION_FAILED, user.toString()));
 
         user.getRoles().remove(Role.UNVERIFIED);
         user.getRoles().add(Role.VERIFIED);

@@ -2,6 +2,7 @@ package com.naturalprogrammer.springmvc.common.error;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -17,12 +18,12 @@ import static com.naturalprogrammer.springmvc.common.error.Problem.toResponse;
 @RequiredArgsConstructor
 public class MyControllerAdvice {
 
-    private final ProblemComposer problemComposer;
+    private final ObjectFactory<ProblemBuilder> problemBuilder;
 
     @ExceptionHandler(value = HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<Problem> handleException(HttpMediaTypeNotSupportedException ex) {
 
-        var problem = problemComposer.compose(ProblemType.HTTP_MEDIA_TYPE_NOT_SUPPORTED, ex.getMessage());
+        var problem = problemBuilder.getObject().build(ProblemType.HTTP_MEDIA_TYPE_NOT_SUPPORTED, ex.getMessage());
         log.info("HttpMediaTypeNotSupportedException (%s): %s".formatted(ex.getMessage(), problem), ex);
         return toResponse(problem);
     }
@@ -30,7 +31,7 @@ public class MyControllerAdvice {
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public ResponseEntity<Problem> handleException(HttpMessageNotReadableException ex) {
 
-        var problem = problemComposer.compose(ProblemType.HTTP_MESSAGE_NOT_READABLE, ex.getMessage());
+        var problem = problemBuilder.getObject().build(ProblemType.HTTP_MESSAGE_NOT_READABLE, ex.getMessage());
         log.info("HttpMessageNotReadableException (%s): %s".formatted(ex.getMessage(), problem), ex);
         return toResponse(problem);
     }
@@ -43,7 +44,7 @@ public class MyControllerAdvice {
             throw ex;
         }
 
-        var problem = problemComposer.compose(ProblemType.GENERIC_ERROR, null);
+        var problem = problemBuilder.getObject().build(ProblemType.GENERIC_ERROR, null);
         log.error("Unknown error %s (%s): %s".formatted(ex.getClass().getCanonicalName(), ex.getMessage(), problem), ex);
         return toResponse(problem);
     }

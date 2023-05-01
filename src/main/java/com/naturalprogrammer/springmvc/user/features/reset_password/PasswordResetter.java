@@ -2,7 +2,7 @@ package com.naturalprogrammer.springmvc.user.features.reset_password;
 
 import com.naturalprogrammer.springmvc.common.error.BeanValidator;
 import com.naturalprogrammer.springmvc.common.error.Problem;
-import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
+import com.naturalprogrammer.springmvc.common.error.ProblemBuilder;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.common.jwt.JweService;
 import com.naturalprogrammer.springmvc.user.domain.User;
@@ -12,6 +12,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,7 @@ class PasswordResetter {
 
     private final BeanValidator validator;
     private final JweService jweService;
-    private final ProblemComposer problemComposer;
+    private final ObjectFactory<ProblemBuilder> problemBuilder;
     private final UserRepository userRepository;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
@@ -42,7 +43,7 @@ class PasswordResetter {
         log.info("Resetting password for {}", request);
         var trimmedRequest = request.trimmed();
         return validator
-                .validate(trimmedRequest, ProblemType.INVALID_DATA)
+                .validate(trimmedRequest)
                 .or(() -> resetValidatedPassword(trimmedRequest));
     }
 
@@ -51,7 +52,7 @@ class PasswordResetter {
         return jweService
                 .parseToken(request.token())
                 .fold(problemType -> {
-                    var problem = problemComposer.compose(
+                    var problem = problemBuilder.getObject().build(
                             problemType,
                             request.toString());
                     return Optional.of(problem);
@@ -63,7 +64,7 @@ class PasswordResetter {
 
         if (notEqual(claims.getClaim(PURPOSE), FORGOT_PASSWORD.name())) {
             log.warn("Received token with invalid purpose while resetting password {}", claims);
-            return Optional.of(problemComposer.compose(ProblemType.TOKEN_VERIFICATION_FAILED, request.toString()));
+            return Optional.of(problemBuilder.getObject().build(ProblemType.TOKEN_VERIFICATION_FAILED, request.toString()));
         }
 
         var userId = UUID.fromString(claims.getSubject());

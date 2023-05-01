@@ -19,7 +19,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_DATA;
 import static com.naturalprogrammer.springmvc.common.jwt.JwtPurpose.FORGOT_PASSWORD;
 import static com.naturalprogrammer.springmvc.common.jwt.JwtPurpose.PURPOSE;
 import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.EMAIL;
@@ -38,7 +37,7 @@ class ForgotPasswordInitiator {
         log.info("Initiating forgot password for {}", request);
         var trimmedRequest = request.trimmed();
         return validator
-                .validate(trimmedRequest, INVALID_DATA)
+                .validate(trimmedRequest)
                 .or(() -> {
                     initiateValidated(trimmedRequest);
                     return Optional.empty();

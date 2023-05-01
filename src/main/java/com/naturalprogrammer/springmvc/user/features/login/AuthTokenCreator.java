@@ -1,13 +1,14 @@
 package com.naturalprogrammer.springmvc.user.features.login;
 
 import com.naturalprogrammer.springmvc.common.error.Problem;
-import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
+import com.naturalprogrammer.springmvc.common.error.ProblemBuilder;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.common.jwt.JwsService;
 import com.naturalprogrammer.springmvc.user.services.UserService;
 import io.jbock.util.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -35,7 +36,7 @@ public class AuthTokenCreator {
     public static final long ACCESS_TOKEN_VALID_MILLIS = MINUTES.toMillis(30);
 
     private final UserService userService;
-    private final ProblemComposer problemComposer;
+    private final ObjectFactory<ProblemBuilder> problemBuilder;
     private final JwsService jwsService;
     private final Clock clock;
 
@@ -45,7 +46,7 @@ public class AuthTokenCreator {
     ) {
         return userService.isSelfOrAdmin(userId)
                 ? Either.right(create(userId.toString(), resourceTokenValidForMillis))
-                : Either.left(problemComposer.compose(ProblemType.NOT_FOUND, "User %s not found".formatted(userId)));
+                : Either.left(problemBuilder.getObject().build(ProblemType.NOT_FOUND, "User %s not found".formatted(userId)));
     }
 
     public AuthTokensResource create(

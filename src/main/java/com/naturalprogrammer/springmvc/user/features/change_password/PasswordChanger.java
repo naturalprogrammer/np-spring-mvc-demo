@@ -1,11 +1,11 @@
 package com.naturalprogrammer.springmvc.user.features.change_password;
 
 import com.naturalprogrammer.springmvc.common.CommonUtils;
-import com.naturalprogrammer.springmvc.common.MessageGetter;
 import com.naturalprogrammer.springmvc.common.error.*;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +22,7 @@ public class PasswordChanger {
     private final CommonUtils commonUtils;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ProblemComposer problemComposer;
-    private final MessageGetter messageGetter;
+    private final ObjectFactory<ProblemBuilder> problemComposer;
     private final Clock clock;
 
     public Optional<Problem> changePassword(ChangePasswordRequest request) {
@@ -33,7 +32,7 @@ public class PasswordChanger {
         log.info("Changing password for user {}", userId);
         var trimmedRequest = request.trimmed();
         return validator
-                .validate(trimmedRequest, ProblemType.INVALID_DATA)
+                .validate(trimmedRequest)
                 .or(() -> changeValidatedPassword(userId, trimmedRequest));
     }
 
@@ -41,12 +40,11 @@ public class PasswordChanger {
 
         var user = userRepository.findById(userId).orElseThrow();
         if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
-            var problem = problemComposer.compose(
-                    ProblemType.PASSWORD_MISMATCH,
-                    messageGetter.getMessage("password-mismatch-for-user", userId),
-                    ErrorCode.PASSWORD_MISMATCH,
-                    "oldPassword"
-            );
+            var problem = problemComposer.getObject()
+                    .type(ProblemType.PASSWORD_MISMATCH)
+                    .detailMessage("password-mismatch-for-user", userId)
+                    .error("oldPassword", ErrorCode.PASSWORD_MISMATCH)
+                    .build();
             return Optional.of(problem);
         }
         user.setPassword(passwordEncoder.encode(request.newPassword()));

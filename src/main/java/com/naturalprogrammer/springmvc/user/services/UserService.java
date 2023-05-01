@@ -2,7 +2,7 @@ package com.naturalprogrammer.springmvc.user.services;
 
 import com.naturalprogrammer.springmvc.common.CommonUtils;
 import com.naturalprogrammer.springmvc.common.error.Problem;
-import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
+import com.naturalprogrammer.springmvc.common.error.ProblemBuilder;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.domain.User;
@@ -12,6 +12,7 @@ import com.naturalprogrammer.springmvc.user.features.verification.VerificationMa
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,7 +37,7 @@ public class UserService {
     private final Clock clock;
     private final UserRepository userRepository;
     private final VerificationMailSender verificationMailSender;
-    private final ProblemComposer problemComposer;
+    private final ObjectFactory<ProblemBuilder> problemBuilder;
 
 
     public UserResource toResource(User user) {
@@ -106,11 +107,17 @@ public class UserService {
     }
 
     public Problem userNotFound(UUID userId) {
-        return problemComposer.composeMessage(ProblemType.NOT_FOUND, "user-not-found", userId);
+        return problemBuilder.getObject()
+                .type(ProblemType.NOT_FOUND)
+                .detailMessage("user-not-found", userId)
+                .build();
     }
 
     public Problem userNotFound(String email) {
-        return problemComposer.composeMessage(ProblemType.NOT_FOUND, "user-not-found", email);
+        return problemBuilder.getObject()
+                .type(ProblemType.NOT_FOUND)
+                .detailMessage("user-not-found", email)
+                .build();
     }
 
 }

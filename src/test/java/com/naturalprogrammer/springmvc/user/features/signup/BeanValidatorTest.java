@@ -1,32 +1,25 @@
 package com.naturalprogrammer.springmvc.user.features.signup;
 
 import com.naturalprogrammer.springmvc.common.error.BeanValidator;
-import com.naturalprogrammer.springmvc.common.error.Problem;
-import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
-import jakarta.validation.ConstraintViolation;
+import com.naturalprogrammer.springmvc.common.error.ProblemBuilder;
+import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import java.util.Set;
-
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_DATA;
+import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.mockProblemBuilder;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.mockValidator;
-import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.randomProblem;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.RANDOM_USER_PASSWORD;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class BeanValidatorTest {
@@ -35,15 +28,10 @@ class BeanValidatorTest {
     private LocalValidatorFactoryBean validator;
 
     @Mock
-    private ProblemComposer problemComposer;
+    private ObjectFactory<ProblemBuilder> problemComposer;
 
     @InjectMocks
     private BeanValidator subject;
-
-    @Captor
-    private ArgumentCaptor<Set<ConstraintViolation<SignupRequest>>> violationsCaptor;
-
-    private final Problem problem = randomProblem();
 
     @BeforeEach
     void setUp() {
@@ -57,28 +45,28 @@ class BeanValidatorTest {
 
         // given
         var request = new SignupRequest(null, password, null, null);
-        given(problemComposer.compose(any(), any(), anySet())).willReturn(problem);
+        mockProblemBuilder(problemComposer);
 
         // when
-        var possibleProblem = subject.validate(request, INVALID_DATA);
+        var possibleProblem = subject.validate(request);
 
         // then
-        verify(problemComposer).compose(
-                eq(INVALID_DATA),
-                eq("SignupRequest{email='null', displayName='null', resourceTokenValidForMillis=null}"),
-                violationsCaptor.capture()
-        );
+        assertThat(possibleProblem).isNotEmpty();
+        var problem = possibleProblem.orElseThrow();
+        assertThat(problem.id()).isNotBlank();
+        assertThat(problem.type()).isEqualTo(INVALID_DATA.getType());
+        assertThat(problem.title()).isEqualTo(ProblemType.INVALID_DATA.getTitle());
+        assertThat(problem.status()).isEqualTo(ProblemType.INVALID_DATA.getStatus().value());
+        assertThat(problem.detail()).isEqualTo(request.toString());
+        assertThat(problem.instance()).isNull();
 
-        var violations = violationsCaptor.getValue();
-        var passwordViolation = violations
-                .stream()
-                .filter(violation -> violation.getPropertyPath().toString().equals("password"))
-                .findAny()
-                .orElseThrow();
-
-        assertThat(passwordViolation.getMessageTemplate()).isEqualTo("{com.naturalprogrammer.spring.invalid.password}");
-        assertThat(passwordViolation.getMessage()).isEqualTo("Password must have least 1 upper, lower, special characters and digit, min 8 chars, max 50 chars");
-        assertThat(possibleProblem).hasValue(problem);
+        assertThat(problem.errors()).isNotEmpty();
+        var possibleError = problem.errors().stream().filter(e -> e.field().equals("password")).findAny();
+        assertThat(possibleError).isNotEmpty();
+        var error = possibleError.orElseThrow();
+        assertThat(error.code()).isEqualTo("invalid");
+        assertThat(error.field()).isEqualTo("password");
+        assertThat(error.message()).isEqualTo("Password must have least 1 upper, lower, special characters and digit, min 8 chars, max 50 chars");
     }
 
     @Test
@@ -88,7 +76,7 @@ class BeanValidatorTest {
         var request = new SignupRequest("email@example.com", RANDOM_USER_PASSWORD, "Some name", null);
 
         // when
-        var possibleProblem = subject.validate(request, INVALID_DATA);
+        var possibleProblem = subject.validate(request);
 
         // then
         assertThat(possibleProblem).isEmpty();

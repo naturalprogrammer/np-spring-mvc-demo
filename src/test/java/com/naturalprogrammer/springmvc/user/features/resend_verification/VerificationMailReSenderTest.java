@@ -1,7 +1,7 @@
 package com.naturalprogrammer.springmvc.user.features.resend_verification;
 
 import com.naturalprogrammer.springmvc.common.error.Problem;
-import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
+import com.naturalprogrammer.springmvc.common.error.ProblemBuilder;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.domain.User;
@@ -12,10 +12,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectFactory;
 
 import java.util.Optional;
 import java.util.Set;
 
+import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.mockProblemBuilder;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.randomProblem;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +33,7 @@ class VerificationMailReSenderTest {
     private UserRepository userRepository;
 
     @Mock
-    private ProblemComposer problemComposer;
+    private ObjectFactory<ProblemBuilder> problemComposer;
 
     @InjectMocks
     private VerificationMailReSender subject;
@@ -75,16 +77,20 @@ class VerificationMailReSenderTest {
         user.setRoles(Set.of(Role.VERIFIED));
         given(userService.isSelfOrAdmin(user.getId())).willReturn(true);
         given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-        given(problemComposer.composeMessage(
-                ProblemType.USER_ALREADY_VERIFIED,
-                "given-user-already-verified",
-                user.getId()))
-                .willReturn(problem);
+        mockProblemBuilder(problemComposer);
 
         // when
         var possibleProblem = subject.resend(user.getId());
 
         // then
-        assertThat(possibleProblem).hasValue(problem);
+        assertThat(possibleProblem).isNotEmpty();
+        var problem = possibleProblem.orElseThrow();
+        assertThat(problem.id()).isNotBlank();
+        assertThat(problem.type()).isEqualTo(ProblemType.USER_ALREADY_VERIFIED.getType());
+        assertThat(problem.title()).isEqualTo(ProblemType.USER_ALREADY_VERIFIED.getTitle());
+        assertThat(problem.status()).isEqualTo(ProblemType.USER_ALREADY_VERIFIED.getStatus().value());
+        assertThat(problem.detail()).isEqualTo("given-user-already-verified" + user.getId());
+        assertThat(problem.instance()).isNull();
+        assertThat(problem.errors()).isEmpty();
     }
 }

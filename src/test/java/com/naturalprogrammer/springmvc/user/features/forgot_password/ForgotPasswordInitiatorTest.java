@@ -1,7 +1,6 @@
 package com.naturalprogrammer.springmvc.user.features.forgot_password;
 
 import com.naturalprogrammer.springmvc.common.error.BeanValidator;
-import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +39,7 @@ class ForgotPasswordInitiatorTest {
         // given
         var user = randomUser();
         var request = new ForgotPasswordRequest(user.getEmail());
-        given(validator.validate(request, ProblemType.INVALID_DATA)).willReturn(Optional.empty());
+        given(validator.validate(request)).willReturn(Optional.empty());
         given(userRepository.findByEmail(request.email())).willReturn(Optional.of(user));
 
         // when
@@ -56,7 +55,7 @@ class ForgotPasswordInitiatorTest {
         // given
         var request = new ForgotPasswordRequest("");
         var problem = randomProblem();
-        given(validator.validate(request, ProblemType.INVALID_DATA)).willReturn(Optional.of(problem));
+        given(validator.validate(request)).willReturn(Optional.of(problem));
 
         // when
         var possibleProblem = subject.initiate(request);
@@ -72,7 +71,7 @@ class ForgotPasswordInitiatorTest {
         // given
         var user = randomUser();
         var request = new ForgotPasswordRequest(user.getEmail());
-        given(validator.validate(request, ProblemType.INVALID_DATA)).willReturn(Optional.empty());
+        given(validator.validate(request)).willReturn(Optional.empty());
         given(userRepository.findByEmail(request.email())).willReturn(Optional.empty());
 
         // when

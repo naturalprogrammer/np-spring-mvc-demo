@@ -1,6 +1,6 @@
 package com.naturalprogrammer.springmvc.user.features.login;
 
-import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
+import com.naturalprogrammer.springmvc.common.error.ProblemBuilder;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.user.services.UserService;
 import org.junit.jupiter.api.Test;
@@ -8,13 +8,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectFactory;
 
 import java.util.UUID;
 
-import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.randomProblem;
+import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.mockProblemBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,7 +23,7 @@ class AccessTokenCreatorTest {
     private UserService userService;
 
     @Mock
-    private ProblemComposer problemComposer;
+    private ObjectFactory<ProblemBuilder> problemBuilder;
 
     @InjectMocks
     private AccessTokenCreator subject;
@@ -35,14 +34,14 @@ class AccessTokenCreatorTest {
         // given
         var userId = UUID.randomUUID();
         given(userService.isSelfOrAdmin(userId)).willReturn(false);
-
-        var problem = randomProblem();
-        given(problemComposer.compose(eq(ProblemType.NOT_FOUND), any())).willReturn(problem);
+        mockProblemBuilder(problemBuilder);
 
         // when
         var either = subject.create(userId);
 
         // then
-        assertThat(either.getLeft()).hasValue(problem);
+        assertThat(either.isLeft()).isTrue();
+        var problem = either.getLeft().orElseThrow();
+        assertThat(problem.type()).isEqualTo(ProblemType.NOT_FOUND.getType());
     }
 }

@@ -3,7 +3,7 @@ package com.naturalprogrammer.springmvc.user.features.login;
 import com.naturalprogrammer.springmvc.common.CommonUtils;
 import com.naturalprogrammer.springmvc.common.error.BeanValidator;
 import com.naturalprogrammer.springmvc.common.error.Problem;
-import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
+import com.naturalprogrammer.springmvc.common.error.ProblemBuilder;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.user.services.UserService;
 import io.jbock.util.Either;
@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -26,7 +27,7 @@ class ResourceTokenExchanger {
 
     private final BeanValidator validator;
     private final UserService userService;
-    private final ProblemComposer problemComposer;
+    private final ObjectFactory<ProblemBuilder> problemBuilder;
     private final AuthTokenCreator authTokenCreator;
 
     public Either<Problem, AuthTokensResource> exchange(
@@ -74,7 +75,7 @@ class ResourceTokenExchanger {
     }
 
     private Problem notFound(UUID userId) {
-        return problemComposer.compose(ProblemType.NOT_FOUND, "User %s not found".formatted(userId));
+        return problemBuilder.getObject().build(ProblemType.NOT_FOUND, "User %s not found".formatted(userId));
     }
 
     private Either<Problem, AuthTokensResource> exchangeResourceToken(

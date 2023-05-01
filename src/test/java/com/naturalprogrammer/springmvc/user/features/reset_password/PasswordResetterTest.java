@@ -2,7 +2,7 @@ package com.naturalprogrammer.springmvc.user.features.reset_password;
 
 import com.naturalprogrammer.springmvc.common.error.BeanValidator;
 import com.naturalprogrammer.springmvc.common.error.Problem;
-import com.naturalprogrammer.springmvc.common.error.ProblemComposer;
+import com.naturalprogrammer.springmvc.common.error.ProblemBuilder;
 import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.common.jwt.JweService;
 import com.naturalprogrammer.springmvc.common.jwt.JwtPurpose;
@@ -15,11 +15,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectFactory;
 
 import java.util.Optional;
 import java.util.UUID;
 
 import static com.naturalprogrammer.springmvc.common.jwt.JwtPurpose.PURPOSE;
+import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.mockProblemBuilder;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.randomProblem;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +38,7 @@ class PasswordResetterTest {
     private JweService jweService;
 
     @Mock
-    private ProblemComposer problemComposer;
+    private ObjectFactory<ProblemBuilder> problemBuilder;
 
     @Mock
     private UserRepository userRepository;
@@ -54,7 +56,7 @@ class PasswordResetterTest {
     void shouldNot_resetPassword_when_invalidRequest() {
 
         // given
-        given(validator.validate(request, ProblemType.INVALID_DATA)).willReturn(Optional.of(problem));
+        given(validator.validate(request)).willReturn(Optional.of(problem));
 
         // when
         var possibleProblem = subject.reset(request);
@@ -68,31 +70,37 @@ class PasswordResetterTest {
     void shouldNot_resetPassword_when_invalidToken() {
 
         // given
-        given(validator.validate(request, ProblemType.INVALID_DATA)).willReturn(Optional.empty());
+        given(validator.validate(request)).willReturn(Optional.empty());
         given(jweService.parseToken(request.token())).willReturn(Either.left(ProblemType.EXPIRED_JWT));
-        given(problemComposer.compose(ProblemType.EXPIRED_JWT, request.toString())).willReturn(problem);
+        mockProblemBuilder(problemBuilder);
 
         // when
         var possibleProblem = subject.reset(request);
 
         // then
-        assertThat(possibleProblem).hasValue(problem);
+        assertThat(possibleProblem).isNotEmpty();
+        var problem = possibleProblem.orElseThrow();
+        assertThat(problem.type()).isEqualTo(ProblemType.EXPIRED_JWT.getType());
+        assertThat(problem.detail()).isEqualTo(request.toString());
     }
 
     @Test
     void shouldNot_resetPassword_when_tokenHasWrongPurpose() {
 
         // given
-        given(validator.validate(request, ProblemType.INVALID_DATA)).willReturn(Optional.empty());
+        given(validator.validate(request)).willReturn(Optional.empty());
         given(jweService.parseToken(request.token())).willReturn(Either.right(
                 new JWTClaimsSet.Builder().claim(PURPOSE, JwtPurpose.AUTH.name()).build()));
-        given(problemComposer.compose(ProblemType.TOKEN_VERIFICATION_FAILED, request.toString())).willReturn(problem);
+        mockProblemBuilder(problemBuilder);
 
         // when
         var possibleProblem = subject.reset(request);
 
         // then
-        assertThat(possibleProblem).hasValue(problem);
+        assertThat(possibleProblem).isNotEmpty();
+        var problem = possibleProblem.orElseThrow();
+        assertThat(problem.type()).isEqualTo(ProblemType.TOKEN_VERIFICATION_FAILED.getType());
+        assertThat(problem.detail()).isEqualTo(request.toString());
     }
 
     @Test
@@ -100,7 +108,7 @@ class PasswordResetterTest {
 
         // given
         var userId = UUID.randomUUID();
-        given(validator.validate(request, ProblemType.INVALID_DATA)).willReturn(Optional.empty());
+        given(validator.validate(request)).willReturn(Optional.empty());
         given(jweService.parseToken(request.token())).willReturn(Either.right(
                 new JWTClaimsSet.Builder()
                         .subject(userId.toString())
@@ -120,7 +128,7 @@ class PasswordResetterTest {
         // given
         var user = randomUser();
         var oldEmail = "old" + user.getEmail();
-        given(validator.validate(request, ProblemType.INVALID_DATA)).willReturn(Optional.empty());
+        given(validator.validate(request)).willReturn(Optional.empty());
         given(jweService.parseToken(request.token())).willReturn(Either.right(
                 new JWTClaimsSet.Builder()
                         .subject(user.getIdStr())

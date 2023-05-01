@@ -9,6 +9,7 @@ import com.naturalprogrammer.springmvc.user.services.UserService;
 import io.jbock.util.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
@@ -19,7 +20,7 @@ import java.util.Locale;
 class SignupService {
 
     private final BeanValidator validator;
-    private final ProblemComposer problemComposer;
+    private final ObjectFactory<ProblemBuilder> problemComposer;
     private final UserRepository userRepository;
     private final UserService userService;
     private final AuthTokenCreator authTokenCreator;
@@ -33,11 +34,12 @@ class SignupService {
     private Either<Problem, UserResource> signupValidated(SignupRequest request, Locale locale) {
 
         if (userRepository.existsByEmail(request.email())) {
-            var problem = problemComposer.compose(
-                    ProblemType.USED_EMAIL,
-                    request.toString(),
-                    ErrorCode.USED_EMAIL,
-                    "email");
+            var problem = problemComposer.getObject()
+                    .type(ProblemType.USED_EMAIL)
+                    .detail(request.toString())
+                    .error("email", ErrorCode.USED_EMAIL)
+                    .build();
+
             return Either.left(problem);
         }
 
