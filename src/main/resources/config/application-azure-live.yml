@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://svr-postgres-common.postgres.database.azure.com:5432/np-spring-mvc-demo?serverTimezone=UTC
+    username: admin1
+  kafka:
+    bootstrap-servers: localhost:9092
+    security:
+      protocol: PLAINTEXT
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 1011974249454-6gq0hr01gqh3cndoqnss5r69tkk2nd84.apps.googleusercontent.com
+            client-secret: saDA6Cj60wipncFM-hzBD-C6
+
+logging.level:
+  org.apache.kafka: OFF
+
+my:
+  homepage: http://localhost:8080
+  oauth2-authentication-success-url: http://localhost:8080?userId=%s&resourceToken=%s
+  jws:
+    id: e0498dad-4f5f-40cf-86e3-2726ec78463d
+    public-key: classpath:/config/rsa-2048-public-key.txt
+    private-key: classpath:/config/rsa-2048-private-key.txt
+  jwe:
+    id: c00f9459-82cb-48bc-882d-66b3b65258b4
+    key: 841D8A6C80CBA4FCAD32D5367C18C53B
