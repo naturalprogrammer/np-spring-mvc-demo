@@ -1,15 +1,18 @@
 name: test-on-push
 run-name: ${{ github.actor }} is testing on push
-on: [ push ]
+on:
+  push:
+    branches-ignore:
+      - main
 jobs:
-  check-bats-version:
+  test-on-push:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
       - name: Build with Maven
-        run: mvn --batch-mode --update-snapshots test
+        run: mvn --batch-mode --update-snapshots clean test
