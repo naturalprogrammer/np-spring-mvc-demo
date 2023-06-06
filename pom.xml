@@ -18,6 +18,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <testcontainers.version>1.17.6</testcontainers.version>
+        <azure.app.name>staging-np-spring-mvc-demo</azure.app.name>
     </properties>
     <dependencies>
         <dependency>
@@ -230,7 +231,7 @@
                 <configuration>
                     <schemaVersion>v2</schemaVersion>
                     <resourceGroup>rg-np-spring-mvc-demo</resourceGroup>
-                    <appName>np-spring-mvc-demo</appName>
+                    <appName>${azure.app.name}</appName>
                     <pricingTier>B1</pricingTier>
                     <region>eastus</region>
                     <runtime>

@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://svr-postgres-common.postgres.database.azure.com:5432/np-spring-mvc-demo?serverTimezone=UTC
+    url: jdbc:postgresql://svr-postgres-common.postgres.database.azure.com:5432/np-spring-mvc-demo-staging?serverTimezone=UTC
     username: admin1
   kafka:
     bootstrap-servers: localhost:9092
@@ -19,8 +19,8 @@ logging.level:
   org.apache.kafka: OFF
 
 my:
-  homepage: https://np-spring-mvc-demo.azurewebsites.net
-  oauth2-authentication-success-url: https://np-spring-mvc-demo.azurewebsites.net?userId=%s&resourceToken=%s
+  homepage: https://staging-np-spring-mvc-demo.azurewebsites.net
+  oauth2-authentication-success-url: https://staging-np-spring-mvc-demo.azurewebsites.net?userId=%s&resourceToken=%s
   jws:
     id: e0498dad-4f5f-40cf-86e3-2726ec78463d
     public-key: classpath:/config/rsa-2048-public-key.txt
