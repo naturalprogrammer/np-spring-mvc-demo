@@ -62,7 +62,7 @@ jobs:
 
   deploy-live:
     runs-on: ubuntu-latest
-    needs: staging
+    needs: deploy-staging
     environment:
       name: 'live'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
