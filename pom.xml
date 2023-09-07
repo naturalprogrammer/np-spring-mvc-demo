@@ -199,6 +199,19 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <docker>
+                        <publishRegistry>
+                            <url>https://registry.digitalocean.com</url>
+                            <username>${env.DOCKER_REGISTRY_USERNAME}</username>
+                            <password>${env.DOCKER_REGISTRY_PASSWORD}</password>
+                            <email>skpatel20@gmail.com</email>
+                        </publishRegistry>
+                    </docker>
+                    <image>
+                        <name>registry.digitalocean.com/naturalprogrammer/${project.artifactId}:${project.version}
+                        </name>
+                        <publish>true</publish>
+                    </image>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
