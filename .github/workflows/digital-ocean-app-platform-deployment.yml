@@ -1,0 +1,38 @@
+name: DigitalOcean App Platform Deployment
+
+# 1
+on:
+  push:
+    branches:
+      - do-app-platform
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Image version'
+        required: true
+#2
+env:
+  DOCKER_REGISTRY_USERNAME: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+  DOCKER_REGISTRY_PASSWORD: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+#3
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Set App Version
+        run: mvn versions:set -DnewVersion=${{ github.sha }}
+
+      - name: Build with Maven
+        run: mvn clean spring-boot:build-image -Dspring-boot.build-image.imageName=registry.digitalocean.com/naturalprogrammer/np-spring-mvc-demo -Dspring-boot.build-image.publish=true

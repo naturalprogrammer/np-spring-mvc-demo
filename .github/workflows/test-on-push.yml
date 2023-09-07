@@ -3,7 +3,8 @@ run-name: ${{ github.actor }} is testing on push
 on:
   push:
     branches-ignore:
-      - main
+      - do-app-platform
+
 jobs:
   test-on-push:
     runs-on: ubuntu-latest
