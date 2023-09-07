@@ -4,7 +4,7 @@ name: DigitalOcean App Platform Deployment
 on:
   push:
     branches:
-      - do-app-platform
+      - main
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
