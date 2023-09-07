@@ -4,8 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-
-import static org.springframework.util.Base64Utils.encodeToString;
+import java.util.Base64;
 
 @ConfigurationProperties(prefix = "my")
 public record MyProperties(
@@ -22,7 +21,7 @@ public record MyProperties(
     ) {
 
         public String publicKeyString() {
-            return encodeToString(publicKey().getEncoded());
+            return Base64.getEncoder().encodeToString(publicKey().getEncoded());
         }
     }
 

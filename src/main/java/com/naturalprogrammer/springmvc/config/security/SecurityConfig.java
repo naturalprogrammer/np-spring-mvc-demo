@@ -41,14 +41,14 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         return http
-                .cors().and()
+                .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .securityContext(customizer -> customizer.securityContextRepository(new NullSecurityContextRepository()))
                 .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .oauth2ResourceServer(configurer -> configurer.jwt()
+                .oauth2ResourceServer(configurer -> configurer.jwt(customizer -> customizer
                         .decoder(jwtDecoder(properties))
                         .jwtAuthenticationConverter(new JwtAuthenticationConverter(userRepository))
-                )
+                ))
                 .oauth2Login(oauth2Login -> {
                     oauth2Login.authorizationEndpoint(endpoint ->
                             endpoint.authorizationRequestRepository(new HttpCookieOAuth2AuthorizationRequestRepository())

@@ -27,7 +27,7 @@ public class MyTestUtils {
 
     public static void mockProblemBuilder(ObjectFactory<ProblemBuilder> problemComposer) {
         var messageGetter = mock(MessageGetter.class);
-        given(messageGetter.getMessage(any(), any())).willAnswer(invocation -> {
+        given(messageGetter.getMessage(any(), any(Object[].class))).willAnswer(invocation -> {
             Object[] args = invocation.getArguments();
             return Arrays.stream(args).map(Object::toString).collect(Collectors.joining());
         });
