@@ -1,4 +1,5 @@
 name: DigitalOcean App Platform Deployment
+run-name: ${{ github.actor }} is pushing docker image to DigitalOcean
 
 # 1
 on:
