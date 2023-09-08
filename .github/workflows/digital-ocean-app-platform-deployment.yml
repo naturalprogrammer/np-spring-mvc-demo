@@ -32,8 +32,8 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Set App Version
-        run: mvn versions:set -DnewVersion=${{ github.sha }}
+      #      - name: Set App Version
+      #        run: mvn versions:set -DnewVersion=${{ github.sha }}
 
       - name: Build with Maven
-        run: mvn clean spring-boot:build-image
+        run: mvn clean spring-boot:build-image -Dspring-boot.build-image.imageName=registry.digitalocean.com/naturalprogrammer/np-spring-mvc-demo:staging

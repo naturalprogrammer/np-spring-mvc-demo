@@ -208,8 +208,6 @@
                         </publishRegistry>
                     </docker>
                     <image>
-                        <name>registry.digitalocean.com/naturalprogrammer/${project.artifactId}:${project.version}
-                        </name>
                         <publish>true</publish>
                     </image>
                     <excludes>

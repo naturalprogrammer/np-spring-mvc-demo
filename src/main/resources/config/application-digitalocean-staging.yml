@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://private-db-postgresql-nyc3-naturalprogrammer-do-user-1523363-0.b.db.ondigitalocean.com:25060/np-spring-mvc-demo-staging?serverTimezone=UTC
+    url: jdbc:postgresql://private-db-postgresql-nyc3-naturalprogrammer-do-user-1523363-0.b.db.ondigitalocean.com:25060/np-spring-mvc-demo-staging?serverTimezone=UTC&sslmode=require
     username: np-spring-mvc-demo-staging
   kafka:
     bootstrap-servers: localhost:9092
