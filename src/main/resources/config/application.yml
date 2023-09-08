@@ -79,4 +79,4 @@ jws:
     # a UUID generated independently
     id: ~
     # An aes-128-cbc key generated at https://asecuritysite.com/encryption/keygen (take the "key" field)
-    key: BCBD9D4139418B06DAB351F31B83052D
+    key: ~

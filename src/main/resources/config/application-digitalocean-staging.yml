@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://private-db-postgresql-nyc3-naturalprogrammer-do-user-1523363-0.b.db.ondigitalocean.com:25060/np-spring-mvc-demo-staging?serverTimezone=UTC&sslmode=require
+    url: jdbc:postgresql://db-postgresql-nyc3-naturalprogrammer-do-user-1523363-0.b.db.ondigitalocean.com:25060/np-spring-mvc-demo-staging?serverTimezone=UTC&sslmode=require
     username: np-spring-mvc-demo-staging
   kafka:
     bootstrap-servers: localhost:9092
@@ -13,7 +13,6 @@ spring:
         registration:
           google:
             client-id: 1011974249454-6gq0hr01gqh3cndoqnss5r69tkk2nd84.apps.googleusercontent.com
-            client-secret: saDA6Cj60wipncFM-hzBD-C6
 
 logging.level:
   org.apache.kafka: OFF
