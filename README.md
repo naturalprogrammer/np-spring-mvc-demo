@@ -20,3 +20,4 @@ of [Spring Lemon](https://github.com/naturalprogrammer/spring-lemon)). Depicts t
     elegant way to avoid exceptions -- by using `Optional`, `Either` and functional programming.
 11. OpenApi documentation auto generation
 12. Java packaging strategy for modulith applications
+13. GitHub Actions CI/CD pipelines for Azure WebApp and DigitalOcean App Platform deployments 
