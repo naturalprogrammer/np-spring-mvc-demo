@@ -9,7 +9,7 @@ import java.util.List;
 
 @Slf4j
 @Component
-@Profile({"default", "test", "azure-staging", "azure-live"})
+@Profile({"default", "test", "azure-staging", "azure-live", "digitalocean-staging", "digitalocean-live"})
 public class LoggingMailSender implements MailSender {
 
     private static final List<MailData> SENT_MAILS = new ArrayList<>();
