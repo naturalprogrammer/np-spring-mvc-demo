@@ -30,4 +30,5 @@ jobs:
       #        run: mvn versions:set -DnewVersion=${{ github.sha }}
 
       - name: Build with Maven
-        run: mvn clean spring-boot:build-image -Dspring-boot.build-image.imageName=registry.digitalocean.com/naturalprogrammer/np-spring-mvc-demo:app
+        run: mvn --batch-mode --update-snapshots clean test
+      # Uncomment this to deploy push image  run: mvn --batch-mode --update-snapshots clean spring-boot:build-image -Dspring-boot.build-image.imageName=registry.digitalocean.com/naturalprogrammer/np-spring-mvc-demo:app
