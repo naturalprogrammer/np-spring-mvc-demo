@@ -7,7 +7,6 @@ import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 
 import java.time.Instant;
 import java.util.Set;
@@ -16,6 +15,7 @@ import java.util.UUID;
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
 import static com.naturalprogrammer.springmvc.config.sociallogin.HttpCookieOAuth2AuthorizationRequestRepository.CLIENT_ID_COOKIE_PARAM_NAME;
 import static com.naturalprogrammer.springmvc.config.sociallogin.HttpCookieOAuth2AuthorizationRequestRepository.newCookie;
+import static com.naturalprogrammer.springmvc.helpers.MyResultMatchers.result;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.futureTime;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
 import static com.naturalprogrammer.springmvc.user.features.login.AuthTokenCreator.ACCESS_TOKEN_VALID_MILLIS;
@@ -108,7 +108,7 @@ class ExchangeResourceTokenIntegrationTest extends AbstractIntegrationTest {
 
         var cookie = response.getCookie(CLIENT_ID_COOKIE_PARAM_NAME);
         assertThat(cookie).isNotNull();
-        assertThat(cookie.getValue()).isEqualTo("");
+        assertThat(cookie.getValue()).isEmpty();
     }
 
     @Test
@@ -161,8 +161,7 @@ class ExchangeResourceTokenIntegrationTest extends AbstractIntegrationTest {
                                     "resourceTokenValidForMillis" : 234356
                                 }
                                 """.formatted(CLIENT_ID_COOKIE_PARAM_NAME, clientId)))
-                .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+                .andExpect(result().isNotFoundProblem());
     }
 
     @Test
@@ -187,8 +186,7 @@ class ExchangeResourceTokenIntegrationTest extends AbstractIntegrationTest {
                                     "resourceTokenValidForMillis" : 234356
                                 }
                                 """.formatted(CLIENT_ID_COOKIE_PARAM_NAME, UUID.randomUUID().toString())))
-                .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+                .andExpect(result().isNotFoundProblem());
     }
 
     @Test
@@ -212,8 +210,7 @@ class ExchangeResourceTokenIntegrationTest extends AbstractIntegrationTest {
                                     "resourceTokenValidForMillis" : 234356
                                 }
                                 """.formatted(CLIENT_ID_COOKIE_PARAM_NAME, UUID.randomUUID().toString())))
-                .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+                .andExpect(result().isNotFoundProblem());
     }
 
     @Test

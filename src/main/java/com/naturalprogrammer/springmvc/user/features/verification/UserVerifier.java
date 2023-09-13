@@ -24,7 +24,7 @@ import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.E
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserVerifier {
+class UserVerifier {
 
     private final BeanValidator validator;
     private final ValidatedUserVerifier validatedUserVerifier;
@@ -40,7 +40,7 @@ public class UserVerifier {
 @RequiredArgsConstructor
 class ValidatedUserVerifier {
 
-    private final ObjectFactory<ProblemBuilder> problemComposer;
+    private final ObjectFactory<ProblemBuilder> problemBuilder;
     private final UserRepository userRepository;
     private final UserService userService;
     private final JweService jweService;
@@ -64,7 +64,7 @@ class ValidatedUserVerifier {
 
         return jweService
                 .parseToken(request.emailVerificationToken())
-                .mapLeft(problemType -> problemComposer.getObject()
+                .mapLeft(problemType -> problemBuilder.getObject()
                         .type(problemType)
                         .detail(request.emailVerificationToken())
                         .error("emailVerificationToken", ErrorCode.TOKEN_VERIFICATION_FAILED)
@@ -77,7 +77,7 @@ class ValidatedUserVerifier {
         if (notEqual(claims.getSubject(), user.getIdStr()) ||
                 notEqual(claims.getClaim(PURPOSE), EMAIL_VERIFICATION.name()) ||
                 notEqual(claims.getClaim(EMAIL), user.getEmail()))
-            return Either.left(problemComposer.getObject().build(ProblemType.TOKEN_VERIFICATION_FAILED, user.toString()));
+            return Either.left(problemBuilder.getObject().build(ProblemType.TOKEN_VERIFICATION_FAILED, user.toString()));
 
         user.getRoles().remove(Role.UNVERIFIED);
         user.getRoles().add(Role.VERIFIED);

@@ -26,6 +26,7 @@ import static com.naturalprogrammer.springmvc.common.Path.USERS;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_DATA;
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.USED_EMAIL;
 import static com.naturalprogrammer.springmvc.common.mail.LoggingMailSender.sentMails;
+import static com.naturalprogrammer.springmvc.helpers.MyResultMatchers.result;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.RANDOM_USER_PASSWORD;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
 import static com.naturalprogrammer.springmvc.user.features.login.AuthTokenCreator.ACCESS_TOKEN_VALID_MILLIS;
@@ -211,16 +212,11 @@ public class SignupIntegrationTest extends AbstractIntegrationTest {
                                         "displayName" : "Sanjay457 Patel983"
                                    }
                                 """.formatted(user.getEmail(), RANDOM_USER_PASSWORD)))
-                .andExpect(status().isConflict())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("id").isString())
-                .andExpect(jsonPath("type").value(USED_EMAIL.getType()))
+                .andExpect(result().isProblem(409, USED_EMAIL.getType(),
+                        "UsedEmail", "email"))
                 .andExpect(jsonPath("title").value("Email already used"))
                 .andExpect(jsonPath("status").value("409"))
-                .andExpect(jsonPath("errors", hasSize(1)))
-                .andExpect(jsonPath("errors[0].code").value("UsedEmail"))
-                .andExpect(jsonPath("errors[0].message").value("Email already used"))
-                .andExpect(jsonPath("errors[0].field").value("email"));
+                .andExpect(jsonPath("errors[0].message").value("Email already used"));
     }
 
 }

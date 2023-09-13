@@ -22,7 +22,7 @@ public class PasswordChanger {
     private final CommonUtils commonUtils;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ObjectFactory<ProblemBuilder> problemComposer;
+    private final ObjectFactory<ProblemBuilder> problemBuilder;
     private final Clock clock;
 
     public Optional<Problem> changePassword(ChangePasswordRequest request) {
@@ -40,7 +40,7 @@ public class PasswordChanger {
 
         var user = userRepository.findById(userId).orElseThrow();
         if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
-            var problem = problemComposer.getObject()
+            var problem = problemBuilder.getObject()
                     .type(ProblemType.PASSWORD_MISMATCH)
                     .detailMessage("password-mismatch-for-user", userId)
                     .error("oldPassword", ErrorCode.PASSWORD_MISMATCH)

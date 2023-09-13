@@ -53,7 +53,7 @@ class UserVerificationController {
     @PutMapping(value = "/{id}/verifications",
             consumes = UserVerificationRequest.CONTENT_TYPE,
             produces = UserResource.CONTENT_TYPE)
-    public ResponseEntity<?> verifyEmail(
+    ResponseEntity<?> verifyEmail(
             @PathVariable UUID id,
             @RequestBody UserVerificationRequest request
     ) {

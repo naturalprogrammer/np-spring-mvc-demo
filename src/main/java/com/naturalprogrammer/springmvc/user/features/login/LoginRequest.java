@@ -30,7 +30,7 @@ record LoginRequest(
 
     public static final String CONTENT_TYPE = CONTENT_TYPE_PREFIX + "login-request.v1+json";
 
-    public LoginRequest trimmed() {
+    LoginRequest trimmed() {
         var trimmed = new LoginRequest(
                 trim(email), trim(password), resourceTokenValidForMillis
         );

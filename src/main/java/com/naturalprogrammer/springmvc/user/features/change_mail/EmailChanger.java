@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import static com.naturalprogrammer.springmvc.common.jwt.JwtPurpose.EMAIL_CHANGE;
 import static com.naturalprogrammer.springmvc.common.jwt.JwtPurpose.PURPOSE;
+import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.EMAIL;
 
@@ -46,7 +47,7 @@ class ValidatedEmailChanger {
 
     private final UserRepository userRepository;
     private final JweService jweService;
-    private final ObjectFactory<ProblemBuilder> problemComposer;
+    private final ObjectFactory<ProblemBuilder> problemBuilder;
     private final Clock clock;
 
     public Optional<Problem> changeEmail(UUID userId, UserEmailChangeVerificationRequest request) {
@@ -56,14 +57,13 @@ class ValidatedEmailChanger {
         return jweService
                 .parseToken(request.emailVerificationToken())
                 .fold(
-                        problemType -> Optional.of(problemComposer.getObject()
+                        problemType -> Optional.of(problemBuilder.getObject()
                                 .type(problemType)
                                 .detail(request.emailVerificationToken())
                                 .error("emailVerificationToken", ErrorCode.TOKEN_VERIFICATION_FAILED)
                                 .build()),
                         claims -> changeEmail(user, claims)
                 );
-
     }
 
     private Optional<Problem> changeEmail(User user, JWTClaimsSet claims) {
@@ -71,12 +71,13 @@ class ValidatedEmailChanger {
         if (notEqual(claims.getSubject(), user.getIdStr()) ||
                 notEqual(claims.getClaim(PURPOSE), EMAIL_CHANGE.name()) ||
                 notEqual(claims.getClaim(EMAIL), user.getNewEmail()))
-            return Optional.of(problemComposer.getObject().build(ProblemType.TOKEN_VERIFICATION_FAILED, user.toString()));
+            return Optional.of(problemBuilder.getObject().build(ProblemType.TOKEN_VERIFICATION_FAILED, user.toString()));
 
         if (userRepository.existsByEmail(user.getNewEmail()))
-            return Optional.of(problemComposer.getObject()
+            return Optional.of(problemBuilder.getObject()
                     .type(ProblemType.USED_EMAIL)
                     .detailMessage("used-given-email", user.getNewEmail())
+                    .errors(emptyList())
                     .build());
 
         user.setEmail(user.getNewEmail());

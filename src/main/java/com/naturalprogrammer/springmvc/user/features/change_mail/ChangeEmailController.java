@@ -1,7 +1,6 @@
 package com.naturalprogrammer.springmvc.user.features.change_mail;
 
 import com.naturalprogrammer.springmvc.common.error.Problem;
-import com.naturalprogrammer.springmvc.user.services.UserResource;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -37,15 +36,10 @@ class ChangeEmailController {
                     content = @Content(
                             mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
                             schema = @Schema(implementation = Problem.class))
-            ),
-            @ApiResponse(responseCode = "404", description = "User not found or insufficient rights (must be self)",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
-                            schema = @Schema(implementation = Problem.class))
             )
     })
     @PostMapping(value = "/email-change-request", consumes = UserEmailChangeRequest.CONTENT_TYPE)
-    public ResponseEntity<?> requestChangingEmail(@RequestBody UserEmailChangeRequest request) {
+    ResponseEntity<?> requestChangingEmail(@RequestBody UserEmailChangeRequest request) {
         return emailChangeRequestProcessor
                 .process(request)
                 .map(Problem::toResponse)
@@ -71,10 +65,8 @@ class ChangeEmailController {
                             schema = @Schema(implementation = Problem.class))
             )
     })
-    @PatchMapping(value = "/email-change-request",
-            consumes = UserEmailChangeVerificationRequest.CONTENT_TYPE,
-            produces = UserResource.CONTENT_TYPE)
-    public ResponseEntity<?> changeEmail(@RequestBody UserEmailChangeVerificationRequest request) {
+    @PatchMapping(value = "/email-change-request", consumes = UserEmailChangeVerificationRequest.CONTENT_TYPE)
+    ResponseEntity<?> changeEmail(@RequestBody UserEmailChangeVerificationRequest request) {
         return emailChanger.changeEmail(request)
                 .map(Problem::toResponse)
                 .orElseGet(() -> ResponseEntity.noContent().build());

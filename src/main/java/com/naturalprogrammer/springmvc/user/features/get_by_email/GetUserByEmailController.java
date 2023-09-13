@@ -39,7 +39,7 @@ class GetUserByEmailController {
             )
     })
     @GetMapping(produces = UserResource.LIST_TYPE)
-    public List<UserResource> getUsers(@RequestParam String email) {
+    List<UserResource> getUsers(@RequestParam String email) {
         return usersGetter.getBy(email);
     }
 }

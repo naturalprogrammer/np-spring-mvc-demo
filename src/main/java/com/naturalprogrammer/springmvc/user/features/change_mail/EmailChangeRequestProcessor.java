@@ -9,7 +9,6 @@ import com.naturalprogrammer.springmvc.common.mail.MailSender;
 import com.naturalprogrammer.springmvc.config.MyProperties;
 import com.naturalprogrammer.springmvc.user.domain.User;
 import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
-import com.naturalprogrammer.springmvc.user.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectFactory;
@@ -56,35 +55,29 @@ class EmailChangeRequestProcessor {
 class ValidatedEmailChangeRequestProcessor {
 
     private final UserRepository userRepository;
-    private final UserService userService;
-    private final ObjectFactory<ProblemBuilder> problemComposer;
+    private final ObjectFactory<ProblemBuilder> problemBuilder;
     private final PasswordEncoder passwordEncoder;
     private final NewEmailVerificationMailSender newEmailVerificationMailSender;
 
     public Optional<Problem> process(UUID userId, UserEmailChangeRequest request) {
-
-        return userRepository.findById(userId)
-                .map(user -> process(user, request))
-                .orElseGet(() -> {
-                    log.warn("User {} not found when trying to process {}", userId, request);
-                    return Optional.of(userService.userNotFound(userId));
-                });
+        var user = userRepository.findById(userId).orElseThrow();
+        return process(user, request);
     }
 
     private Optional<Problem> process(User user, UserEmailChangeRequest request) {
 
         if (notEqual(user.getEmail(), request.oldEmail())) {
-            var problem = problemComposer.getObject()
+            var problem = problemBuilder.getObject()
                     .type(ProblemType.EMAIL_MISMATCH)
                     .detailMessage("email-mismatch-for-user", user.getId())
-                    .error("oldPassword", ErrorCode.EMAIL_MISMATCH)
+                    .error("oldEmail", ErrorCode.EMAIL_MISMATCH)
                     .build();
 
             return Optional.of(problem);
         }
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            var problem = problemComposer.getObject()
+            var problem = problemBuilder.getObject()
                     .type(ProblemType.PASSWORD_MISMATCH)
                     .detailMessage("password-mismatch-for-user", user.getId())
                     .error("oldPassword", ErrorCode.PASSWORD_MISMATCH)
@@ -114,7 +107,7 @@ class NewEmailVerificationMailSender {
     public void send(User user) {
         var verificationToken = createVerificationToken(user);
         var mail = new MailData(
-                user.getEmail(),
+                user.getNewEmail(),
                 messageGetter.getMessage("verification-mail-subject"),
                 messageGetter.getMessage("verification-mail-body",
                         user.getDisplayName(), properties.homepage(), verificationToken),

@@ -22,7 +22,8 @@ public class SocialLoginController {
             @ApiResponse(responseCode = "302", description = "Redirect to Google login")
     })
     @GetMapping("/oauth2/authorization/google")
-    public void googleLogin() {
+    void googleLogin() {
+        // This is a dummy controller, just for OpenAPI documentation
     }
 
 }

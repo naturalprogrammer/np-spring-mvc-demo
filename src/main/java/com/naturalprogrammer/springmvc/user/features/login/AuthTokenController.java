@@ -52,7 +52,7 @@ public class AuthTokenController {
             )
     })
     @PostMapping(value = LOGIN, consumes = LoginRequest.CONTENT_TYPE, produces = AuthTokensResource.CONTENT_TYPE)
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    ResponseEntity<?> login(@RequestBody LoginRequest request) {
         return toResponse(loginService.login(request), ResponseEntity::ok);
     }
 
@@ -70,7 +70,7 @@ public class AuthTokenController {
             )
     })
     @GetMapping(value = USERS + "/{id}/auth-tokens", produces = AuthTokensResource.CONTENT_TYPE)
-    public ResponseEntity<?> createAuthTokens(
+    ResponseEntity<?> createAuthTokens(
             @PathVariable UUID id,
             @RequestParam(required = false) Long resourceTokenValidForMillis
     ) {
@@ -100,7 +100,7 @@ public class AuthTokenController {
             consumes = ResourceTokenExchangeRequest.CONTENT_TYPE,
             produces = AuthTokensResource.CONTENT_TYPE
     )
-    public ResponseEntity<?> exchangeResourceToken(
+    ResponseEntity<?> exchangeResourceToken(
             @PathVariable UUID id,
             @RequestBody ResourceTokenExchangeRequest exchangeRequest,
             HttpServletRequest request,
@@ -123,7 +123,7 @@ public class AuthTokenController {
             )
     })
     @GetMapping(value = USERS + "/{id}/access-token", produces = AccessTokenResource.CONTENT_TYPE)
-    public ResponseEntity<?> createAccessToken(
+    ResponseEntity<?> createAccessToken(
             @PathVariable UUID id
     ) {
         return toResponse(accessTokenCreator.create(id), ResponseEntity::ok);

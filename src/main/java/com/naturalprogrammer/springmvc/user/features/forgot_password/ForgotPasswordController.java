@@ -33,7 +33,7 @@ class ForgotPasswordController {
             )
     })
     @PostMapping(value = FORGOT_PASSWORD, consumes = ForgotPasswordRequest.CONTENT_TYPE)
-    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+    ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
 
         return forgotPasswordInitiator
                 .initiate(request)
