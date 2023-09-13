@@ -44,7 +44,7 @@ class GetUserController {
             )
     })
     @GetMapping(value = "/{id}", produces = UserResource.CONTENT_TYPE)
-    public ResponseEntity<?> getUser(@PathVariable UUID id) {
+    ResponseEntity<?> getUser(@PathVariable UUID id) {
         return toResponse(userGetter.get(id), ResponseEntity::ok);
     }
 }

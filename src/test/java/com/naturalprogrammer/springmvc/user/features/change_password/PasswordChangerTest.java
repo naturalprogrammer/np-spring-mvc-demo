@@ -36,7 +36,7 @@ class PasswordChangerTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private ObjectFactory<ProblemBuilder> problemComposer;
+    private ObjectFactory<ProblemBuilder> problemBuilder;
 
     @InjectMocks
     private PasswordChanger subject;
@@ -71,7 +71,7 @@ class PasswordChangerTest {
         given(validator.validate(request)).willReturn(Optional.empty());
         given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
         given(passwordEncoder.matches(request.oldPassword(), user.getPassword())).willReturn(false);
-        mockProblemBuilder(problemComposer);
+        mockProblemBuilder(problemBuilder);
 
         // when
         var possibleProblem = subject.changePassword(request);

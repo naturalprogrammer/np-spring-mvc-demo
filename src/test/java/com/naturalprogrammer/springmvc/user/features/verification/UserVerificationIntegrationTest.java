@@ -9,7 +9,6 @@ import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import com.naturalprogrammer.springmvc.user.services.UserResource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 
 import java.time.Clock;
 import java.util.Date;
@@ -22,6 +21,7 @@ import static com.naturalprogrammer.springmvc.common.error.ProblemType.INVALID_D
 import static com.naturalprogrammer.springmvc.common.error.ProblemType.TOKEN_VERIFICATION_FAILED;
 import static com.naturalprogrammer.springmvc.common.jwt.JwtPurpose.EMAIL_VERIFICATION;
 import static com.naturalprogrammer.springmvc.common.jwt.JwtPurpose.PURPOSE;
+import static com.naturalprogrammer.springmvc.helpers.MyResultMatchers.result;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.futureTime;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.pastTime;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
@@ -140,16 +140,10 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
                                         "emailVerificationToken" : ""
                                   }
                                 """))
-                .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("id").isString())
-                .andExpect(jsonPath("type").value(INVALID_DATA.getType()))
+                .andExpect(result().isProblem(422, INVALID_DATA.getType(),
+                        "NotBlank", "emailVerificationToken"))
                 .andExpect(jsonPath("title").value("Invalid data given. See \"errors\" for details"))
-                .andExpect(jsonPath("status").value("422"))
-                .andExpect(jsonPath("errors", hasSize(1)))
-                .andExpect(jsonPath("errors[0].code").value("NotBlank"))
-                .andExpect(jsonPath("errors[0].message").value("must not be blank"))
-                .andExpect(jsonPath("errors[0].field").value("emailVerificationToken"));
+                .andExpect(jsonPath("errors[0].message").value("must not be blank"));
 
         user = userRepository.findById(user.getId()).orElseThrow();
         assertThat(user.getRoles()).isEqualTo(Set.of(Role.UNVERIFIED));
@@ -172,7 +166,7 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
         var verificationToken = anotherJweService.createToken(
                 userIdStr,
                 future,
-                Map.of("email", user.getEmail())
+                Map.of(EMAIL, user.getEmail())
         );
 
         // when, then
@@ -184,14 +178,8 @@ class UserVerificationIntegrationTest extends AbstractIntegrationTest {
                                         "emailVerificationToken" : "%s"
                                   }
                                 """.formatted(verificationToken)))
-                .andExpect(status().isForbidden())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("id").isString())
-                .andExpect(jsonPath("type").value(TOKEN_VERIFICATION_FAILED.getType()))
-                .andExpect(jsonPath("status").value("403"))
-                .andExpect(jsonPath("errors", hasSize(1)))
-                .andExpect(jsonPath("errors[0].code").value("TokenVerificationFailed"))
-                .andExpect(jsonPath("errors[0].field").value("emailVerificationToken"));
+                .andExpect(result().isProblem(403, TOKEN_VERIFICATION_FAILED.getType(),
+                        "TokenVerificationFailed", "emailVerificationToken"));
 
         user = userRepository.findById(user.getId()).orElseThrow();
         assertThat(user.getRoles()).isEqualTo(Set.of(Role.UNVERIFIED));

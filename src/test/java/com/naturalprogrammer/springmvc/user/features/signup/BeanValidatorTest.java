@@ -28,7 +28,7 @@ class BeanValidatorTest {
     private LocalValidatorFactoryBean validator;
 
     @Mock
-    private ObjectFactory<ProblemBuilder> problemComposer;
+    private ObjectFactory<ProblemBuilder> problemBuilder;
 
     @InjectMocks
     private BeanValidator subject;
@@ -45,7 +45,7 @@ class BeanValidatorTest {
 
         // given
         var request = new SignupRequest(null, password, null, null);
-        mockProblemBuilder(problemComposer);
+        mockProblemBuilder(problemBuilder);
 
         // when
         var possibleProblem = subject.validate(request);

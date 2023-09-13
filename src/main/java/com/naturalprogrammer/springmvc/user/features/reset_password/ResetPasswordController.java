@@ -42,7 +42,7 @@ class ResetPasswordController {
                             schema = @Schema(implementation = Problem.class))
             )})
     @PostMapping(value = RESET_PASSWORD, consumes = ResetPasswordRequest.CONTENT_TYPE)
-    public ResponseEntity<?> forgotPassword(@RequestBody ResetPasswordRequest request) {
+    ResponseEntity<?> forgotPassword(@RequestBody ResetPasswordRequest request) {
 
         return passwordResetter
                 .reset(request)

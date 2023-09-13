@@ -25,13 +25,17 @@ public class MyTestUtils {
         );
     }
 
-    public static void mockProblemBuilder(ObjectFactory<ProblemBuilder> problemComposer) {
+    public static void mockProblemBuilder(ObjectFactory<ProblemBuilder> problemBuilder) {
         var messageGetter = mock(MessageGetter.class);
+        mockMessageGetter(messageGetter);
+        given(problemBuilder.getObject()).willReturn(new ProblemBuilder(messageGetter));
+    }
+
+    public static void mockMessageGetter(MessageGetter messageGetter) {
         given(messageGetter.getMessage(any(), any(Object[].class))).willAnswer(invocation -> {
             Object[] args = invocation.getArguments();
             return Arrays.stream(args).map(Object::toString).collect(Collectors.joining());
         });
-        given(problemComposer.getObject()).willReturn(new ProblemBuilder(messageGetter));
     }
 
     public static Problem randomProblem() {

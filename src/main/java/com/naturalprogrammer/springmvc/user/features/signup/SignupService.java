@@ -20,7 +20,7 @@ import java.util.Locale;
 class SignupService {
 
     private final BeanValidator validator;
-    private final ObjectFactory<ProblemBuilder> problemComposer;
+    private final ObjectFactory<ProblemBuilder> problemBuilder;
     private final UserRepository userRepository;
     private final UserService userService;
     private final AuthTokenCreator authTokenCreator;
@@ -34,7 +34,7 @@ class SignupService {
     private Either<Problem, UserResource> signupValidated(SignupRequest request, Locale locale) {
 
         if (userRepository.existsByEmail(request.email())) {
-            var problem = problemComposer.getObject()
+            var problem = problemBuilder.getObject()
                     .type(ProblemType.USED_EMAIL)
                     .detail(request.toString())
                     .error("email", ErrorCode.USED_EMAIL)

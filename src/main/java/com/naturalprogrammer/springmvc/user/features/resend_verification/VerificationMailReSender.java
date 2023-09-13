@@ -24,7 +24,7 @@ class VerificationMailReSender {
     private final UserService userService;
     private final UserRepository userRepository;
     private final VerificationMailSender verificationMailSender;
-    private final ObjectFactory<ProblemBuilder> problemComposer;
+    private final ObjectFactory<ProblemBuilder> problemBuilder;
 
     public Optional<Problem> resend(UUID userId) {
 
@@ -45,7 +45,7 @@ class VerificationMailReSender {
 
         if (user.hasRoles(Role.VERIFIED)) {
             log.warn("User {} already verified trying to create verification token", user);
-            var problem = problemComposer.getObject()
+            var problem = problemBuilder.getObject()
                     .type(ProblemType.USER_ALREADY_VERIFIED)
                     .detailMessage("given-user-already-verified", user.getId())
                     .build();

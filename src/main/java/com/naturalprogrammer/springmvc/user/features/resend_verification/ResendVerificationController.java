@@ -43,7 +43,7 @@ class ResendVerificationController {
             )
     })
     @PostMapping(value = "/{id}/verifications")
-    public ResponseEntity<?> resendVerification(@PathVariable UUID id) {
+    ResponseEntity<?> resendVerification(@PathVariable UUID id) {
 
         return verificationMailReSender
                 .resend(id)

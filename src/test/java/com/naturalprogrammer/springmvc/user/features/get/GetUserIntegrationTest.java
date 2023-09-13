@@ -1,6 +1,5 @@
 package com.naturalprogrammer.springmvc.user.features.get;
 
-import com.naturalprogrammer.springmvc.common.error.ProblemType;
 import com.naturalprogrammer.springmvc.helpers.AbstractIntegrationTest;
 import com.naturalprogrammer.springmvc.user.domain.Role;
 import com.naturalprogrammer.springmvc.user.features.login.AuthTokenCreator;
@@ -8,15 +7,17 @@ import com.naturalprogrammer.springmvc.user.repositories.UserRepository;
 import com.naturalprogrammer.springmvc.user.services.UserResource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 
 import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
 import static com.naturalprogrammer.springmvc.common.Path.USERS;
+import static com.naturalprogrammer.springmvc.common.error.ProblemType.NOT_FOUND;
+import static com.naturalprogrammer.springmvc.helpers.MyResultMatchers.result;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.futureTime;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
+import static java.util.Collections.emptyMap;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -97,14 +98,12 @@ class GetUserIntegrationTest extends AbstractIntegrationTest {
         // when, then
         mvc.perform(get(USERS + "/{id}", userIdStr)
                         .header(AUTHORIZATION, "Bearer " + accessToken))
-                .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("id").exists())
-                .andExpect(jsonPath("type").value(ProblemType.NOT_FOUND.getType()))
+                .andExpect(result().isProblem(
+                        404,
+                        NOT_FOUND.getType(),
+                        emptyMap()))
                 .andExpect(jsonPath("title").value("Entity not found"))
-                .andExpect(jsonPath("status").value(404))
-                .andExpect(jsonPath("detail").value("User %s not found".formatted(userIdStr)))
-                .andExpect(jsonPath("errors", hasSize(0)));
+                .andExpect(jsonPath("detail").value("User %s not found".formatted(userIdStr)));
     }
 
     @Test

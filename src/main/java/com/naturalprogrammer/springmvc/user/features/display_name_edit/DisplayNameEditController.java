@@ -48,7 +48,7 @@ class DisplayNameEditController {
     @PatchMapping(value = "/{id}/display-name",
             consumes = UserDisplayNameEditRequest.CONTENT_TYPE,
             produces = UserResource.CONTENT_TYPE)
-    public ResponseEntity<?> editDisplayName(
+    ResponseEntity<?> editDisplayName(
             @PathVariable UUID id,
             @RequestBody UserDisplayNameEditRequest request
     ) {

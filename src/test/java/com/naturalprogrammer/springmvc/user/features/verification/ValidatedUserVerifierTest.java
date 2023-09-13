@@ -24,14 +24,16 @@ import java.util.UUID;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.mockProblemBuilder;
 import static com.naturalprogrammer.springmvc.helpers.MyTestUtils.randomProblem;
 import static com.naturalprogrammer.springmvc.user.UserTestUtils.randomUser;
+import static com.nimbusds.jwt.JWTClaimNames.SUBJECT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.EMAIL;
 
 @ExtendWith(MockitoExtension.class)
 class ValidatedUserVerifierTest {
 
     @Mock
-    private ObjectFactory<ProblemBuilder> problemComposer;
+    private ObjectFactory<ProblemBuilder> problemBuilder;
 
     @Mock
     private UserRepository userRepository;
@@ -79,20 +81,20 @@ class ValidatedUserVerifierTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"sub", "email"})
+    @ValueSource(strings = {SUBJECT, EMAIL})
     void should_preventVerification_when_wrongClaims(String claimName) {
 
         // given
         var claims = new JWTClaimsSet.Builder()
                 .subject(user.getIdStr())
-                .claim("email", user.getEmail())
+                .claim(EMAIL, user.getEmail())
                 .claim(claimName, UUID.randomUUID().toString())
                 .build();
 
         given(userService.isSelfOrAdmin(user.getId())).willReturn(true);
         given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
         given(jweService.parseToken(request.emailVerificationToken())).willReturn(Either.right(claims));
-        mockProblemBuilder(problemComposer);
+        mockProblemBuilder(problemBuilder);
 
         // when
         var either = subject.verify(user.getId(), request);

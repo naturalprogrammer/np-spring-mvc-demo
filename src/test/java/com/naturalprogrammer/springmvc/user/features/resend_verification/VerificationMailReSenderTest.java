@@ -33,7 +33,7 @@ class VerificationMailReSenderTest {
     private UserRepository userRepository;
 
     @Mock
-    private ObjectFactory<ProblemBuilder> problemComposer;
+    private ObjectFactory<ProblemBuilder> problemBuilder;
 
     @InjectMocks
     private VerificationMailReSender subject;
@@ -77,7 +77,7 @@ class VerificationMailReSenderTest {
         user.setRoles(Set.of(Role.VERIFIED));
         given(userService.isSelfOrAdmin(user.getId())).willReturn(true);
         given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-        mockProblemBuilder(problemComposer);
+        mockProblemBuilder(problemBuilder);
 
         // when
         var possibleProblem = subject.resend(user.getId());

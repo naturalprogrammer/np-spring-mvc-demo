@@ -26,7 +26,7 @@ public class GetContextController {
             )
     })
     @GetMapping(value = "/context", produces = ContextResource.CONTENT_TYPE)
-    public ContextResource getContext() {
+    ContextResource getContext() {
         return contextGetter.get();
     }
 
