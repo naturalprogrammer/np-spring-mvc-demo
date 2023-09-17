@@ -59,13 +59,11 @@ class ResourceTokenExchanger {
     }
 
     private Optional<Problem> cookieMatchesRequest(String cookieValue, ResourceTokenExchangeRequest exchangeRequest, UUID userId) {
-        {
-            if (exchangeRequest.myClientId().equals(cookieValue))
-                return Optional.empty();
-            log.warn("{} cookie {} different from the given {} for user {}",
-                    CLIENT_ID_COOKIE_PARAM_NAME, cookieValue, exchangeRequest, userId);
-            return Optional.of(notFound(userId));
-        }
+        if (exchangeRequest.myClientId().equals(cookieValue))
+            return Optional.empty();
+        log.warn("{} cookie {} different from the given {} for user {}",
+                CLIENT_ID_COOKIE_PARAM_NAME, cookieValue, exchangeRequest, userId);
+        return Optional.of(notFound(userId));
     }
 
     private Either<Problem, String> cookieNotFound(UUID userId, ResourceTokenExchangeRequest exchangeRequest) {
