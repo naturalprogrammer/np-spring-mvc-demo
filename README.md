@@ -11,8 +11,8 @@ of [Spring Lemon](https://github.com/naturalprogrammer/spring-lemon)). Depicts t
 6. Testing best practices
 7. Elegant functional
    programming [using Optional and Either](https://dzone.com/articles/the-beauty-of-java-optional-and-either)
-8.
-Using [specific media types instead of application/json](https://medium.com/@naturalprogrammer/why-and-how-to-use-specific-media-types-instead-of-application-json-36e91efe167b)
+8. Using [specific media types](https://medium.com/@naturalprogrammer/why-and-how-to-use-specific-media-types-instead-of-application-json-36e91efe167b)
+instead of application/json
 9. Complying to https://www.rfc-editor.org/rfc/rfc7807 for HTTP error responses
 10. *How to **not** use exception handling for validation and business rules*: We all know that
     using [exceptions for foreseen cases](https://reflectoring.io/business-exceptions/) is bad. Still, most of us
