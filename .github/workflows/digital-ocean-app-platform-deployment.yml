@@ -18,7 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
@@ -30,5 +29,5 @@ jobs:
       #        run: mvn versions:set -DnewVersion=${{ github.sha }}
 
       - name: Build with Maven
-        run: mvn --batch-mode --update-snapshots clean test
-      # Uncomment this to deploy push image  run: mvn --batch-mode --update-snapshots clean spring-boot:build-image -Dspring-boot.build-image.imageName=registry.digitalocean.com/naturalprogrammer/np-spring-mvc-demo:app
+        # run: mvn --batch-mode --update-snapshots clean test
+        run: mvn --batch-mode --update-snapshots clean spring-boot:build-image -Dspring-boot.build-image.imageName=registry.digitalocean.com/naturalprogrammer/np-spring-mvc-demo:app
