@@ -87,9 +87,7 @@ public class SecurityConfig {
                                         "/favicon.ico",
                                         "/swagger-ui.html",
                                         "/swagger-ui/**",
-                                        "/webjars/**",
-                                        "/assets/**",
-                                        "/vite.svg"
+                                        "/webjars/**"
                                 ).permitAll()
                                 .dispatcherTypeMatchers(ERROR).permitAll()
                                 .anyRequest().denyAll()
