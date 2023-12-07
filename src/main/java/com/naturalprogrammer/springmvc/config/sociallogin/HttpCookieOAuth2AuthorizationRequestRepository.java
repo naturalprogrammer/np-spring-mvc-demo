@@ -34,7 +34,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
 	private static final int COOKIE_EXPIRY_SECONDS = 60;
 	public static final String AUTHORIZATION_REQUEST_COOKIE_NAME = "my_oauth2_authorization_request";
 	public static final String REDIRECT_URI_COOKIE_PARAM_NAME = "myRedirectUri";
-	public static final String CLIENT_ID_COOKIE_PARAM_NAME = "myClientId";
+	public static final String CLIENT_ID_COOKIE_PARAM_NAME = "myAttemptId";
 
 	/**
 	 * Load authorization request from cookie

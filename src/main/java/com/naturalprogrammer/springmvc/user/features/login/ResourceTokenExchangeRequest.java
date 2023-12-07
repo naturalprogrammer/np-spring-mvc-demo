@@ -7,7 +7,7 @@ import static com.naturalprogrammer.springmvc.common.CommonUtils.CONTENT_TYPE_PR
 record ResourceTokenExchangeRequest(
 
         @NotBlank
-        String myClientId,
+        String myAttemptId,
 
         Long resourceTokenValidForMillis
 ) {

@@ -41,7 +41,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         return http
-                .cors(AbstractHttpConfigurer::disable)
+                //.cors(customizer -> customizer.configurationSource())
                 .csrf(AbstractHttpConfigurer::disable)
                 .securityContext(customizer -> customizer.securityContextRepository(new NullSecurityContextRepository()))
                 .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -17,6 +17,16 @@ spring:
       use-new-id-generator-mappings: false
       ddl-auto: validate
 
+  cors:
+    origins:
+      - ${my.homepage}
+    methods:
+      #      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    maxAge: 3600
   security:
     strategy: MODE_INHERITABLETHREADLOCAL
     oauth2:

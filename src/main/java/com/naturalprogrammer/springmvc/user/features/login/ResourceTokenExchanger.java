@@ -55,11 +55,11 @@ class ResourceTokenExchanger {
                 .map(cookie -> Either.<Problem, String>right(cookie.getValue()))
                 .orElseGet(() -> cookieNotFound(userId, exchangeRequest))
                 .filter((String cookieValue) -> cookieMatchesRequest(cookieValue, exchangeRequest, userId))
-                .flatMap(myClientId -> exchangeResourceToken(userId, exchangeRequest.resourceTokenValidForMillis(), request, response));
+                .flatMap(attemptId -> exchangeResourceToken(userId, exchangeRequest.resourceTokenValidForMillis(), request, response));
     }
 
     private Optional<Problem> cookieMatchesRequest(String cookieValue, ResourceTokenExchangeRequest exchangeRequest, UUID userId) {
-        if (exchangeRequest.myClientId().equals(cookieValue))
+        if (exchangeRequest.myAttemptId().equals(cookieValue))
             return Optional.empty();
         log.warn("{} cookie {} different from the given {} for user {}",
                 CLIENT_ID_COOKIE_PARAM_NAME, cookieValue, exchangeRequest, userId);

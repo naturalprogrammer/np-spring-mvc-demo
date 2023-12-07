@@ -14,7 +14,7 @@
 <body>
 <div class="container unauthenticated">
     Login With Google (v3): <a
-        href="/oauth2/authorization/google?myClientId=a-unique-id">click
+        href="/oauth2/authorization/google?myAttemptId=a-unique-id">click
     here</a>
 </div>
 <div class="container authenticated" style="display:none">
@@ -51,7 +51,7 @@
                 'Content-Type': 'application/vnd.com.naturalprogrammer.resource-token-exchange-request.v1+json'
             },
             data: JSON.stringify({
-                'myClientId': 'a-unique-id'
+                'myAttemptId': 'a-unique-id'
             }),
             success: function (data) {
                 getUser(data);

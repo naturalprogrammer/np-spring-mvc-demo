@@ -19,6 +19,8 @@ logging.level:
   org.apache.kafka: OFF
 
 my:
+  #  homepage: http://localhost:5173
+  #  oauth2-authentication-success-url: http://localhost:5173/social-login-success?userId=%s&resourceToken=%s
   homepage: http://localhost:8080
   oauth2-authentication-success-url: http://localhost:8080?userId=%s&resourceToken=%s
   jws:
